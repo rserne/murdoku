@@ -62,15 +62,12 @@ h1{font:800 clamp(26px,5vw,38px)/1.05 Outfit,sans-serif;margin:0;letter-spacing:
 .cell.kleed::before{position:absolute;inset:18%;pointer-events:none}
 .cell.blk{background:repeating-linear-gradient(-45deg,var(--rc) 0 7px,color-mix(in srgb,var(--rc) 78%,var(--wall)) 7px 8px);cursor:not-allowed}
 .cell:hover:not(.blk){filter:brightness(1.06)}
-.rl.sm{font-size:11px;padding:3px 5px;left:2px}
+.rl.sm{font-size:11px;left:4px}
 .rl.over{z-index:5}
 .walls{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:4;overflow:visible}
 .walls path{fill:none;stroke:var(--wall);stroke-width:3.5px;stroke-linecap:square;vector-effect:non-scaling-stroke}
 .bwrap{position:relative}
-.tabs{position:absolute;inset:3px;pointer-events:none;z-index:6}
-.tab{position:absolute;transform:translateY(-50%);font:700 12px/1 Inter,sans-serif;color:#fff;background:var(--rc);border:2px solid #e9e9ee;padding:4px 8px;border-radius:8px;white-space:nowrap;box-shadow:0 2px 6px -2px rgba(0,0,0,.4)}
-.tab.in{transform:translateY(calc(50% + 3px))}
-.rl{position:absolute;top:4px;left:4px;font:600 13px/1 Inter,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink);z-index:1;pointer-events:none;background:color-mix(in srgb,var(--bg) 82%,transparent);padding:3px 6px;border-radius:999px}
+.rl{position:absolute;top:6px;left:7px;font:600 13px/1 Inter,sans-serif;color:rgba(255,255,255,.92);text-shadow:0 1px 2px rgba(0,0,0,.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;z-index:1;pointer-events:none}
 .ico{width:60%;height:60%;pointer-events:none;filter:drop-shadow(0 2px 0 rgba(0,0,0,.12))}
 .cell.has .ico{position:absolute;right:3px;bottom:3px;width:32%;height:32%}
 .mk{position:absolute;left:22%;top:22%;width:56%;height:56%;pointer-events:none;color:color-mix(in srgb,var(--wall) 60%,transparent)}
@@ -232,7 +229,7 @@ dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
 
 <main class="game">
   <section aria-label="Plattegrond">
-    <div class="stage"><div class="bwrap"><div id="board" role="grid"></div><div class="tabs" id="tabs" aria-hidden="true"></div></div></div>
+    <div class="stage"><div class="bwrap"><div id="board" role="grid"></div></div></div>
     <div class="people-row">
       <div class="prow"><h2>Wie stond waar?</h2><span class="clock" aria-label="Speeltijd"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7.5V12l3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><b id="time">00:00</b></span></div>
       <div class="tray" id="tray"></div>
@@ -337,19 +334,6 @@ function start(diff,seed,saved){
 }
 function push(){undo.push(JSON.stringify({place:state.place,marks:state.marks}));if(undo.length>200)undo.shift()}
 
-function layoutTabs(){const tabs=$('#tabs');if(!tabs)return;const placed=[],W=tabs.clientWidth;
-    [...tabs.children].forEach(t=>{t.style.left=t.dataset.x;t.classList.remove('in')});
-    [...tabs.children].sort((a,b)=>a.offsetTop-b.offsetTop||a.offsetLeft-b.offsetLeft).forEach(t=>{
-      const w=t.offsetWidth,x0=Math.min(t.offsetLeft,W-w-2);let y=t.offsetTop,x=x0,h,g=0;
-      const hit=x=>placed.find(p=>Math.abs(p.y-y)<6&&x<p.x+p.w+6&&x+w>p.x-6);
-      while((h=hit(x))&&g++<12)x=h.x+h.w+6;
-      if(x+w>W-2){x=x0;const y0=y;y+=t.offsetHeight;
-        if(!hit(x))t.classList.add('in');
-        else{y=y0;g=0;while((h=hit(x))&&g++<12)x=h.x-w-6;if(x<2){x=x0;t.classList.add('in');y+=t.offsetHeight}}}
-      t.style.left=x+'px';placed.push({x,y,w})})}
-
-document.fonts&&document.fonts.ready.then(()=>layoutTabs());
-const tabsRO=new ResizeObserver(()=>layoutTabs());
 
 function render(){
   const {n,room,obj,people,V}=pz;
@@ -357,6 +341,15 @@ function render(){
   $('#case').innerHTML=`<span class="zk">Zaak </span><b>${state.seed}</b> · ${DIFF[state.diff].label}`;
   // Kamernaam: eerst een plek waar de naam past, dan bij voorkeur in lege vakjes, zo hoog mogelijk
 
+  // kamernaam: altijd in een leeg vakje; daarna liefst met ruimte ernaast, zo hoog mogelijk
+  const best={};
+  for(let c=0;c<n*n;c++){
+    const r=Math.floor(c/n),k=c%n,rm=room[c],short=pz.names[rm][0].length<=4;
+    let w=0;while(k+w<n&&room[c+w]===rm)w++;
+    let f=0;while(k+f<n&&room[c+f]===rm&&!obj[c+f])f++;
+    const sc=(obj[c]?0:300)+(f>=2||(short&&f>=1)?100:0)+(w>=2||short?50:0)+Math.min(w,3)*5-r;
+    if(!best[rm]||sc>best[rm].sc)best[rm]={c,len:w,sc};
+  }
   const rowC=Array(n).fill(0),colC=Array(n).fill(0);
   state.place.forEach(c=>{if(c>=0){rowC[Math.floor(c/n)]++;colC[c%n]++}});
   let h='';
@@ -367,6 +360,7 @@ function render(){
     if(BLOCK[o])cls.push('blk');
     if(p>=0)cls.push('has');
     let inner='';
+    if(best[room[c]].c===c)inner+=`<span class="rl" style="max-width:calc(${best[room[c]].len*100}% - 8px)">${cap(pz.names[room[c]][0])}</span>`;
     if(o&&o!=='kleed')inner+=`<svg class="ico" aria-hidden="true"><use href="#i-${o}"/></svg>`;
     if(p<0&&state.marks.includes(c))inner+=`<svg class="mk" aria-hidden="true"><use href="#i-x"/></svg>`;
     if(p>=0){
@@ -381,19 +375,7 @@ function render(){
   for(let c=0;c<n*n;c++){const r=Math.floor(c/n),k=c%n;if(r>0&&room[c]!==room[c-n])wd+=`M${k} ${r}h1`;if(k>0&&room[c]!==room[c-1])wd+=`M${k} ${r}v1`}
   h+=`<svg class="walls" viewBox="0 0 ${n} ${n}" preserveAspectRatio="none" aria-hidden="true"><path d="${wd}"/></svg>`;
   board.innerHTML=h;
-  // kamernaam als tab op de bovenmuur van elke kamer
-  const tabs=$('#tabs');
-  // per kamer het beste stuk bovenmuur: geen meubel eronder of erboven, ruimte ernaast, liefst hoog en links
-  // hoe erg een meubel onder (in het vakje) of boven (vakje erboven) de tab verdwijnt
-  const PEN_IN={kleed:3,bed:2.5,kast:2.5,plant:2,stoel:2},PEN_UP={kleed:3,bed:2,kast:2,plant:1.5,stoel:1};
-  const wallTop=c=>c<n||room[c-n]!==room[c];
-  const tabCell=i=>{let best=-1,bs=-1e9;for(let c=0;c<n*n;c++){if(room[c]!==i||!wallTop(c))continue;const r=Math.floor(c/n),k=c%n;
-    const nx=k<n-1&&room[c+1]===i&&wallTop(c+1);
-    const sc=-(PEN_IN[obj[c]]||0)-(r>0?(PEN_UP[obj[c-n]]||0):0)+(nx&&!obj[c+1]?2:0)+(nx&&r>0&&!obj[c+1-n]?1:0)-r*.1-k*.01;
-    if(sc>bs){bs=sc;best=c}}return best};
-  tabs.innerHTML=pz.names.map((nm,i)=>{const c=tabCell(i);const lx=`calc(${(c%n)/n*100}% + 6px)`;return `<span class="tab" data-x="${lx}" style="--rc:var(--r${i});left:${lx};top:${Math.floor(c/n)/n*100}%">${cap(nm[0])}</span>`}).join('');
-  requestAnimationFrame(layoutTabs);
-  if(!tabsRO.on){tabsRO.observe($('#tabs'));tabsRO.on=1}
+  board.querySelectorAll('.rl').forEach(l=>{if(l.scrollWidth>l.clientWidth)l.classList.add('sm');if(l.scrollWidth>l.clientWidth){l.style.maxWidth='none';l.classList.add('over')}});
   const S=state.sel,sc=S>=0?pz.clues.find(c=>c.p===S):null;
   tray.innerHTML=people.map((per,p)=>`<button type="button" class="pick${p===S?' on':''}${state.place[p]>=0?' done':''}" data-p="${p}" aria-pressed="${p===S}">${face(p)}${state.place[p]>=0?'<span class="ok" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 12.5l4 4 8-9"/></svg></span>':''}<span>${per.name}</span></button>`).join('');
   const F=$('#focus');
@@ -523,7 +505,7 @@ function renderRules(){
     <div><i>${IC.tip}</i><span><b>Tip</b>Haal een fout weg of zet iemand goed.</span></div>
     <div><i>${IC.trash}</i><span><b>Wissen</b>Begin opnieuw met een leeg bord.</span></div>
   </div>
-  <p class="ver">Versie 18</p>`;
+  <p class="ver">Versie 19</p>`;
 }
 function boot(data){
   renderRules();
