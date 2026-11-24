@@ -247,7 +247,6 @@ dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
       <div class="status"><span id="placed"></span><span>Tijd <b id="time">00:00</b></span></div>
       <div class="bar"><i id="prog" style="width:0"></i></div>
     </div>
-    <p class="rule"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M15.5 15.5l5 5" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg><span id="rule"></span></p>
     <details class="all"><summary>Alle aanwijzingen</summary><ul class="clues" id="clues"></ul></details>
   </section>
 </main>
@@ -360,7 +359,6 @@ function render(){
     const hl=S>=0&&(cl.p===S||cl.t==='with'&&cl.a===S);
     return `<li class="${hl?'hl':''}"><button type="button" data-p="${cl.p}">${face(cl.p)}<span class="t">${clueText(pz,cl)}</span></button></li>`;
   }).join('');
-  $('#rule').textContent=`De dader was als enige verdachte samen met ${people[V].name} in één kamer.`;
   const F=$('#focus');
   if(state.closed){F.className='focus';F.innerHTML=`${face(pz.murderer)}<span><b>Zaak gesloten</b><span class="q">${people[pz.murderer].name} was als enige verdachte samen met ${people[V].name} ${roomName(room[pz.sol[V]])}.</span></span>`}
   else if(S>=0){F.className='focus';F.innerHTML=`${face(S)}<span><span class="q">${clueText(pz,sc)}</span><span class="h">${mode==='kruis'?`Kies ‘Persoon zetten’ om ${people[S].name} neer te zetten.`:state.place[S]>=0?`Tik op een ander vakje om ${people[S].name} te verplaatsen, of op hetzelfde vakje om ${people[S].name} weg te halen.`:`Tik op een vakje om ${people[S].name} neer te zetten.`}</span></span>`}
@@ -481,7 +479,7 @@ function renderRules(){
     <div><i>${IC.trash}</i><span><b>Wissen</b>Begin opnieuw met een leeg bord.</span></div>
   </div>
   <button class="btn main cta" type="button" data-close>Aan de slag</button>
-  <p class="ver">Versie 5</p>`;
+  <p class="ver">Versie 6</p>`;
 }
 function boot(data){
   renderRules();
