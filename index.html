@@ -100,6 +100,8 @@ h2{font:700 22px/1.1 Outfit,sans-serif;margin:0 0 12px;letter-spacing:-.01em}
 .focus b{display:block;font:700 18px/1.2 Outfit,sans-serif}
 .focus .q{display:block;font-size:16px;line-height:1.35}
 .focus .h{display:block;font-size:13px;color:var(--soft);margin-top:2px}
+.focus.accuse b,.focus.done b{display:block;font:700 17px/1.25 Outfit,sans-serif}
+.focus.done .btn{flex:none;min-height:44px}
 .focus.idle{background:var(--card);border-color:transparent;color:var(--soft)}
 .people{list-style:none;margin:0;padding:0;display:grid;gap:8px}
 .pc{display:flex;align-items:stretch;border:1.5px solid var(--line);border-radius:18px;background:var(--bg);transition:border-color .15s,background .15s}
@@ -274,7 +276,7 @@ dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
 const $=s=>document.querySelector(s);
 const board=$('#board'),tray=$('#tray');
 const LS='murdoku-v4';
-let pz=null,state=null,mode='plaats',undo=[],toastT=0,hlRoom=-1;
+let pz=null,state=null,mode='plaats',undo=[],toastT=0,hlRoom=-1,accMsg='';
 
 // gezichten: kop 64×64, hoofd gecentreerd op (32,30)
 const EYES='<circle cx="27" cy="31" r="1.9" fill="#1b1b22"/><circle cx="37" cy="31" r="1.9" fill="#1b1b22"/>';
@@ -379,12 +381,14 @@ function render(){
   board.querySelectorAll('.rl').forEach(l=>{const cw=l.parentElement.clientWidth,tw=l.scrollWidth;if(tw<=cw-12){l.classList.add('ctr');return}
     const span=Math.min(+l.dataset.len,Math.ceil((tw+12)/cw));if(span>1&&tw<=span*cw-12){l.style.left=Math.round((span*cw-tw)/2)+'px';return}if(l.scrollWidth>l.clientWidth)l.classList.add('sm');if(l.scrollWidth>l.clientWidth){l.style.maxWidth='none';l.classList.add('over')}});
   const S=state.sel,sc=S>=0?pz.clues.find(c=>c.p===S):null;
-  tray.innerHTML=people.map((per,p)=>`<button type="button" class="pick${p===S?' on':''}${state.place[p]>=0?' done':''}" data-p="${p}" aria-pressed="${p===S}">${face(p)}${state.place[p]>=0?'<span class="ok" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 12.5l4 4 8-9"/></svg></span>':''}<span>${per.name}</span></button>`).join('');
+  const picking=state.solved&&!state.closed;
+  tray.innerHTML=people.map((per,p)=>`<button type="button" class="pick${p===S?' on':''}${state.place[p]>=0&&!picking?' done':''}" data-p="${p}" aria-pressed="${p===S}">${face(p)}${state.place[p]>=0&&!picking?'<span class="ok" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 12.5l4 4 8-9"/></svg></span>':''}<span>${per.name}</span></button>`).join('');
   const F=$('#focus');
-  if(state.closed){F.className='focus';F.innerHTML=`${face(pz.murderer)}<span><b>Zaak gesloten</b><span class="q">${people[pz.murderer].name} was als enige verdachte samen met ${people[V].name} ${roomName(room[pz.sol[V]])}.</span></span>`}
+  if(state.closed){F.className='focus done';F.innerHTML=`${face(pz.murderer)}<span><b>Zaak gesloten: ${people[pz.murderer].name} was het!</b><span class="h">${people[pz.murderer].name} was als enige verdachte samen met ${people[V].name} ${roomName(room[pz.sol[V]])}. Opgelost in ${fmt(state.elapsed)}${state.hints?` met ${state.hints} tip${state.hints>1?'s':''}`:' zonder tips'}.</span></span><button type="button" class="btn main" data-new>Nieuwe zaak</button>`}
+  else if(state.solved){F.className='focus accuse';F.innerHTML=`<span><b>Iedereen staat goed!</b><span class="h">${accMsg||`Wie heeft ${people[V].name} vermoord? Tik op de dader, hieronder of op het bord.`}</span></span>`}
   else if(S>=0){F.className='focus';F.innerHTML=`${face(S)}<span><span class="q">${clueText(pz,sc)}</span><span class="h">${mode==='kruis'?`Kies ‘Persoon zetten’ om ${people[S].name} neer te zetten.`:state.place[S]>=0?`Tik op een ander vakje om ${people[S].name} te verplaatsen, of op hetzelfde vakje om ${people[S].name} weg te halen.`:`Tik op een vakje om ${people[S].name} neer te zetten.`}</span></span>`}
   else{F.className='focus idle';F.innerHTML=`<span><span class="q">${mode==='kruis'?'Tik op vakjes waar volgens jou niemand stond. Nog een keer tikken haalt het kruisje weg.':'Tik op een persoon om de aanwijzing te zien.'}</span></span>`}
-  if(state.closed||S>=0)F.style.setProperty('--pc',people[state.closed?pz.murderer:S].col);else F.style.removeProperty('--pc');
+  if(state.solved&&!state.closed)F.style.setProperty('--pc','var(--alarm)');else if(state.closed||S>=0)F.style.setProperty('--pc',people[state.closed?pz.murderer:S].col);else F.style.removeProperty('--pc');
   $('#mPlace').setAttribute('aria-pressed',mode==='plaats');
   $('#mMark').setAttribute('aria-pressed',mode==='kruis');
 }
@@ -394,7 +398,7 @@ function after(){
   if(state.solved)return;
   const {n,sol}=pz;
   if(state.place.every(c=>c>=0)){
-    if(state.place.every((c,p)=>c===sol[p])){state.solved=true;save();openAccuse()}
+    if(state.place.every((c,p)=>c===sol[p])){state.solved=true;state.sel=-1;accMsg='';save();render()}
     else{
       const rows=new Set(state.place.map(c=>Math.floor(c/n))),cols=new Set(state.place.map(c=>c%n));
       toast(rows.size<n||cols.size<n?'Er staan nog twee mensen in dezelfde rij of kolom.':'Iedereen staat, maar er klopt nog iets niet. Loop de aanwijzingen nog eens na.');
@@ -405,6 +409,7 @@ function after(){
 board.addEventListener('click',e=>{
   const b=e.target.closest('[data-c]');if(!b||!state||state.closed)return;
   const c=+b.dataset.c,occ=state.place.indexOf(c);
+  if(state.solved){if(occ>=0)accuse(occ);else bubble(c,`${cellDesc(c)}. Tik op de dader.`);return}
   if(occ>=0&&occ!==state.sel){state.sel=occ;render();save();return}
   if(mode==='kruis'){
     if(occ>=0){bubble(c,'Haal eerst de persoon van dit vakje.');return}
@@ -428,14 +433,14 @@ board.addEventListener('click',e=>{
   after();
   if(pb&&!document.querySelector('dialog[open]'))bubble(c,pb);
 });
-tray.addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(!b||state.closed)return;const p=+b.dataset.p;state.sel=state.sel===p?-1:p;mode='plaats';render();save()});
+tray.addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(!b||state.closed)return;if(state.solved){accuse(+b.dataset.p);return}const p=+b.dataset.p;state.sel=state.sel===p?-1:p;mode='plaats';render();save()});
 $('#mPlace').addEventListener('click',()=>{mode='plaats';render()});
 $('#mMark').addEventListener('click',()=>{mode='kruis';render()});
 $('#undoBtn').addEventListener('click',()=>{if(state.closed||!undo.length){toast('Er is niets om ongedaan te maken.');return}const u=JSON.parse(undo.pop());state.place=u.place;state.marks=u.marks;state.solved=false;render();save()});
 $('#clearBtn').addEventListener('click',()=>{if(state.closed)return;push();state.place=state.place.map(()=>-1);state.marks=[];state.sel=0;after();toast('Het bord is leeg. Met Terug zet je alles weer terug.')});
 $('#hintBtn').addEventListener('click',()=>{
   if(state.closed)return;
-  if(state.solved){openAccuse();return}
+  if(state.solved){toast('Iedereen staat goed. Tik op de dader.');return}
   const {sol,people}=pz;push();state.hints++;
   const wrong=state.place.findIndex((c,p)=>c>=0&&c!==sol[p]);
   if(wrong>=0){state.place[wrong]=-1;state.sel=wrong;toast(`${people[wrong].name} stond op de verkeerde plek. Ik heb ${people[wrong].name} van het bord gehaald.`)}
@@ -443,19 +448,14 @@ $('#hintBtn').addEventListener('click',()=>{
   after();
 });
 
-function openAccuse(){
-  const {people,V}=pz,body=$('#accBody');
-  body.innerHTML=`<div class="grabbar"><div class="grab"></div></div><h3>Iedereen staat goed</h3><p>Nu de hamvraag: wie heeft ${people[V].name} vermoord?</p><div class="sus">${people.slice(0,V).map((per,p)=>`<button type="button" class="pick" data-acc="${p}">${face(p)}<span>${per.name}</span></button>`).join('')}</div><p class="msg" id="accMsg"></p><div class="row"><button class="btn" type="button" data-close>Later</button></div>`;
-  $('#accDlg').showModal();
+function accuse(p){
+  const {people,V,murderer}=pz;
+  if(p===V)accMsg=`${people[V].name} is het slachtoffer. Wie stond als enige verdachte bij ${people[V].name} in de kamer?`;
+  else if(p!==murderer)accMsg=`Nee, ${people[p].name} heeft een alibi. Kijk wie als enige verdachte bij ${people[V].name} in de kamer staat.`;
+  else{state.closed=true;state.sel=-1;save()}
+  render();
 }
-$('#accDlg').addEventListener('click',e=>{
-  const b=e.target.closest('[data-acc]');if(!b)return;
-  const p=+b.dataset.acc,{people,V,murderer,room,sol}=pz;
-  if(p!==murderer){$('#accMsg').textContent=`Nee, ${people[p].name} heeft een alibi. Kijk wie als enige verdachte bij ${people[V].name} in de kamer stond.`;return}
-  state.closed=true;state.sel=-1;save();render();
-  $('#accBody').innerHTML=`<div class="grabbar"><div class="grab"></div></div><span class="tag">Zaak gesloten</span><div class="win">${face(p)}<h3>${people[p].name} was het!</h3></div><p>${people[p].name} was als enige verdachte samen met ${people[V].name} ${roomName(room[sol[V]])}.</p><p>Opgelost in <b>${fmt(state.elapsed)}</b>${state.hints?` met ${state.hints} hint${state.hints>1?'s':''}`:' zonder hints'}.</p><div class="row"><button class="btn" type="button" data-close>Bekijk het bord</button><button class="btn main" type="button" id="againBtn">Nieuwe zaak</button></div>`;
-  $('#againBtn').addEventListener('click',()=>{$('#accDlg').close();$('#seedIn').value='';$('#newDlg').showModal()});
-});
+$('#focus').addEventListener('click',e=>{if(e.target.closest('[data-new]')){$('#seedIn').value='';$('#newDlg').showModal()}});
 document.addEventListener('click',e=>{if(e.target.closest('[data-close]'))e.target.closest('dialog').close()});
 // Sluiten door naast het venster te tikken, of door het omlaag te vegen
 function swipeToClose(d){
@@ -507,7 +507,7 @@ function renderRules(){
     <div><i>${IC.tip}</i><span><b>Tip</b>Haal een fout weg of zet iemand goed.</span></div>
     <div><i>${IC.trash}</i><span><b>Wissen</b>Begin opnieuw met een leeg bord.</span></div>
   </div>
-  <p class="ver">Versie 20</p>`;
+  <p class="ver">Versie 21</p>`;
 }
 function boot(data){
   renderRules();
