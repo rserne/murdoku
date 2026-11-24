@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Murdoku: een logische puzzel waarin je uitzoekt wie waar stond en wie Vincent heeft vermoord.">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0f1014" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Murdoku">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Murdoku</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* VOICE  occasion: een moderne puzzelgame, speels en strak
+   IDEA   een bordspel-plattegrond met kamers als gekleurde tegels en verdachten als fiches met gezicht
+   PICTURE het bord zelf, groot, met getekende meubels en gezichtjes
+   COLOUR wit of bijna zwart, inkt, koraalrood voor de moord; frisse pasteltinten voor de kamers
+   TYPE   Outfit voor koppen + Inter voor tekst
+   LAYOUT laptop: bord links, verdachten en aanwijzingen rechts; telefoon: titel, bord, verdachten, aanwijzingen */
+:root{color-scheme:light dark;--bg:light-dark(#ffffff,#0f1014);--ink:light-dark(#14151a,#f0f0f3);--soft:light-dark(#6a6c78,#9d9fab);--line:light-dark(#e6e6ec,#2a2b33);--card:light-dark(#f5f5f8,#191a20);--hot:light-dark(#f2304f,#ff5a73);--wall:light-dark(#1d1e24,#e9e9ee);
+--r0:light-dark(#ffd8c6,#4a2b22);--r1:light-dark(#c8eed8,#1f3d2c);--r2:light-dark(#d2e2ff,#22314f);--r3:light-dark(#fff0ae,#463d17);--r4:light-dark(#e8dbff,#36294f);--r5:light-dark(#c4eff2,#1b4046);
+--wood:light-dark(#9a6533,#d39c62);--leaf:light-dark(#239455,#57c983);--pot:light-dark(#d06a3d,#e48a5d);--sheet:light-dark(#ffffff,#dedde6);--quilt:light-dark(#5a7fe0,#8aa6f0)}
+:root[data-theme=light]{color-scheme:light}
+:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 Inter,system-ui,sans-serif;overflow-x:clip}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--hot);outline-offset:2px}
+.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 20px;padding:max(20px,env(safe-area-inset-top)) max(4vw,16px,env(safe-area-inset-right)) 6px max(4vw,16px,env(safe-area-inset-left));max-width:1180px;margin:0 auto}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:44px;height:44px;flex:none}
+h1{font:800 clamp(30px,5vw,40px)/1.05 Outfit,sans-serif;margin:0;letter-spacing:-.03em}
+.case{font-size:14px;color:var(--soft)}
+.case b{color:var(--ink);font-weight:600}
+.acts{display:flex;gap:8px;flex-wrap:wrap}
+.btn{min-height:44px;padding:0 18px;border-radius:999px;border:1.5px solid var(--line);background:var(--bg);font-weight:600;font-size:15px}
+.btn:hover{border-color:var(--ink)}
+.btn.main{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btn.main:hover{background:color-mix(in srgb,var(--ink) 85%,var(--hot))}
+.game{display:grid;gap:28px;padding:16px max(4vw,16px,env(safe-area-inset-right)) max(48px,env(safe-area-inset-bottom)) max(4vw,16px,env(safe-area-inset-left));max-width:1180px;margin:0 auto}
+@media(min-width:900px){.game{grid-template-columns:minmax(0,580px) minmax(0,1fr);align-items:start}.side{position:sticky;top:16px}}
+.stage{background:var(--card);border-radius:28px;padding:clamp(10px,2.4vw,22px)}
+#board{display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));grid-template-rows:repeat(var(--n),minmax(0,1fr));aspect-ratio:1;width:100%;border:3px solid var(--wall);border-radius:18px;overflow:hidden;user-select:none;-webkit-user-select:none;box-shadow:0 18px 40px -18px rgba(20,20,40,.35);background:var(--wall)}
+.cell{position:relative;border:0;border-top:1px solid color-mix(in srgb,var(--wall) 12%,transparent);border-left:1px solid color-mix(in srgb,var(--wall) 12%,transparent);display:grid;place-items:center;padding:0;background:var(--rc);touch-action:manipulation;transition:filter .15s}
+.cell.wt{border-top:3px solid var(--wall)}
+.cell.wl{border-left:3px solid var(--wall)}
+.r0{--rc:var(--r0)}.r1{--rc:var(--r1)}.r2{--rc:var(--r2)}.r3{--rc:var(--r3)}.r4{--rc:var(--r4)}.r5{--rc:var(--r5)}
+.cell.kleed{background:repeating-linear-gradient(90deg,#e0644d 0 4px,#f08b62 4px 8px);box-shadow:inset 0 0 0 7px var(--rc),inset 0 0 0 9px #b8452f}
+.cell.blk{background:repeating-linear-gradient(-45deg,var(--rc) 0 7px,color-mix(in srgb,var(--rc) 78%,var(--wall)) 7px 8px);cursor:not-allowed}
+.cell:hover:not(.blk){filter:brightness(1.06)}
+.rl{position:absolute;top:4px;left:4px;font:600 12px/1 Inter,sans-serif;white-space:nowrap;z-index:3;pointer-events:none;background:color-mix(in srgb,var(--bg) 82%,transparent);padding:3px 6px;border-radius:999px}
+.ico{width:60%;height:60%;pointer-events:none;filter:drop-shadow(0 2px 0 rgba(0,0,0,.12))}
+.cell.has .ico{position:absolute;right:3px;bottom:3px;width:32%;height:32%}
+.mk{position:absolute;left:22%;top:22%;width:56%;height:56%;pointer-events:none;color:color-mix(in srgb,var(--wall) 60%,transparent)}
+.face{--c:#888;display:block;width:76%;aspect-ratio:1;border-radius:50%;overflow:hidden;background:var(--c);box-shadow:0 0 0 2.5px var(--bg),0 6px 10px -4px rgba(0,0,0,.45);position:relative;z-index:2;pointer-events:none}
+.face svg{display:block;width:100%;height:100%}
+.cell .face{animation:pop .22s ease-out}
+.face.bad{box-shadow:0 0 0 3px var(--hot),0 0 0 6px color-mix(in srgb,var(--hot) 30%,transparent)}
+.face.sel{box-shadow:0 0 0 2.5px var(--bg),0 0 0 5px var(--ink)}
+.badge{position:absolute;bottom:2px;left:50%;transform:translateX(-50%);background:var(--hot);color:#fff;font:700 11px/1 Inter,sans-serif;padding:3px 7px;border-radius:999px;z-index:4;pointer-events:none;white-space:nowrap}
+@keyframes pop{from{transform:scale(.5);opacity:.2}}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.shake{animation:shake .25s 2}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin:14px 4px 0;font-size:14px;color:var(--soft)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend svg{width:22px;height:22px}
+.sw{width:18px;height:18px;border-radius:4px}
+.side{display:grid;gap:22px}
+h2{font:700 22px/1.1 Outfit,sans-serif;margin:0 0 12px;letter-spacing:-.01em}
+.tray{display:flex;flex-wrap:wrap;gap:6px}
+.pick{display:grid;justify-items:center;gap:6px;border:0;background:none;padding:8px 4px;width:72px;border-radius:16px;position:relative}
+.pick .face{width:52px;box-shadow:0 0 0 2.5px var(--bg),0 6px 10px -5px rgba(0,0,0,.4)}
+.pick>span:last-child{font-size:14px;font-weight:600}
+.pick:hover{background:var(--card)}
+.pick.on{background:var(--card)}
+.pick.on .face{box-shadow:0 0 0 2.5px var(--bg),0 0 0 5px var(--ink)}
+.pick.done .face{opacity:.4;filter:grayscale(.6)}
+.pick.done::after{content:'';position:absolute;top:6px;right:10px;width:18px;height:18px;border-radius:50%;background:var(--hot) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 12.5l4 4 8-9' stroke='white' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") center/12px no-repeat}
+.focus{display:flex;gap:14px;align-items:center;margin-top:10px;padding:12px 16px 12px 12px;border-radius:20px;background:var(--ink);color:var(--bg);min-height:76px}
+.focus .face{width:52px;flex:none;box-shadow:0 0 0 2.5px var(--ink);animation:none}
+.focus b{display:block;font:700 18px/1.2 Outfit,sans-serif}
+.focus .q{display:block;font-size:16px;line-height:1.35}
+.focus .h{display:block;font-size:13px;opacity:.7;margin-top:2px}
+.focus.idle{background:var(--card);color:var(--soft)}
+.people{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.pc{display:flex;align-items:stretch;border:1.5px solid var(--line);border-radius:18px;background:var(--bg);transition:border-color .15s,background .15s}
+.pbtn{flex:1;display:flex;gap:12px;align-items:center;border:0;background:none;text-align:left;padding:8px 6px 8px 8px;min-height:62px;border-radius:16px}
+.pbtn .face{width:46px;flex:none;animation:none}
+.pt b{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;font-weight:600}
+.pt .t{display:block;line-height:1.35}
+.st{font:600 12px/1 Inter,sans-serif;background:var(--card);color:var(--soft);padding:4px 8px;border-radius:999px}
+.pc:hover{border-color:color-mix(in srgb,var(--ink) 40%,var(--line))}
+.pc.on{border-color:var(--ink);background:var(--card)}
+.pc.on .st{background:var(--bg)}
+.pc.rel{border-color:var(--ink);border-style:dashed}
+.pc.x .t{text-decoration:line-through;color:var(--soft)}
+.pc.x .pbtn .face{opacity:.5}
+.chk{flex:none;width:52px;border:0;background:none;display:grid;place-items:center;border-radius:16px}
+.chk svg{width:26px;height:26px}
+.chk circle{fill:none;stroke:var(--line);stroke-width:2}
+.chk path{stroke:transparent}
+.chk[aria-pressed=true] circle{fill:var(--ink);stroke:var(--ink)}
+.chk[aria-pressed=true] path{stroke:var(--bg)}
+.chk:hover circle{stroke:var(--ink)}
+.focus>span{flex:1}
+.focus .q.x{text-decoration:line-through;opacity:.7}
+.tick svg{width:16px;height:16px}
+.tick{display:inline-flex;align-items:center;gap:6px;flex:none;align-self:center;min-height:40px;padding:0 14px;border-radius:999px;border:1.5px solid color-mix(in srgb,var(--bg) 45%,transparent);background:none;color:inherit;font-weight:600;font-size:14px;white-space:nowrap}
+.tick:hover{border-color:var(--bg)}
+.tick[aria-pressed=true]{background:var(--bg);color:var(--ink);border-color:var(--bg)}
+.pick.x>span:last-child{text-decoration:line-through;color:var(--soft)}
+.all summary{display:flex;align-items:center;justify-content:space-between;min-height:52px;padding:0 16px;border:1.5px solid var(--line);border-radius:16px;font-weight:600;cursor:pointer;list-style:none}
+.all summary::-webkit-details-marker{display:none}
+.all summary::after{content:'';width:9px;height:9px;border-right:2px solid var(--ink);border-bottom:2px solid var(--ink);transform:rotate(45deg);margin-top:-5px;transition:transform .2s}
+.all[open] summary::after{transform:rotate(225deg);margin-top:5px}
+.all summary:hover{border-color:var(--ink)}
+.all .clues{margin-top:8px}
+.rule{margin:0!important}
+.tools{display:grid;gap:10px}
+.seg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;background:var(--card);border-radius:16px;padding:4px}
+.seg button{min-height:48px;padding:0 10px;border:0;background:none;font-weight:600;font-size:15px;border-radius:12px;display:flex;align-items:center;justify-content:center;gap:8px;color:var(--soft)}
+.seg svg,.ibtn svg{width:20px;height:20px;flex:none}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.modeline{margin:0;font-size:14px;color:var(--soft)}
+.tools2{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.seg button,.ibtn{white-space:nowrap}
+.ibtn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 8px;border-radius:14px;border:1.5px solid var(--line);background:var(--bg);font-weight:600;font-size:15px}
+.ibtn:hover{border-color:var(--ink)}
+.status{display:flex;justify-content:space-between;gap:12px;font-size:15px;color:var(--soft)}
+.status b{color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap}
+.bar{height:6px;border-radius:999px;background:var(--card);overflow:hidden;margin-top:8px}
+.bar i{display:block;height:100%;background:var(--ink);border-radius:999px;transition:width .3s}
+.rule{display:flex;gap:12px;align-items:center;background:color-mix(in srgb,var(--hot) 10%,var(--bg));border:1.5px solid color-mix(in srgb,var(--hot) 40%,transparent);border-radius:16px;padding:12px 14px;margin:0 0 10px;font-weight:500;line-height:1.4}
+.rule svg{width:28px;height:28px;flex:none;color:var(--hot)}
+.clues{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.clues button{width:100%;text-align:left;display:flex;gap:12px;align-items:center;padding:8px 14px 8px 8px;border-radius:16px;border:1.5px solid var(--line);background:var(--bg);min-height:52px;line-height:1.35;transition:border-color .15s,background .15s}
+.clues .face{width:36px;flex:none;box-shadow:none;animation:none}
+.clues li.hl button{border-color:var(--ink);background:var(--card)}
+.clues li.x button{color:var(--soft)}
+.clues li.x .t{text-decoration:line-through}
+.clues li.x .face{opacity:.45}
+.toast{position:fixed;left:50%;bottom:20px;transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:16px;max-width:min(92vw,460px);opacity:0;transition:.25s;pointer-events:none;z-index:20;font-size:15px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+dialog{border:0;border-radius:24px;padding:0;width:min(92vw,480px);background:var(--bg);color:var(--ink);box-shadow:0 30px 80px rgba(0,0,0,.4)}
+dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
+.dlg{padding:24px}
+.dlg h3{font:800 28px/1.1 Outfit,sans-serif;margin:0 0 10px;letter-spacing:-.02em}
+.dlg ol{padding-left:20px;margin:8px 0 14px}
+.dlg li{margin-bottom:6px}
+.dlg p{margin:0 0 12px}
+.row{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;margin-top:16px}
+.choices{display:grid;gap:8px}
+.choices button{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:58px;padding:0 18px;border-radius:16px;border:1.5px solid var(--line);background:var(--bg);font-weight:600;text-align:left}
+.choices button:hover{border-color:var(--ink);background:var(--card)}
+.choices small{color:var(--soft);font-weight:400;font-size:14px}
+.sus{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.field{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:14px;font-size:15px}
+.field input{font:16px Inter,sans-serif;min-height:44px;width:8em;padding:0 14px;border:1.5px solid var(--line);border-radius:999px;background:var(--bg);color:var(--ink)}
+.win{display:flex;align-items:center;gap:14px;margin-bottom:12px}
+.win .face{width:72px;flex:none}
+.tag{display:inline-block;background:var(--hot);color:#fff;font:700 13px/1 Inter,sans-serif;padding:6px 10px;border-radius:999px;margin-bottom:8px}
+.msg{color:var(--hot);min-height:1.5em;font-size:15px;margin-top:8px}
+.busy #board{opacity:.4}
+@media(max-width:600px){.game{padding-top:10px;gap:22px}.pick{width:62px}.pick .face{width:46px}.stage{border-radius:22px}}
+@media(prefers-reduced-motion:reduce){.cell .face,.shake{animation:none}.toast,.bar i{transition:none}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-stoel" viewBox="0 0 24 24"><path fill="var(--wood)" d="M6.5 2.5h2.6v9.3h8.4v3H9.1v6.7H6.5zM14.9 14.8h2.6v6.7h-2.6z"/></symbol>
+  <symbol id="i-plant" viewBox="0 0 24 24"><path fill="var(--leaf)" d="M12 15C11.5 10.5 8.5 7.5 4 6.5c.3 4.6 3.3 8 8 8.5zM12 15c.5-4.5 3.5-7.5 8-8.5-.3 4.6-3.3 8-8 8.5zM12 15c-1.6-4-1.4-8.3 0-12 1.4 3.7 1.6 8 0 12z"/><path fill="var(--pot)" d="M7.5 14.5h9l-1.4 7H8.9z"/></symbol>
+  <symbol id="i-kast" viewBox="0 0 24 24"><rect x="4" y="2.5" width="16" height="19" rx="1.5" fill="var(--wood)"/><rect x="5.6" y="4" width="12.8" height="7" rx=".6" fill="var(--sheet)"/><rect x="5.6" y="12.6" width="12.8" height="7.4" rx=".6" fill="var(--sheet)"/><path d="M6.6 5.2h1.8V11H6.6zM9 6h1.6v5H9zM11.2 5.4h2v5.6h-2zM7 13.8h2v6.2H7zM9.6 14.6h1.6V20H9.6zM13 14h2v6h-2z" fill="var(--quilt)"/><path d="M14 5.4l2 .4-1 5.2-2-.4z" fill="var(--hot)"/></symbol>
+  <symbol id="i-bed" viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.4" fill="var(--wood)"/><rect x="6.3" y="3.8" width="11.4" height="16.4" rx="1.6" fill="var(--sheet)"/><rect x="7.6" y="4.8" width="8.8" height="3.6" rx="1.8" fill="var(--sheet)" stroke="var(--soft)" stroke-width=".6"/><rect x="6.3" y="10.2" width="11.4" height="10" rx="1.4" fill="var(--quilt)"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></symbol>
+</svg>
+
+<header class="top">
+  <div class="brand">
+    <svg class="logo" viewBox="0 0 44 44" aria-hidden="true"><rect width="44" height="44" rx="12" fill="var(--ink)"/><path d="M11 11h22v22H11z" fill="none" stroke="var(--bg)" stroke-width="2.4" stroke-linejoin="round"/><path d="M22 11v22M11 22h22" stroke="var(--bg)" stroke-width="1.4" opacity=".5"/><circle cx="16.5" cy="16.5" r="3.2" fill="var(--hot)"/><circle cx="27.5" cy="27.5" r="3.2" fill="var(--bg)"/></svg>
+    <div><h1>Murdoku</h1><div class="case" id="case"></div></div>
+  </div>
+  <div class="acts"><button class="btn" id="rulesBtn" type="button">Spelregels</button><button class="btn main" id="newBtn" type="button">Nieuwe zaak</button></div>
+</header>
+
+<main class="game">
+  <section aria-label="Plattegrond">
+    <div class="stage"><div id="board" role="grid"></div></div>
+    <div class="legend">
+      <span><svg><use href="#i-stoel"/></svg>Stoel</span>
+      <span><svg><use href="#i-bed"/></svg>Bed</span>
+      <span><i class="sw" style="background:repeating-linear-gradient(90deg,#e0644d 0 3px,#f08b62 3px 6px);box-shadow:inset 0 0 0 3px var(--bg),inset 0 0 0 4.5px #b8452f"></i>Kleed</span>
+      <span><svg><use href="#i-plant"/></svg>Plant</span>
+      <span><svg><use href="#i-kast"/></svg>Boekenkast</span>
+      <span><i class="sw" style="background:repeating-linear-gradient(-45deg,var(--card) 0 5px,var(--soft) 5px 6px)"></i>Hier staat niemand</span>
+    </div>
+  </section>
+  <section class="side">
+    <div>
+      <h2>Wie stond waar?</h2>
+      <div class="tray" id="tray"></div>
+      <div class="focus" id="focus" aria-live="polite"></div>
+    </div>
+    <div class="tools">
+      <div class="seg" role="group" aria-label="Wat doet een tik op het bord?">
+        <button type="button" id="mPlace" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" fill="currentColor"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7z" fill="currentColor"/></svg>Persoon zetten</button>
+        <button type="button" id="mMark" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg>Kruisje zetten</button>
+      </div>
+      <p class="modeline" id="modeline"></p>
+      <div class="tools2">
+        <button class="ibtn" type="button" id="undoBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7L4 12l5 5M4.5 12H14a6 6 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" transform="translate(0 -3)"/></svg>Terug</button>
+        <button class="ibtn" type="button" id="hintBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19.5h5M10.5 22h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip</button>
+        <button class="ibtn" type="button" id="clearBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 7V4.5h4V7M6.5 7l1 13h9l1-13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Wissen</button>
+      </div>
+    </div>
+    <div>
+      <div class="status"><span id="placed"></span><span>Tijd <b id="time">00:00</b></span></div>
+      <div class="bar"><i id="prog" style="width:0"></i></div>
+    </div>
+    <p class="rule"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M15.5 15.5l5 5" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg><span id="rule"></span></p>
+    <details class="all"><summary>Alle aanwijzingen</summary><ul class="clues" id="clues"></ul></details>
+  </section>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<dialog id="rulesDlg"><div class="dlg">
+  <h3>Spelregels</h3>
+  <p>Iemand heeft Vincent vermoord. Zoek uit waar iedereen stond en wie de dader is.</p>
+  <ol>
+    <li>Zet iedereen op de plattegrond: de verdachten én Vincent.</li>
+    <li>In elke rij en in elke kolom staat precies één persoon.</li>
+    <li>Op een plant of boekenkast kan niemand staan. Stoelen, bedden en kleden mogen wel.</li>
+    <li>Iedereen heeft één aanwijzing, en elke aanwijzing klopt. ‘Naast’ betekent direct links, rechts, boven of onder, en in dezelfde kamer. Een meubel aan de andere kant van een muur telt dus niet.</li>
+    <li>De dader is de enige verdachte die met Vincent in dezelfde kamer was.</li>
+  </ol>
+  <p><b>Zo speel je:</b> tik op een persoon om de aanwijzing te zien, en tik daarna op een vakje om de persoon neer te zetten. Tik nog eens op hetzelfde vakje om de persoon weer weg te halen.</p>
+  <p><b>De knoppen:</b></p>
+  <ul style="padding-left:20px;margin:0 0 12px">
+    <li><b>Persoon zetten / Kruisje zetten:</b> kies wat een tik op het bord doet. Met kruisjes markeer je vakjes waar volgens jou niemand stond.</li>
+    <li><b>Terug:</b> maakt je laatste zet ongedaan.</li>
+    <li><b>Tip:</b> haalt iemand weg die verkeerd staat, of zet de volgende persoon op de goede plek.</li>
+    <li><b>Wissen:</b> haalt iedereen en alle kruisjes van het bord. Met Terug zet je alles weer terug.</li>
+    <li><b>Afvinken:</b> markeert een aanwijzing die je al hebt gebruikt.</li>
+  </ul>
+  <div class="row"><button class="btn main" type="button" data-close>Aan de slag</button></div>
+</div></dialog>
+
+<dialog id="newDlg"><div class="dlg">
+  <h3>Nieuwe zaak</h3>
+  <p>Hoe zwaar mag het onderzoek zijn?</p>
+  <div class="choices">
+    <button type="button" data-diff="makkelijk">Makkelijk <small>5 × 5 · 4 kamers</small></button>
+    <button type="button" data-diff="gemiddeld">Gemiddeld <small>6 × 6 · 5 kamers</small></button>
+    <button type="button" data-diff="moeilijk">Moeilijk <small>7 × 7 · 6 kamers</small></button>
+  </div>
+  <div class="field"><label for="seedIn">Zaaknummer (optioneel)</label><input id="seedIn" inputmode="numeric" maxlength="6" placeholder="bijv. 4821"></div>
+  <p style="font-size:14px;color:var(--soft);margin-top:10px">Met hetzelfde zaaknummer en niveau krijgt iedereen dezelfde puzzel. Handig om samen te spelen.</p>
+  <div class="row"><button class="btn" type="button" data-close>Annuleren</button></div>
+</div></dialog>
+
+<dialog id="accDlg"><div class="dlg" id="accBody"></div></dialog>
+
+<script src="js/core.js"></script>
+<script>
+{
+const $=s=>document.querySelector(s);
+const board=$('#board'),tray=$('#tray'),cluesEl=$('#clues');
+const LS='murdoku-v4';
+let pz=null,state=null,mode='plaats',undo=[],toastT=0;
+
+// gezichten: kop 64×64, hoofd gecentreerd op (32,30)
+const EYES='<circle cx="27" cy="31" r="1.9" fill="#1b1b22"/><circle cx="37" cy="31" r="1.9" fill="#1b1b22"/>';
+const SMILE='<path d="M28.5 38.5q3.5 2.8 7 0" stroke="#1b1b22" stroke-width="1.7" fill="none" stroke-linecap="round"/>';
+const BROWS=c=>`<path d="M24.5 27q2.5-1.6 5 0M34.5 27q2.5-1.6 5 0" stroke="${c}" stroke-width="1.5" fill="none" stroke-linecap="round"/>`;
+const GLASSES='<g fill="none" stroke="#1b1b22" stroke-width="1.6"><circle cx="26.8" cy="31" r="4.4"/><circle cx="37.2" cy="31" r="4.4"/><path d="M31.2 31h1.6M22.4 30l-3-1M41.6 30l3-1"/></g>';
+const LOOK={
+  Anna:{skin:'#f4c8a6',hair:'#6f3d22',shirt:'#0f4ea3',back:'<path d="M16.5 31c0-12.5 7-19 15.5-19s15.5 6.5 15.5 19v24h-31z"/>',front:'<path d="M19 29c1-9.5 6.2-14.5 13-14.5S44 19.5 45 29c-6.5-1-11-4.2-13-8.4-2 4.2-6.5 7.4-13 8.4z"/>',extra:'<circle cx="19.4" cy="37" r="1.8" fill="#ffc94d"/><circle cx="44.6" cy="37" r="1.8" fill="#ffc94d"/>'+EYES+SMILE},
+  Bram:{skin:'#e2a37a',hair:'#e8b547',shirt:'#a4470c',front:'<path d="M18.8 28c0-10 6-15.5 13.2-15.5S45.2 18 45.2 28c-2.4-4-5.4-6-8.6-6H27.4c-3.2 0-6.2 2-8.6 6z"/>',extra:EYES+'<path d="M25.5 36.8c2.2-2.2 4.4-2.2 6.5-.5 2.1-1.7 4.3-1.7 6.5.5-2.2 1.1-4.3 1.1-6.5 0-2.2 1.1-4.3 1.1-6.5 0z" fill="#c9922c"/><path d="M29.5 40.2q2.5 1.4 5 0" stroke="#1b1b22" stroke-width="1.6" fill="none" stroke-linecap="round"/>'},
+  Chantal:{skin:'#8a5536',hair:'#1f1714',shirt:'#147a40',back:'<circle cx="32" cy="23" r="17"/><circle cx="17.5" cy="31" r="8.5"/><circle cx="46.5" cy="31" r="8.5"/><circle cx="21" cy="15" r="7"/><circle cx="43" cy="15" r="7"/>',front:'<path d="M19.5 25c3-6.5 8-9 12.5-9s9.5 2.5 12.5 9c-4-2.5-8-3.4-12.5-3.4s-8.5.9-12.5 3.4z"/>',extra:'<circle cx="27" cy="31" r="1.9" fill="#100c0a"/><circle cx="37" cy="31" r="1.9" fill="#100c0a"/><path d="M28 38q4 3.4 8 0" stroke="#100c0a" stroke-width="1.8" fill="#fff" stroke-linecap="round"/><circle cx="19" cy="38" r="2.2" fill="#ff7aa8"/><circle cx="45" cy="38" r="2.2" fill="#ff7aa8"/>'},
+  Daan:{skin:'#f6d3b8',hair:'#c9532a',shirt:'#5d2794',front:'<path d="M18.4 29c-1.6-10.5 5.6-17 13.6-17 7.6 0 14.6 5.4 13.8 14l-3.2-2.6-2 3.4-3-4.2-3 3.4-3-4.2-3 3.4-3-3.6-3 4.4z"/>',extra:EYES+GLASSES+'<path d="M29 39h6" stroke="#1b1b22" stroke-width="1.7" stroke-linecap="round"/><g fill="#d88a5e" opacity=".7"><circle cx="23" cy="36" r=".9"/><circle cx="25.5" cy="37.5" r=".9"/><circle cx="41" cy="36" r=".9"/><circle cx="38.5" cy="37.5" r=".9"/></g>'},
+  Eva:{skin:'#c98a62',hair:'#2a1d1a',shirt:'#a3164c',back:'<circle cx="32" cy="11.5" r="7.5"/>',front:'<path d="M18.8 30c0-10.5 6-16 13.2-16s13.2 5.5 13.2 16c-3.6-6.4-8-8.6-13.2-8.6S22.4 23.6 18.8 30z"/>',extra:EYES+BROWS('#2a1d1a')+'<path d="M28.5 38.2q3.5 3 7 0" stroke="#7a1a2a" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M19.5 34.5v4M44.5 34.5v4" stroke="#ffc94d" stroke-width="1.6" stroke-linecap="round"/>'},
+  Floris:{skin:'#f0c6a2',hair:'#b9bcc4',shirt:'#0a6b7a',front:'<path d="M18.2 35c-1.6-5-.6-10.4 2.4-13l2.2 10.5zM45.8 35c1.6-5 .6-10.4-2.4-13l-2.2 10.5z"/>',extra:'<path d="M23 23.5q9-6 18 0" stroke="#e6b28d" stroke-width="1.4" fill="none" opacity=".8"/>'+EYES+GLASSES+'<path d="M25.4 37c2.4-2.6 4.6-2.6 6.6-.6 2-2 4.2-2 6.6.6-2.4 1.6-4.4 1.6-6.6 0-2.2 1.6-4.2 1.6-6.6 0z" fill="#d4d6dc"/>'},
+  Vincent:{skin:'#dfe2d6',hair:'#2e2f36',shirt:'#3b3d46',front:'<path d="M18.8 27.5c0-9.6 6-15 13.2-15s13.2 5.4 13.2 15c-6.4-4.8-14.4-5.6-26.4 0z"/>',extra:'<path d="M24.8 28.8l4.4 4.4M29.2 28.8l-4.4 4.4M34.8 28.8l4.4 4.4M39.2 28.8l-4.4 4.4" stroke="#1b1b22" stroke-width="1.7" stroke-linecap="round"/><path d="M27.5 39.5q2.2-1.8 4.5 0t4.5 0" stroke="#1b1b22" stroke-width="1.6" fill="none" stroke-linecap="round"/><path d="M26.5 50l5.5 3.4-5.5 3.4zM37.5 50L32 53.4l5.5 3.4z" fill="var(--hot)"/>'}
+};
+function faceSvg(name){
+  const L=LOOK[name];
+  return `<svg viewBox="0 0 64 64" aria-hidden="true"><g fill="${L.hair}">${L.back||''}</g><path d="M11 66c0-13 9.5-19.5 21-19.5S53 53 53 66z" fill="${L.shirt}"/><rect x="27" y="38" width="10" height="11" rx="4" fill="${L.skin}"/><rect x="27" y="40" width="10" height="4" fill="#000" opacity=".1"/><ellipse cx="32" cy="30" rx="13.2" ry="15" fill="${L.skin}"/><ellipse cx="18.8" cy="31.5" rx="2" ry="3" fill="${L.skin}"/><ellipse cx="45.2" cy="31.5" rx="2" ry="3" fill="${L.skin}"/><g fill="${L.hair}">${L.front||''}</g>${L.extra||''}</svg>`;
+}
+function face(p,cls=''){const per=pz.people[p];return `<span class="face ${cls}" style="--c:${per.col}">${faceSvg(per.name)}</span>`}
+
+function save(){try{localStorage.setItem(LS,JSON.stringify(state))}catch(e){}}
+function loadSaved(){try{return JSON.parse(localStorage.getItem(LS)||'null')}catch(e){return null}}
+function fmt(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
+function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('show'),2800)}
+function roomName(i){return pz.names[i][1]+' '+pz.names[i][0]}
+function cap(s){return s[0].toUpperCase()+s.slice(1)}
+
+function start(diff,seed,saved){
+  seed=Number.isFinite(seed)&&seed>0?Math.floor(seed):1000+Math.floor(Math.random()*9000);
+  document.body.classList.add('busy');
+  setTimeout(()=>{
+    const g=generate(seed,diff);
+    document.body.classList.remove('busy');
+    if(!g){toast('Deze zaak lukt niet. Probeer een ander nummer.');return}
+    pz=g;
+    state=saved||{seed,diff,place:Array(pz.n).fill(-1),marks:[],struck:[],hints:0,elapsed:0,solved:false,closed:false,sel:0};
+    undo=[];render();save();
+  },30);
+}
+function push(){undo.push(JSON.stringify({place:state.place,marks:state.marks}));if(undo.length>200)undo.shift()}
+
+function render(){
+  const {n,room,obj,people,V}=pz;
+  board.style.setProperty('--n',n);
+  $('#case').innerHTML=`Zaak <b>${state.seed}</b> · ${DIFF[state.diff].label}`;
+  const first={};room.forEach((r,c)=>{if(first[r]===undefined)first[r]=c});
+  const rowC=Array(n).fill(0),colC=Array(n).fill(0);
+  state.place.forEach(c=>{if(c>=0){rowC[Math.floor(c/n)]++;colC[c%n]++}});
+  let h='';
+  for(let c=0;c<n*n;c++){
+    const r=Math.floor(c/n),k=c%n,o=obj[c],p=state.place.indexOf(c);
+    const cls=['cell','r'+room[c]];
+    if(r>0&&room[c-n]!==room[c])cls.push('wt');
+    if(k>0&&room[c-1]!==room[c])cls.push('wl');
+    if(o==='kleed')cls.push('kleed');
+    if(BLOCK[o])cls.push('blk');
+    if(p>=0)cls.push('has');
+    let inner='';
+    if(first[room[c]]===c)inner+=`<span class="rl">${cap(pz.names[room[c]][0])}</span>`;
+    if(o&&o!=='kleed')inner+=`<svg class="ico" aria-hidden="true"><use href="#i-${o}"/></svg>`;
+    if(p<0&&state.marks.includes(c))inner+=`<svg class="mk" aria-hidden="true"><use href="#i-x"/></svg>`;
+    if(p>=0){
+      const bad=rowC[r]>1||colC[k]>1;
+      inner+=face(p,(bad?'bad ':'')+(p===state.sel&&!state.closed?'sel':''));
+      if(state.closed&&p===pz.murderer)inner+='<span class="badge">Dader</span>';
+    }
+    const label=`Rij ${r+1}, kolom ${k+1}, ${pz.names[room[c]][0]}${o?', '+OBJ[o][0]:''}${p>=0?', '+people[p].name:''}`;
+    h+=`<button type="button" class="${cls.join(' ')}" data-c="${c}" aria-label="${label}">${inner}</button>`;
+  }
+  board.innerHTML=h;
+  const S=state.sel,sc=S>=0?pz.clues.find(c=>c.p===S):null;
+  tray.innerHTML=people.map((per,p)=>`<button type="button" class="pick${p===S?' on':''}${state.place[p]>=0?' done':''}${state.struck.includes(pz.clues.findIndex(c=>c.p===p))?' x':''}" data-p="${p}" aria-pressed="${p===S}">${face(p)}<span>${per.name}</span></button>`).join('');
+  cluesEl.innerHTML=pz.clues.map((cl,i)=>{
+    const hl=S>=0&&(cl.p===S||cl.t==='with'&&cl.a===S);
+    return `<li class="${hl?'hl':''}${state.struck.includes(i)?' x':''}"><button type="button" data-i="${i}">${face(cl.p)}<span class="t">${clueText(pz,cl)}</span></button></li>`;
+  }).join('');
+  $('#rule').textContent=`De dader was als enige verdachte samen met ${people[V].name} in één kamer.`;
+  const F=$('#focus');
+  if(state.closed){F.className='focus';F.innerHTML=`${face(pz.murderer)}<span><b>Zaak gesloten</b><span class="q">${people[pz.murderer].name} was als enige verdachte samen met ${people[V].name} ${roomName(room[pz.sol[V]])}.</span></span>`}
+  else if(S>=0){const sx=state.struck.includes(pz.clues.indexOf(sc));F.className='focus';F.innerHTML=`${face(S)}<span><b>${people[S].name}</b><span class="q${sx?' x':''}">${clueText(pz,sc)}</span><span class="h">${mode==='kruis'?`Kies ‘Persoon zetten’ om ${people[S].name} op het bord te zetten.`:state.place[S]>=0?`Tik op een ander vakje om ${people[S].name} te verplaatsen, of op hetzelfde vakje om ${people[S].name} weg te halen.`:`Tik op een vakje om ${people[S].name} neer te zetten.`}</span></span><button type="button" class="tick" aria-pressed="${sx}" aria-label="Aanwijzing afvinken"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>${sx?'Gebruikt':'Afvinken'}</button>`}
+  else{F.className='focus idle';F.innerHTML=`<span><span class="q">Tik op een persoon om de aanwijzing te zien.</span></span>`}
+  const placed=state.place.filter(c=>c>=0).length;
+  $('#placed').innerHTML=state.closed?`<b>Zaak gesloten</b>`:`Geplaatst <b>${placed} van ${n}</b>${state.hints?` · hints <b>${state.hints}</b>`:''}`;
+  $('#prog').style.width=(placed/n*100)+'%';
+  $('#time').textContent=fmt(state.elapsed);
+  $('#mPlace').setAttribute('aria-pressed',mode==='plaats');
+  $('#mMark').setAttribute('aria-pressed',mode==='kruis');
+  $('#modeline').textContent=mode==='plaats'?'Een tik op het bord zet de gekozen persoon neer.':'Een tik op het bord zet een kruisje op een vakje waar volgens jou niemand stond. Nog een keer tikken haalt het weg.';
+}
+
+function after(){
+  render();save();
+  if(state.solved)return;
+  const {n,sol}=pz;
+  if(state.place.every(c=>c>=0)){
+    if(state.place.every((c,p)=>c===sol[p])){state.solved=true;save();openAccuse()}
+    else{
+      const rows=new Set(state.place.map(c=>Math.floor(c/n))),cols=new Set(state.place.map(c=>c%n));
+      toast(rows.size<n||cols.size<n?'Er staan nog twee mensen in dezelfde rij of kolom.':'Iedereen staat, maar er klopt nog iets niet. Loop de aanwijzingen nog eens na.');
+    }
+  }
+}
+
+board.addEventListener('click',e=>{
+  const b=e.target.closest('[data-c]');if(!b||!state||state.closed)return;
+  const c=+b.dataset.c,occ=state.place.indexOf(c);
+  if(occ>=0&&occ!==state.sel){state.sel=occ;render();save();return}
+  if(mode==='kruis'){
+    if(occ>=0){toast('Haal eerst de persoon van dit vakje.');return}
+    if(BLOCK[pz.obj[c]]){toast('Op dit vakje kan sowieso niemand staan.');return}
+    push();const i=state.marks.indexOf(c);i>=0?state.marks.splice(i,1):state.marks.push(c);after();return;
+  }
+  if(BLOCK[pz.obj[c]]){b.classList.add('shake');setTimeout(()=>b.classList.remove('shake'),520);toast(`Op een ${OBJ[pz.obj[c]][0]} kan niemand staan.`);return}
+  if(state.sel<0){toast('Tik eerst op een persoon.');return}
+  push();
+  const s=state.sel;
+  if(state.place[s]===c){state.place[s]=-1}
+  else{
+    if(occ>=0)state.place[occ]=-1;
+    state.place[s]=c;
+    state.marks=state.marks.filter(m=>m!==c);
+    let next=-1;
+    for(let i=1;i<=pz.n;i++){const q=(s+i)%pz.n;if(state.place[q]<0){next=q;break}}
+    state.sel=next;
+  }
+  after();
+});
+tray.addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(!b||state.closed)return;const p=+b.dataset.p;state.sel=state.sel===p?-1:p;mode='plaats';render();save()});
+cluesEl.addEventListener('click',e=>{const b=e.target.closest('[data-i]');if(!b)return;const i=+b.dataset.i,j=state.struck.indexOf(i);j>=0?state.struck.splice(j,1):state.struck.push(i);render();save()});
+$('#focus').addEventListener('click',e=>{if(!e.target.closest('.tick')||state.sel<0)return;const i=pz.clues.findIndex(c=>c.p===state.sel),j=state.struck.indexOf(i);j>=0?state.struck.splice(j,1):state.struck.push(i);render();save()});
+$('#mPlace').addEventListener('click',()=>{mode='plaats';render()});
+$('#mMark').addEventListener('click',()=>{mode='kruis';render()});
+$('#undoBtn').addEventListener('click',()=>{if(state.closed||!undo.length){toast('Er is niets om ongedaan te maken.');return}const u=JSON.parse(undo.pop());state.place=u.place;state.marks=u.marks;state.solved=false;render();save()});
+$('#clearBtn').addEventListener('click',()=>{if(state.closed)return;push();state.place=state.place.map(()=>-1);state.marks=[];state.sel=0;after();toast('Het bord is leeg. Met Terug zet je alles weer terug.')});
+$('#hintBtn').addEventListener('click',()=>{
+  if(state.closed)return;
+  if(state.solved){openAccuse();return}
+  const {sol,people}=pz;push();state.hints++;
+  const wrong=state.place.findIndex((c,p)=>c>=0&&c!==sol[p]);
+  if(wrong>=0){state.place[wrong]=-1;state.sel=wrong;toast(`${people[wrong].name} stond op de verkeerde plek. Ik heb ${people[wrong].name} van het bord gehaald.`)}
+  else{const p=state.place.findIndex(c=>c<0);const c=sol[p];const occ=state.place.indexOf(c);if(occ>=0)state.place[occ]=-1;state.place[p]=c;state.marks=state.marks.filter(m=>m!==c);state.sel=state.place.findIndex(x=>x<0);toast(`${people[p].name} staat nu op de juiste plek.`)}
+  after();
+});
+
+function openAccuse(){
+  const {people,V}=pz,body=$('#accBody');
+  body.innerHTML=`<h3>Iedereen staat goed</h3><p>Nu de hamvraag: wie heeft ${people[V].name} vermoord?</p><div class="sus">${people.slice(0,V).map((per,p)=>`<button type="button" class="pick" data-acc="${p}">${face(p)}<span>${per.name}</span></button>`).join('')}</div><p class="msg" id="accMsg"></p><div class="row"><button class="btn" type="button" data-close>Later</button></div>`;
+  $('#accDlg').showModal();
+}
+$('#accDlg').addEventListener('click',e=>{
+  const b=e.target.closest('[data-acc]');if(!b)return;
+  const p=+b.dataset.acc,{people,V,murderer,room,sol}=pz;
+  if(p!==murderer){$('#accMsg').textContent=`Nee, ${people[p].name} heeft een alibi. Kijk wie als enige verdachte bij ${people[V].name} in de kamer stond.`;return}
+  state.closed=true;state.sel=-1;save();render();
+  $('#accBody').innerHTML=`<span class="tag">Zaak gesloten</span><div class="win">${face(p)}<h3>${people[p].name} was het!</h3></div><p>${people[p].name} was als enige verdachte samen met ${people[V].name} ${roomName(room[sol[V]])}.</p><p>Opgelost in <b>${fmt(state.elapsed)}</b>${state.hints?` met ${state.hints} hint${state.hints>1?'s':''}`:' zonder hints'}.</p><div class="row"><button class="btn" type="button" data-close>Bekijk het bord</button><button class="btn main" type="button" id="againBtn">Nieuwe zaak</button></div>`;
+  $('#againBtn').addEventListener('click',()=>{$('#accDlg').close();$('#seedIn').value='';$('#newDlg').showModal()});
+});
+document.addEventListener('click',e=>{if(e.target.closest('[data-close]'))e.target.closest('dialog').close()});
+$('#rulesBtn').addEventListener('click',()=>$('#rulesDlg').showModal());
+$('#newBtn').addEventListener('click',()=>{$('#seedIn').value='';$('#newDlg').showModal()});
+$('#newDlg').addEventListener('click',e=>{const b=e.target.closest('[data-diff]');if(!b)return;const v=parseInt($('#seedIn').value,10);$('#newDlg').close();mode='plaats';start(b.dataset.diff,v)});
+
+setInterval(()=>{if(state&&!state.closed&&!document.hidden){state.elapsed++;$('#time').textContent=fmt(state.elapsed);if(state.elapsed%5===0)save()}},1000);
+
+function boot(data){
+  const s=(data&&data.state)||loadSaved();
+  if(s&&DIFF[s.diff]&&s.seed&&Array.isArray(s.place)){start(s.diff,s.seed,s);return}
+  start('makkelijk',2718);
+  try{if(!localStorage.getItem('murdoku-seen')){localStorage.setItem('murdoku-seen','1');$('#rulesDlg').showModal()}}catch(e){}
+}
+boot({});
+if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+}
+</script>
+</body>
+</html>
