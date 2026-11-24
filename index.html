@@ -205,7 +205,7 @@ dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
 .seedbox span{color:var(--soft);font-weight:600;font-size:17px}
 .seedbox input{flex:1;min-width:0;border:0;outline:0;background:none;font:600 17px Inter,sans-serif;color:var(--ink);min-height:50px;font-variant-numeric:tabular-nums}
 .seedbox input:focus-visible{outline:none}
-.seedbox input::placeholder{color:var(--soft);font-weight:500}
+.seedbox input::placeholder{color:var(--soft);font-weight:400;font-size:15px}
 .seed .note{font-size:14px;margin:10px 0 4px!important}
 .choices button:hover{border-color:var(--ink);background:var(--card)}
 .choices small{color:var(--soft);font-weight:400;font-size:14px}
@@ -285,7 +285,7 @@ dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
   </div>
   <div class="seed">
     <label for="seedIn">Zaaknummer</label>
-    <div class="seedbox"><span aria-hidden="true">#</span><input id="seedIn" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="Willekeurig"></div>
+    <div class="seedbox"><span aria-hidden="true">#</span><input id="seedIn" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="Laat leeg voor een willekeurige zaak"></div>
     <p class="note">Speel je samen? Vul hetzelfde nummer in en kies hetzelfde niveau, dan krijgt iedereen dezelfde zaak.</p>
   </div>
 </div></dialog>
@@ -532,7 +532,7 @@ function renderRules(){
     <div><i>${IC.tip}</i><span><b>Tip</b>Haal een fout weg of zet iemand goed.</span></div>
     <div><i>${IC.trash}</i><span><b>Wissen</b>Begin opnieuw met een leeg bord.</span></div>
   </div>
-  <p class="ver">Versie 25</p>`;
+  <p class="ver">Versie 26</p>`;
 }
 function boot(data){
   renderRules();
