@@ -39,7 +39,10 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--hot);outline-of
 h1{font:800 clamp(26px,5vw,38px)/1.05 Outfit,sans-serif;margin:0;letter-spacing:-.03em}
 .case{font-size:14px;color:var(--soft)}
 .case b{color:var(--ink);font-weight:600}
-.acts{display:flex;gap:8px;flex:none}
+.clock{display:inline-flex;align-items:center;gap:5px;white-space:nowrap;min-height:44px;padding:0 12px;border-radius:999px;background:var(--card);font-size:15px}
+.clock svg{width:17px;height:17px;color:var(--soft)}
+.clock b{font-weight:600;font-variant-numeric:tabular-nums}
+.acts{display:flex;align-items:center;gap:8px;flex:none}
 .hbtn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;min-width:44px;padding:0 16px;border-radius:999px;border:1.5px solid var(--line);background:var(--bg);font-weight:600;font-size:15px}
 .hbtn:hover{border-color:var(--ink)}
 .hbtn svg{width:20px;height:20px;flex:none}
@@ -48,7 +51,7 @@ h1{font:800 clamp(26px,5vw,38px)/1.05 Outfit,sans-serif;margin:0;letter-spacing:
 .btn.main{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .btn.main:hover{background:color-mix(in srgb,var(--ink) 85%,var(--hot))}
 .game{display:grid;gap:28px;padding:16px max(4vw,16px,env(safe-area-inset-right)) max(48px,env(safe-area-inset-bottom)) max(4vw,16px,env(safe-area-inset-left));max-width:1180px;margin:0 auto}
-@media(min-width:900px){.game{grid-template-columns:minmax(0,580px) minmax(0,1fr);align-items:start}.side{position:sticky;top:16px}}
+@media(min-width:900px){.game{grid-template-columns:minmax(0,580px) minmax(0,1fr);align-items:start;row-gap:14px}.game>section:first-child{display:contents}.stage{grid-column:1;grid-row:1/span 4}.people-row,.toolbar,.side{grid-column:2}.people-row,.toolbar{margin-top:0}}
 .stage{background:var(--card);border-radius:28px;padding:clamp(10px,2.4vw,22px)}
 #board{position:relative;display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));grid-template-rows:repeat(var(--n),minmax(0,1fr));aspect-ratio:1;width:100%;border:3px solid var(--wall);border-radius:18px;overflow:hidden;user-select:none;-webkit-user-select:none;box-shadow:0 18px 40px -18px rgba(20,20,40,.35);background:var(--wall)}
 .cell{position:relative;border:0;border-top:1px solid color-mix(in srgb,var(--wall) 12%,transparent);border-left:1px solid color-mix(in srgb,var(--wall) 12%,transparent);display:grid;place-items:center;padding:0;background:var(--rc);touch-action:manipulation;transition:filter .15s}
@@ -127,10 +130,6 @@ h2{font:700 22px/1.1 Outfit,sans-serif;margin:0 0 12px;letter-spacing:-.01em}
 .seg .tb[aria-pressed=true]{background:var(--ink);color:var(--bg)}
 .toolbar>.tb{border:1.5px solid var(--line);border-radius:16px;background:var(--bg);color:var(--ink)}
 .toolbar>.tb:hover{border-color:var(--ink)}
-.status{display:flex;justify-content:space-between;gap:12px;font-size:15px;color:var(--soft)}
-.status b{color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap}
-.bar{height:6px;border-radius:999px;background:var(--card);overflow:hidden;margin-top:8px}
-.bar i{display:block;height:100%;background:var(--ink);border-radius:999px;transition:width .3s}
 .rule{display:flex;gap:12px;align-items:center;background:color-mix(in srgb,var(--hot) 10%,var(--bg));border:1.5px solid color-mix(in srgb,var(--hot) 40%,transparent);border-radius:16px;padding:12px 14px;margin:0 0 10px;font-weight:500;line-height:1.4}
 .rule svg{width:28px;height:28px;flex:none;color:var(--hot)}
 .clues{list-style:none;margin:0;padding:0;display:grid;gap:8px}
@@ -194,7 +193,7 @@ dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
 .tag{display:inline-block;background:var(--alarm);color:#fff;font:700 13px/1 Inter,sans-serif;padding:6px 10px;border-radius:999px;margin-bottom:8px}
 .msg{color:var(--hot);min-height:1.5em;font-size:15px;margin-top:8px}
 .busy #board{opacity:.4}
-@media(max-width:600px){.top .lbl{display:none}.hbtn{padding:0;width:44px}dialog{width:100%;max-width:100%;margin:auto 0 0;border-radius:24px 24px 0 0;max-height:90svh}.dlg{padding:12px 20px max(24px,env(safe-area-inset-bottom))}.grab{display:block;width:40px;height:5px;border-radius:9px;background:var(--line);margin:0 auto 14px}.game{padding-top:10px;gap:22px}.pick{width:62px}.pick .face{width:46px}.stage{border-radius:22px}}
+@media(max-width:600px){.top .lbl{display:none}.zk{display:none}.case{white-space:nowrap}.clock{background:none;padding:0 4px}.acts{gap:6px}.hbtn{padding:0;width:44px}dialog{width:100%;max-width:100%;margin:auto 0 0;border-radius:24px 24px 0 0;max-height:90svh}.dlg{padding:12px 20px max(24px,env(safe-area-inset-bottom))}.grab{display:block;width:40px;height:5px;border-radius:9px;background:var(--line);margin:0 auto 14px}.game{padding-top:10px;gap:22px}.pick{width:62px}.pick .face{width:46px}.stage{border-radius:22px}}
 @media(max-width:600px){
 .tray{flex-wrap:nowrap;gap:0;justify-content:space-between}
 .pick{flex:1 0 50px;width:auto;padding:6px 2px;gap:4px}
@@ -204,7 +203,7 @@ dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
 .focus{padding:12px 16px}
 .focus .q{font-size:16px;font-weight:600}
 }
-@media(prefers-reduced-motion:reduce){.cell .face,.shake{animation:none}.toast,.bar i{transition:none}}
+@media(prefers-reduced-motion:reduce){.cell .face,.shake{animation:none}.toast{transition:none}}
 </style>
 </head>
 <body>
@@ -222,6 +221,7 @@ dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
     <div><h1>Murdoku</h1><div class="case" id="case"></div></div>
   </div>
   <div class="acts">
+    <span class="clock" aria-label="Speeltijd"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7.5V12l3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><b id="time">00:00</b></span>
     <button class="hbtn" id="rulesBtn" type="button" aria-label="Spelregels"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.4 9.3a2.7 2.7 0 0 1 5.2 1c0 1.8-2.6 2.2-2.6 3.9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.2" r="1.2" fill="currentColor"/></svg><span class="lbl">Spelregels</span></button>
     <button class="hbtn" id="newBtn" type="button" aria-label="Nieuwe zaak"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg><span class="lbl">Nieuwe zaak</span></button>
   </div>
@@ -246,11 +246,6 @@ dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
     </div>
   </section>
   <section class="side">
-    </div>
-    <div>
-      <div class="status"><span id="placed"></span><span>Tijd <b id="time">00:00</b></span></div>
-      <div class="bar"><i id="prog" style="width:0"></i></div>
-    </div>
     <details class="all"><summary>Alle aanwijzingen</summary><ul class="clues" id="clues"></ul></details>
   </section>
 </main>
@@ -344,7 +339,8 @@ function push(){undo.push(JSON.stringify({place:state.place,marks:state.marks}))
 function render(){
   const {n,room,obj,people,V}=pz;
   board.style.setProperty('--n',n);
-  $('#case').innerHTML=`Zaak <b>${state.seed}</b> · ${DIFF[state.diff].label}`;
+  $('#case').innerHTML=`<span class="zk">Zaak </span><b>${state.seed}</b> · ${DIFF[state.diff].label}`;
+  $('#time').textContent=fmt(state.elapsed);
   const first={};room.forEach((r,c)=>{if(first[r]===undefined)first[r]=c});
   const rowC=Array(n).fill(0),colC=Array(n).fill(0);
   state.place.forEach(c=>{if(c>=0){rowC[Math.floor(c/n)]++;colC[c%n]++}});
@@ -381,10 +377,6 @@ function render(){
   if(state.closed){F.className='focus';F.innerHTML=`${face(pz.murderer)}<span><b>Zaak gesloten</b><span class="q">${people[pz.murderer].name} was als enige verdachte samen met ${people[V].name} ${roomName(room[pz.sol[V]])}.</span></span>`}
   else if(S>=0){F.className='focus';F.innerHTML=`${face(S)}<span><span class="q">${clueText(pz,sc)}</span><span class="h">${mode==='kruis'?`Kies ‘Persoon zetten’ om ${people[S].name} neer te zetten.`:state.place[S]>=0?`Tik op een ander vakje om ${people[S].name} te verplaatsen, of op hetzelfde vakje om ${people[S].name} weg te halen.`:`Tik op een vakje om ${people[S].name} neer te zetten.`}</span></span>`}
   else{F.className='focus idle';F.innerHTML=`<span><span class="q">${mode==='kruis'?'Tik op vakjes waar volgens jou niemand stond. Nog een keer tikken haalt het kruisje weg.':'Tik op een persoon om de aanwijzing te zien.'}</span></span>`}
-  const placed=state.place.filter(c=>c>=0).length;
-  $('#placed').innerHTML=state.closed?`<b>Zaak gesloten</b>`:`Geplaatst <b>${placed} van ${n}</b>${state.hints?` · hints <b>${state.hints}</b>`:''}`;
-  $('#prog').style.width=(placed/n*100)+'%';
-  $('#time').textContent=fmt(state.elapsed);
   $('#mPlace').setAttribute('aria-pressed',mode==='plaats');
   $('#mMark').setAttribute('aria-pressed',mode==='kruis');
 }
@@ -498,10 +490,11 @@ function renderRules(){
     <div><i>${IC.trash}</i><span><b>Wissen</b>Begin opnieuw met een leeg bord.</span></div>
   </div>
   <button class="btn main cta" type="button" data-close>Aan de slag</button>
-  <p class="ver">Versie 8</p>`;
+  <p class="ver">Versie 11</p>`;
 }
 function boot(data){
   renderRules();
+  if(matchMedia('(min-width:900px)').matches)$('.all').open=true;
   const s=(data&&data.state)||loadSaved();
   if(s&&DIFF[s.diff]&&s.seed&&Array.isArray(s.place)){start(s.diff,s.seed,s);return}
   start('makkelijk',2718);
