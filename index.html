@@ -110,12 +110,6 @@ h2{font:700 22px/1.1 Outfit,sans-serif;margin:0 0 12px;letter-spacing:-.01em}
 .chk[aria-pressed=true] path{stroke:var(--bg)}
 .chk:hover circle{stroke:var(--ink)}
 .focus>span{flex:1}
-.focus .q.x{text-decoration:line-through;opacity:.7}
-.tick svg{width:16px;height:16px}
-.tick{display:inline-flex;align-items:center;gap:6px;flex:none;align-self:center;min-height:40px;padding:0 14px;border-radius:999px;border:1.5px solid color-mix(in srgb,var(--bg) 45%,transparent);background:none;color:inherit;font-weight:600;font-size:14px;white-space:nowrap}
-.tick:hover{border-color:var(--bg)}
-.tick[aria-pressed=true]{background:var(--bg);color:var(--ink);border-color:var(--bg)}
-.pick.x>span:last-child{text-decoration:line-through;color:var(--soft)}
 .all summary{display:flex;align-items:center;justify-content:space-between;min-height:52px;padding:0 16px;border:1.5px solid var(--line);border-radius:16px;font-weight:600;cursor:pointer;list-style:none}
 .all summary::-webkit-details-marker{display:none}
 .all summary::after{content:'';width:9px;height:9px;border-right:2px solid var(--ink);border-bottom:2px solid var(--ink);transform:rotate(45deg);margin-top:-5px;transition:transform .2s}
@@ -146,7 +140,7 @@ h2{font:700 22px/1.1 Outfit,sans-serif;margin:0 0 12px;letter-spacing:-.01em}
 .clues li.x button{color:var(--soft)}
 .clues li.x .t{text-decoration:line-through}
 .clues li.x .face{opacity:.45}
-.toast{position:fixed;left:50%;bottom:20px;transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:16px;max-width:min(92vw,460px);opacity:0;transition:.25s;pointer-events:none;z-index:20;font-size:15px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.toast{position:fixed;left:50%;bottom:calc(var(--dockH,0px) + 16px);transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:16px;max-width:min(92vw,460px);opacity:0;transition:.25s;pointer-events:none;z-index:20;font-size:15px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 dialog{border:0;border-radius:24px;padding:0;width:min(92vw,480px);background:var(--bg);color:var(--ink);box-shadow:0 30px 80px rgba(0,0,0,.4)}
 dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
@@ -169,6 +163,19 @@ dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
 .msg{color:var(--hot);min-height:1.5em;font-size:15px;margin-top:8px}
 .busy #board{opacity:.4}
 @media(max-width:600px){.game{padding-top:10px;gap:22px}.pick{width:62px}.pick .face{width:46px}.stage{border-radius:22px}}
+@media(max-width:899px){
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:15;background:color-mix(in srgb,var(--bg) 94%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-top:1px solid var(--line);box-shadow:0 -8px 24px -12px rgba(0,0,0,.35);padding:6px max(12px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}
+.dock h2{display:none}
+.dock .tray{flex-wrap:nowrap;overflow-x:auto;gap:0;justify-content:space-between;scrollbar-width:none}
+.dock .pick{flex:1 0 50px;width:auto;padding:4px 2px;gap:3px}
+.dock .pick .face{width:38px}
+.dock .pick>span:last-child{font-size:13px}
+.dock .focus{margin-top:6px;min-height:0;padding:10px 14px;border-radius:16px;gap:10px}
+.dock .focus .face{display:none}
+.dock .focus .q{font-size:16px;font-weight:600}
+.dock .focus .h{font-size:13px}
+.pick.done::after{top:2px;right:calc(50% - 26px)}
+}
 @media(prefers-reduced-motion:reduce){.cell .face,.shake{animation:none}.toast,.bar i{transition:none}}
 </style>
 </head>
@@ -202,7 +209,7 @@ dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
     </div>
   </section>
   <section class="side">
-    <div>
+    <div class="dock" id="dock">
       <h2>Wie stond waar?</h2>
       <div class="tray" id="tray"></div>
       <div class="focus" id="focus" aria-live="polite"></div>
@@ -247,7 +254,6 @@ dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
     <li><b>Terug:</b> maakt je laatste zet ongedaan.</li>
     <li><b>Tip:</b> haalt iemand weg die verkeerd staat, of zet de volgende persoon op de goede plek.</li>
     <li><b>Wissen:</b> haalt iedereen en alle kruisjes van het bord. Met Terug zet je alles weer terug.</li>
-    <li><b>Afvinken:</b> markeert een aanwijzing die je al hebt gebruikt.</li>
   </ul>
   <div class="row"><button class="btn main" type="button" data-close>Aan de slag</button></div>
 </div></dialog>
@@ -346,15 +352,15 @@ function render(){
   }
   board.innerHTML=h;
   const S=state.sel,sc=S>=0?pz.clues.find(c=>c.p===S):null;
-  tray.innerHTML=people.map((per,p)=>`<button type="button" class="pick${p===S?' on':''}${state.place[p]>=0?' done':''}${state.struck.includes(pz.clues.findIndex(c=>c.p===p))?' x':''}" data-p="${p}" aria-pressed="${p===S}">${face(p)}<span>${per.name}</span></button>`).join('');
+  tray.innerHTML=people.map((per,p)=>`<button type="button" class="pick${p===S?' on':''}${state.place[p]>=0?' done':''}" data-p="${p}" aria-pressed="${p===S}">${face(p)}<span>${per.name}</span></button>`).join('');
   cluesEl.innerHTML=pz.clues.map((cl,i)=>{
     const hl=S>=0&&(cl.p===S||cl.t==='with'&&cl.a===S);
-    return `<li class="${hl?'hl':''}${state.struck.includes(i)?' x':''}"><button type="button" data-i="${i}">${face(cl.p)}<span class="t">${clueText(pz,cl)}</span></button></li>`;
+    return `<li class="${hl?'hl':''}"><button type="button" data-p="${cl.p}">${face(cl.p)}<span class="t">${clueText(pz,cl)}</span></button></li>`;
   }).join('');
   $('#rule').textContent=`De dader was als enige verdachte samen met ${people[V].name} in één kamer.`;
   const F=$('#focus');
   if(state.closed){F.className='focus';F.innerHTML=`${face(pz.murderer)}<span><b>Zaak gesloten</b><span class="q">${people[pz.murderer].name} was als enige verdachte samen met ${people[V].name} ${roomName(room[pz.sol[V]])}.</span></span>`}
-  else if(S>=0){const sx=state.struck.includes(pz.clues.indexOf(sc));F.className='focus';F.innerHTML=`${face(S)}<span><b>${people[S].name}</b><span class="q${sx?' x':''}">${clueText(pz,sc)}</span><span class="h">${mode==='kruis'?`Kies ‘Persoon zetten’ om ${people[S].name} op het bord te zetten.`:state.place[S]>=0?`Tik op een ander vakje om ${people[S].name} te verplaatsen, of op hetzelfde vakje om ${people[S].name} weg te halen.`:`Tik op een vakje om ${people[S].name} neer te zetten.`}</span></span><button type="button" class="tick" aria-pressed="${sx}" aria-label="Aanwijzing afvinken"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>${sx?'Gebruikt':'Afvinken'}</button>`}
+  else if(S>=0){F.className='focus';F.innerHTML=`${face(S)}<span><span class="q">${clueText(pz,sc)}</span><span class="h">${mode==='kruis'?`Kies ‘Persoon zetten’ om ${people[S].name} neer te zetten.`:state.place[S]>=0?`Tik op een ander vakje om ${people[S].name} te verplaatsen, of op hetzelfde vakje om ${people[S].name} weg te halen.`:`Tik op een vakje om ${people[S].name} neer te zetten.`}</span></span>`}
   else{F.className='focus idle';F.innerHTML=`<span><span class="q">Tik op een persoon om de aanwijzing te zien.</span></span>`}
   const placed=state.place.filter(c=>c>=0).length;
   $('#placed').innerHTML=state.closed?`<b>Zaak gesloten</b>`:`Geplaatst <b>${placed} van ${n}</b>${state.hints?` · hints <b>${state.hints}</b>`:''}`;
@@ -403,8 +409,7 @@ board.addEventListener('click',e=>{
   after();
 });
 tray.addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(!b||state.closed)return;const p=+b.dataset.p;state.sel=state.sel===p?-1:p;mode='plaats';render();save()});
-cluesEl.addEventListener('click',e=>{const b=e.target.closest('[data-i]');if(!b)return;const i=+b.dataset.i,j=state.struck.indexOf(i);j>=0?state.struck.splice(j,1):state.struck.push(i);render();save()});
-$('#focus').addEventListener('click',e=>{if(!e.target.closest('.tick')||state.sel<0)return;const i=pz.clues.findIndex(c=>c.p===state.sel),j=state.struck.indexOf(i);j>=0?state.struck.splice(j,1):state.struck.push(i);render();save()});
+cluesEl.addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(!b||state.closed)return;state.sel=+b.dataset.p;mode='plaats';render();save()});
 $('#mPlace').addEventListener('click',()=>{mode='plaats';render()});
 $('#mMark').addEventListener('click',()=>{mode='kruis';render()});
 $('#undoBtn').addEventListener('click',()=>{if(state.closed||!undo.length){toast('Er is niets om ongedaan te maken.');return}const u=JSON.parse(undo.pop());state.place=u.place;state.marks=u.marks;state.solved=false;render();save()});
@@ -437,6 +442,9 @@ $('#rulesBtn').addEventListener('click',()=>$('#rulesDlg').showModal());
 $('#newBtn').addEventListener('click',()=>{$('#seedIn').value='';$('#newDlg').showModal()});
 $('#newDlg').addEventListener('click',e=>{const b=e.target.closest('[data-diff]');if(!b)return;const v=parseInt($('#seedIn').value,10);$('#newDlg').close();mode='plaats';start(b.dataset.diff,v)});
 
+const dock=$('#dock');
+const fitDock=()=>{const h=matchMedia('(max-width:899px)').matches?dock.offsetHeight:0;document.body.style.paddingBottom=h?(h+12)+'px':'';document.documentElement.style.setProperty('--dockH',h+'px')};
+const dockRO=new ResizeObserver(fitDock);dockRO.observe(dock);addEventListener('resize',fitDock);
 setInterval(()=>{if(state&&!state.closed&&!document.hidden){state.elapsed++;$('#time').textContent=fmt(state.elapsed);if(state.elapsed%5===0)save()}},1000);
 
 function boot(data){

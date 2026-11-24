@@ -12,6 +12,10 @@ Murdoku is een Progressive Web App (PWA): je speelt het in de browser, installee
 4. Iedereen heeft één aanwijzing, en elke aanwijzing klopt. ‘Naast’ betekent direct links, rechts, boven of onder, en in dezelfde kamer.
 5. De dader is de enige verdachte die met Vincent in dezelfde kamer was.
 
+## Bediening
+
+Tik op een gezicht om de aanwijzing van die persoon te zien. Op een telefoon staan de gezichten en de aanwijzing in een vaste balk onderin het scherm, zodat je ze altijd ziet.
+
 ## Knoppen
 
 | Knop | Wat hij doet |
@@ -21,7 +25,6 @@ Murdoku is een Progressive Web App (PWA): je speelt het in de browser, installee
 | **Terug** | Maakt je laatste zet ongedaan. |
 | **Tip** | Haalt iemand weg die verkeerd staat, of zet de volgende persoon goed. |
 | **Wissen** | Haalt iedereen en alle kruisjes van het bord. |
-| **Afvinken** | Markeert een aanwijzing die je al hebt gebruikt. |
 
 ## Niveaus en zaaknummers
 
