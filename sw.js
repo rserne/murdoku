@@ -1,6 +1,6 @@
 // Murdoku service worker: houdt de app ook offline speelbaar.
 // Verhoog VERSION bij elke release, zodat spelers de nieuwe versie krijgen.
-const VERSION = 'murdoku-v3';
+const VERSION = 'murdoku-v5';
 const FONTS = 'murdoku-fonts';
 const SHELL = [
   './',
@@ -15,8 +15,13 @@ const SHELL = [
 ];
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(VERSION).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
+  // cache: 'reload' haalt elk bestand vers van de server, niet uit de browsercache
+  self.skipWaiting();
+  e.waitUntil(caches.open(VERSION).then(c => c.addAll(SHELL.map(u => new Request(u, { cache: 'reload' })))));
 });
+
+// De pagina kan een wachtende versie vragen om meteen over te nemen
+self.addEventListener('message', e => { if (e.data === 'skipWaiting') self.skipWaiting(); });
 
 self.addEventListener('activate', e => {
   e.waitUntil(
@@ -45,7 +50,7 @@ self.addEventListener('fetch', e => {
   // Pagina: eerst het netwerk (nieuwste versie), anders de cache
   if (req.mode === 'navigate') {
     e.respondWith(
-      fetch(req)
+      fetch(req, { cache: 'no-cache' })
         .then(res => { if (res.ok) { const copy = res.clone(); caches.open(VERSION).then(c => c.put('index.html', copy)); } return res; })
         .catch(() => caches.match('index.html'))
     );

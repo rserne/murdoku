@@ -50,20 +50,15 @@ h1{font:800 clamp(26px,5vw,38px)/1.05 Outfit,sans-serif;margin:0;letter-spacing:
 .game{display:grid;gap:28px;padding:16px max(4vw,16px,env(safe-area-inset-right)) max(48px,env(safe-area-inset-bottom)) max(4vw,16px,env(safe-area-inset-left));max-width:1180px;margin:0 auto}
 @media(min-width:900px){.game{grid-template-columns:minmax(0,580px) minmax(0,1fr);align-items:start}.side{position:sticky;top:16px}}
 .stage{background:var(--card);border-radius:28px;padding:clamp(10px,2.4vw,22px)}
-#board{display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));grid-template-rows:repeat(var(--n),minmax(0,1fr));aspect-ratio:1;width:100%;border:3px solid var(--wall);border-radius:18px;overflow:hidden;user-select:none;-webkit-user-select:none;box-shadow:0 18px 40px -18px rgba(20,20,40,.35);background:var(--wall)}
+#board{position:relative;display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));grid-template-rows:repeat(var(--n),minmax(0,1fr));aspect-ratio:1;width:100%;border:3px solid var(--wall);border-radius:18px;overflow:hidden;user-select:none;-webkit-user-select:none;box-shadow:0 18px 40px -18px rgba(20,20,40,.35);background:var(--wall)}
 .cell{position:relative;border:0;border-top:1px solid color-mix(in srgb,var(--wall) 12%,transparent);border-left:1px solid color-mix(in srgb,var(--wall) 12%,transparent);display:grid;place-items:center;padding:0;background:var(--rc);touch-action:manipulation;transition:filter .15s}
-.cell.wt{border-top:3px solid var(--wall)}
-.cell.wl{border-left:3px solid var(--wall)}
 .r0{--rc:var(--r0)}.r1{--rc:var(--r1)}.r2{--rc:var(--r2)}.r3{--rc:var(--r3)}.r4{--rc:var(--r4)}.r5{--rc:var(--r5)}
-.cell.kleed::before{content:'';position:absolute;inset:17%;border-radius:6px;background:repeating-linear-gradient(90deg,color-mix(in srgb,var(--rc) 62%,#c4553d) 0 3px,color-mix(in srgb,var(--rc) 80%,#c4553d) 3px 6px);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--rc) 45%,#8d3524);pointer-events:none}
+.cell.kleed::before,.rugsw{content:'';border-radius:5px;background:repeating-linear-gradient(45deg,transparent 0 5px,rgba(184,69,47,.32) 5px 6.5px),repeating-linear-gradient(-45deg,transparent 0 5px,rgba(184,69,47,.32) 5px 6.5px),#f6e7cc;box-shadow:0 0 0 2.5px #b8452f,inset 0 0 0 2.5px #f6e7cc,inset 0 0 0 4px #b8452f}
+.cell.kleed::before{position:absolute;inset:18%;pointer-events:none}
 .cell.blk{background:repeating-linear-gradient(-45deg,var(--rc) 0 7px,color-mix(in srgb,var(--rc) 78%,var(--wall)) 7px 8px);cursor:not-allowed}
 .cell:hover:not(.blk){filter:brightness(1.06)}
-#board.focusing .cell:not(.inroom){filter:grayscale(.9) brightness(.62)}
-.rooms{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
-.room{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 14px 0 8px;border-radius:999px;border:1.5px solid var(--line);background:var(--bg);font-weight:600;font-size:14px}
-.room i{width:18px;height:18px;border-radius:6px;background:var(--rc);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--wall) 25%,transparent)}
-.room:hover{border-color:var(--ink)}
-.room[aria-pressed=true]{border-color:var(--ink);background:var(--card)}
+.walls{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:4;overflow:visible}
+.walls path{fill:none;stroke:var(--wall);stroke-width:3.5px;stroke-linecap:square;vector-effect:non-scaling-stroke}
 .rl{position:absolute;top:4px;left:4px;font:600 13px/1 Inter,sans-serif;white-space:nowrap;z-index:1;pointer-events:none;background:color-mix(in srgb,var(--bg) 82%,transparent);padding:3px 6px;border-radius:999px}
 .ico{width:60%;height:60%;pointer-events:none;filter:drop-shadow(0 2px 0 rgba(0,0,0,.12))}
 .cell.has .ico{position:absolute;right:3px;bottom:3px;width:32%;height:32%}
@@ -77,10 +72,6 @@ h1{font:800 clamp(26px,5vw,38px)/1.05 Outfit,sans-serif;margin:0;letter-spacing:
 @keyframes pop{from{transform:scale(.5);opacity:.2}}
 @keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
 .shake{animation:shake .25s 2}
-.legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin:14px 4px 0;font-size:14px;color:var(--soft)}
-.legend span{display:inline-flex;align-items:center;gap:6px}
-.legend svg{width:22px;height:22px}
-.sw{width:18px;height:18px;border-radius:4px}
 .side{display:grid;gap:22px}
 h2{font:700 22px/1.1 Outfit,sans-serif;margin:0 0 12px;letter-spacing:-.01em}
 .tray{display:flex;flex-wrap:wrap;gap:6px}
@@ -93,7 +84,9 @@ h2{font:700 22px/1.1 Outfit,sans-serif;margin:0 0 12px;letter-spacing:-.01em}
 .pick.done .face{opacity:.55}
 .ok{position:absolute;top:4px;right:calc(50% - 30px);width:20px;height:20px;border-radius:50%;background:var(--ink);color:var(--bg);display:grid;place-items:center;box-shadow:0 0 0 2px var(--bg);z-index:3}
 .ok svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}
-.focus{display:flex;gap:14px;align-items:center;margin-top:10px;padding:12px 16px 12px 12px;border-radius:20px;background:var(--ink);color:var(--bg);min-height:76px}
+.people-row{margin-top:16px}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.focus{display:flex;gap:14px;align-items:center;margin-top:8px;padding:12px 16px 12px 12px;border-radius:20px;background:var(--ink);color:var(--bg);min-height:76px}
 .focus .face{width:52px;flex:none;box-shadow:0 0 0 2.5px var(--ink);animation:none}
 .focus b{display:block;font:700 18px/1.2 Outfit,sans-serif}
 .focus .q{display:block;font-size:16px;line-height:1.35}
@@ -127,7 +120,7 @@ h2{font:700 22px/1.1 Outfit,sans-serif;margin:0 0 12px;letter-spacing:-.01em}
 .all summary:hover{border-color:var(--ink)}
 .all .clues{margin-top:8px}
 .rule{margin:0!important}
-.toolbar{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:14px}
+.toolbar{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:12px}
 .seg{grid-column:span 2;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px;padding:3px;background:var(--card);border-radius:16px}
 .tb{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:58px;padding:0 2px;border:0;border-radius:13px;background:none;font-weight:600;font-size:13px;color:var(--soft);white-space:nowrap}
 .tb svg{width:22px;height:22px;flex:none}
@@ -147,7 +140,7 @@ h2{font:700 22px/1.1 Outfit,sans-serif;margin:0 0 12px;letter-spacing:-.01em}
 .clues li.x button{color:var(--soft)}
 .clues li.x .t{text-decoration:line-through}
 .clues li.x .face{opacity:.45}
-.toast{position:fixed;left:50%;bottom:calc(var(--dockH,0px) + 16px);transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:16px;max-width:min(92vw,460px);opacity:0;transition:.25s;pointer-events:none;z-index:20;font-size:15px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.toast{position:fixed;left:50%;bottom:max(20px,env(safe-area-inset-bottom));transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:16px;max-width:min(92vw,460px);opacity:0;transition:.25s;pointer-events:none;z-index:20;font-size:15px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 dialog{border:0;border-radius:24px;padding:0;width:min(92vw,540px);max-height:min(88svh,820px);overflow:auto;background:var(--bg);color:var(--ink);box-shadow:0 30px 80px rgba(0,0,0,.4)}
 dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
@@ -176,7 +169,14 @@ dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
 .ctrl b{display:block;font-weight:600;font-size:15px;line-height:1.2;color:var(--ink);margin-bottom:2px}
 .dlg h3:focus{outline:none}
 .ctrl span{display:block;font-size:14px;color:var(--soft);line-height:1.35}
+.furn{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 10px}
+.furn span{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 14px 0 8px;border-radius:999px;background:var(--card);font-weight:600;font-size:14px}
+.furn svg{width:24px;height:24px}
+.furn .no{background:repeating-linear-gradient(-45deg,var(--card) 0 6px,color-mix(in srgb,var(--card) 72%,var(--soft)) 6px 7px)}
+.furn .rugsw{display:inline-block;width:22px;height:16px;margin:0 2px}
+.note{color:var(--soft);font-size:15px;margin:0 0 20px!important}
 .cta{width:100%;min-height:52px;font-size:16px}
+.ver{text-align:center;color:var(--soft);font-size:13px;margin:12px 0 0!important}
 .row{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;margin-top:16px}
 .choices{display:grid;gap:8px}
 .choices button{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:58px;padding:0 18px;border-radius:16px;border:1.5px solid var(--line);background:var(--bg);font-weight:600;text-align:left}
@@ -191,17 +191,14 @@ dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
 .msg{color:var(--hot);min-height:1.5em;font-size:15px;margin-top:8px}
 .busy #board{opacity:.4}
 @media(max-width:600px){.top .lbl{display:none}.hbtn{padding:0;width:44px}dialog{width:100%;max-width:100%;margin:auto 0 0;border-radius:24px 24px 0 0;max-height:90svh}.dlg{padding:12px 20px max(24px,env(safe-area-inset-bottom))}.grab{display:block;width:40px;height:5px;border-radius:9px;background:var(--line);margin:0 auto 14px}.game{padding-top:10px;gap:22px}.pick{width:62px}.pick .face{width:46px}.stage{border-radius:22px}}
-@media(max-width:899px){
-.dock{position:fixed;left:0;right:0;bottom:0;z-index:15;background:color-mix(in srgb,var(--bg) 94%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-top:1px solid var(--line);box-shadow:0 -8px 24px -12px rgba(0,0,0,.35);padding:6px max(12px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}
-.dock h2{display:none}
-.dock .tray{flex-wrap:nowrap;overflow-x:auto;gap:0;justify-content:space-between;scrollbar-width:none}
-.dock .pick{flex:1 0 50px;width:auto;padding:4px 2px;gap:3px}
-.dock .pick .face{width:38px}
-.dock .pick>span:last-child{font-size:13px}
-.dock .focus{margin-top:6px;min-height:0;padding:10px 14px;border-radius:16px;gap:10px}
-.dock .focus .face{display:none}
-.dock .focus .q{font-size:16px;font-weight:600}
-.dock .focus .h{font-size:13px}
+@media(max-width:600px){
+.tray{flex-wrap:nowrap;gap:0;justify-content:space-between}
+.pick{flex:1 0 50px;width:auto;padding:6px 2px;gap:4px}
+.pick .face{width:42px}
+.pick>span:last-child{font-size:13px}
+.focus .face{display:none}
+.focus{padding:12px 16px}
+.focus .q{font-size:16px;font-weight:600}
 }
 @media(prefers-reduced-motion:reduce){.cell .face,.shake{animation:none}.toast,.bar i{transition:none}}
 </style>
@@ -229,6 +226,11 @@ dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
 <main class="game">
   <section aria-label="Plattegrond">
     <div class="stage"><div id="board" role="grid"></div></div>
+    <div class="people-row">
+      <h2 class="vh">Wie stond waar?</h2>
+      <div class="tray" id="tray"></div>
+      <div class="focus" id="focus" aria-live="polite"></div>
+    </div>
     <div class="toolbar">
       <div class="seg" role="group" aria-label="Wat doet een tik op het bord?">
         <button class="tb" type="button" id="mPlace" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" fill="currentColor"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7z" fill="currentColor"/></svg>Persoon</button>
@@ -238,22 +240,8 @@ dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
       <button class="tb" type="button" id="hintBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19.5h5M10.5 22h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip</button>
       <button class="tb" type="button" id="clearBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 7V4.5h4V7M6.5 7l1 13h9l1-13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Wissen</button>
     </div>
-    <div class="rooms" id="rooms" role="group" aria-label="Tik op een kamer om hem op te lichten"></div>
-    <div class="legend">
-      <span><svg><use href="#i-stoel"/></svg>Stoel</span>
-      <span><svg><use href="#i-bed"/></svg>Bed</span>
-      <span><i class="sw" style="background:repeating-linear-gradient(90deg,#df9a86 0 3px,#efc0b0 3px 6px);box-shadow:inset 0 0 0 1.5px #a8513d"></i>Kleed</span>
-      <span><svg><use href="#i-plant"/></svg>Plant</span>
-      <span><svg><use href="#i-kast"/></svg>Boekenkast</span>
-      <span><i class="sw" style="background:repeating-linear-gradient(-45deg,var(--card) 0 5px,var(--soft) 5px 6px)"></i>Hier staat niemand</span>
-    </div>
   </section>
   <section class="side">
-    <div class="dock" id="dock">
-      <h2>Wie stond waar?</h2>
-      <div class="tray" id="tray"></div>
-      <div class="focus" id="focus" aria-live="polite"></div>
-    </div>
     </div>
     <div>
       <div class="status"><span id="placed"></span><span>Tijd <b id="time">00:00</b></span></div>
@@ -317,6 +305,10 @@ function fmt(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60)
 function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('show'),2800)}
 function roomName(i){return pz.names[i][1]+' '+pz.names[i][0]}
 function cap(s){return s[0].toUpperCase()+s.slice(1)}
+function cellDesc(c){const o=pz.obj[c],rn=roomName(pz.room[c]);return o?`${cap(OBJ[o][1])} ${rn}`:`Een leeg vakje ${rn}`}
+function placedText(p,c){const o=pz.obj[c],rn=roomName(pz.room[c]),nm=pz.people[p].name,v=p===pz.V;
+  if(o==='stoel')return `${nm} zit op een stoel ${rn}.`;if(o==='bed')return `${nm} ligt op een bed ${rn}.`;
+  if(o==='kleed')return `${nm} ${v?'ligt':'staat'} op een kleed ${rn}.`;return `${nm} ${v?'ligt':'staat'} ${rn}.`}
 
 function start(diff,seed,saved){
   seed=Number.isFinite(seed)&&seed>0?Math.floor(seed):1000+Math.floor(Math.random()*9000);
@@ -343,12 +335,9 @@ function render(){
   for(let c=0;c<n*n;c++){
     const r=Math.floor(c/n),k=c%n,o=obj[c],p=state.place.indexOf(c);
     const cls=['cell','r'+room[c]];
-    if(r>0&&room[c-n]!==room[c])cls.push('wt');
-    if(k>0&&room[c-1]!==room[c])cls.push('wl');
     if(o==='kleed')cls.push('kleed');
     if(BLOCK[o])cls.push('blk');
     if(p>=0)cls.push('has');
-    if(hlRoom===room[c])cls.push('inroom');
     let inner='';
     if(first[room[c]]===c)inner+=`<span class="rl">${cap(pz.names[room[c]][0])}</span>`;
     if(o&&o!=='kleed')inner+=`<svg class="ico" aria-hidden="true"><use href="#i-${o}"/></svg>`;
@@ -361,9 +350,10 @@ function render(){
     const label=`Rij ${r+1}, kolom ${k+1}, ${pz.names[room[c]][0]}${o?', '+OBJ[o][0]:''}${p>=0?', '+people[p].name:''}`;
     h+=`<button type="button" class="${cls.join(' ')}" data-c="${c}" aria-label="${label}">${inner}</button>`;
   }
+  let wd='';
+  for(let c=0;c<n*n;c++){const r=Math.floor(c/n),k=c%n;if(r>0&&room[c]!==room[c-n])wd+=`M${k} ${r}h1`;if(k>0&&room[c]!==room[c-1])wd+=`M${k} ${r}v1`}
+  h+=`<svg class="walls" viewBox="0 0 ${n} ${n}" preserveAspectRatio="none" aria-hidden="true"><path d="${wd}"/></svg>`;
   board.innerHTML=h;
-  board.classList.toggle('focusing',hlRoom>=0);
-  $('#rooms').innerHTML=pz.names.map((nm,i)=>`<button type="button" class="room r${i}" data-r="${i}" aria-pressed="${hlRoom===i}"><i></i>${cap(nm[0])}</button>`).join('');
   const S=state.sel,sc=S>=0?pz.clues.find(c=>c.p===S):null;
   tray.innerHTML=people.map((per,p)=>`<button type="button" class="pick${p===S?' on':''}${state.place[p]>=0?' done':''}" data-p="${p}" aria-pressed="${p===S}">${face(p)}${state.place[p]>=0?'<span class="ok" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 12.5l4 4 8-9"/></svg></span>':''}<span>${per.name}</span></button>`).join('');
   cluesEl.innerHTML=pz.clues.map((cl,i)=>{
@@ -402,11 +392,11 @@ board.addEventListener('click',e=>{
   if(occ>=0&&occ!==state.sel){state.sel=occ;render();save();return}
   if(mode==='kruis'){
     if(occ>=0){toast('Haal eerst de persoon van dit vakje.');return}
-    if(BLOCK[pz.obj[c]]){toast('Op dit vakje kan sowieso niemand staan.');return}
+    if(BLOCK[pz.obj[c]]){toast(`${cellDesc(c)}: hier kan sowieso niemand staan.`);return}
     push();const i=state.marks.indexOf(c);i>=0?state.marks.splice(i,1):state.marks.push(c);after();return;
   }
-  if(BLOCK[pz.obj[c]]){b.classList.add('shake');setTimeout(()=>b.classList.remove('shake'),520);toast(`Op een ${OBJ[pz.obj[c]][0]} kan niemand staan.`);return}
-  if(state.sel<0){toast('Tik eerst op een persoon.');return}
+  if(BLOCK[pz.obj[c]]){b.classList.add('shake');setTimeout(()=>b.classList.remove('shake'),520);toast(`${cellDesc(c)}: hier kan niemand staan.`);return}
+  if(state.sel<0){toast(`${cellDesc(c)}. Tik eerst op een persoon om iemand neer te zetten.`);return}
   push();
   const s=state.sel;
   if(state.place[s]===c){state.place[s]=-1}
@@ -414,6 +404,7 @@ board.addEventListener('click',e=>{
     if(occ>=0)state.place[occ]=-1;
     state.place[s]=c;
     state.marks=state.marks.filter(m=>m!==c);
+    toast(placedText(s,c));
     let next=-1;
     for(let i=1;i<=pz.n;i++){const q=(s+i)%pz.n;if(state.place[q]<0){next=q;break}}
     state.sel=next;
@@ -422,7 +413,6 @@ board.addEventListener('click',e=>{
 });
 tray.addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(!b||state.closed)return;const p=+b.dataset.p;state.sel=state.sel===p?-1:p;mode='plaats';render();save()});
 cluesEl.addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(!b||state.closed)return;state.sel=+b.dataset.p;mode='plaats';render();save()});
-$('#rooms').addEventListener('click',e=>{const b=e.target.closest('[data-r]');if(!b)return;const r=+b.dataset.r;hlRoom=hlRoom===r?-1:r;render()});
 $('#mPlace').addEventListener('click',()=>{mode='plaats';render()});
 $('#mMark').addEventListener('click',()=>{mode='kruis';render()});
 $('#undoBtn').addEventListener('click',()=>{if(state.closed||!undo.length){toast('Er is niets om ongedaan te maken.');return}const u=JSON.parse(undo.pop());state.place=u.place;state.marks=u.marks;state.solved=false;render();save()});
@@ -455,9 +445,6 @@ $('#rulesBtn').addEventListener('click',()=>{$('#rulesDlg').showModal();$('#rule
 $('#newBtn').addEventListener('click',()=>{$('#seedIn').value='';$('#newDlg').showModal()});
 $('#newDlg').addEventListener('click',e=>{const b=e.target.closest('[data-diff]');if(!b)return;const v=parseInt($('#seedIn').value,10);$('#newDlg').close();mode='plaats';start(b.dataset.diff,v)});
 
-const dock=$('#dock');
-const fitDock=()=>{const h=matchMedia('(max-width:899px)').matches?dock.offsetHeight:0;document.body.style.paddingBottom=h?(h+12)+'px':'';document.documentElement.style.setProperty('--dockH',h+'px')};
-const dockRO=new ResizeObserver(fitDock);dockRO.observe(dock);addEventListener('resize',fitDock);
 setInterval(()=>{if(state&&!state.closed&&!document.hidden){state.elapsed++;$('#time').textContent=fmt(state.elapsed);if(state.elapsed%5===0)save()}},1000);
 
 const IC={
@@ -482,6 +469,9 @@ function renderRules(){
     <li><div class="ill"><svg viewBox="0 0 64 64"><rect x="6" y="6" width="52" height="26" fill="var(--r3)"/><rect x="6" y="32" width="52" height="26" fill="var(--r0)"/><path d="M6 32h52" stroke="var(--wall)" stroke-width="3"/><use href="#i-stoel" x="9" y="9" width="20" height="20"/><circle cx="45" cy="19" r="8" fill="#1d6fd1"/><use href="#i-plant" x="35" y="35" width="20" height="20"/><path d="M28 19h6" stroke="#1f9a55" stroke-width="2.4" stroke-linecap="round"/><path d="M45 29v6" stroke="var(--alarm)" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="2 3"/></svg></div><div><b>Elke aanwijzing klopt</b><p>‘Naast’ is direct links, rechts, boven of onder, in dezelfde kamer. Door een muur heen telt niet.</p></div></li>
     <li><div class="ill"><svg viewBox="0 0 64 64"><rect x="4" y="4" width="38" height="56" rx="6" fill="var(--r2)"/><path d="M42 4v56" stroke="var(--wall)" stroke-width="3"/></svg>${fc(V[0],V[1],'left:9px;top:8px')}${fc(C[0],C[1],'left:9px;top:34px')}${fc(B[0],B[1],'left:44px;top:20px;width:20px;opacity:.6')}</div><div><b>De dader was alleen met Vincent</b><p>De enige verdachte in dezelfde kamer als Vincent heeft het gedaan.</p></div></li>
   </ol>
+  <h4>Meubels</h4>
+  <div class="furn"><span><svg><use href="#i-stoel"/></svg>Stoel</span><span><svg><use href="#i-bed"/></svg>Bed</span><span><i class="rugsw"></i>Kleed</span><span class="no"><svg><use href="#i-plant"/></svg>Plant</span><span class="no"><svg><use href="#i-kast"/></svg>Boekenkast</span></div>
+  <p class="note">Op een stoel, bed of kleed mag iemand staan. Op een plant of boekenkast niet: die vakjes zijn gearceerd. Tik op een vakje om te zien wat er staat.</p>
   <h4>Bediening</h4>
   <div class="ctrl">
     <div><i>${IC.person}</i><span><b>Persoon</b>Tik op een gezicht en daarna op een vakje.</span></div>
@@ -489,9 +479,9 @@ function renderRules(){
     <div><i>${IC.undo}</i><span><b>Terug</b>Maak je laatste zet ongedaan.</span></div>
     <div><i>${IC.tip}</i><span><b>Tip</b>Haal een fout weg of zet iemand goed.</span></div>
     <div><i>${IC.trash}</i><span><b>Wissen</b>Begin opnieuw met een leeg bord.</span></div>
-    <div><i>${IC.rooms}</i><span><b>Kamers</b>Tik op een kamernaam om de kamer op te lichten.</span></div>
   </div>
-  <button class="btn main cta" type="button" data-close>Aan de slag</button>`;
+  <button class="btn main cta" type="button" data-close>Aan de slag</button>
+  <p class="ver">Versie 5</p>`;
 }
 function boot(data){
   renderRules();
@@ -501,7 +491,19 @@ function boot(data){
   try{if(!localStorage.getItem('murdoku-seen')){localStorage.setItem('murdoku-seen','1');$('#rulesDlg').showModal()}}catch(e){}
 }
 boot({});
-if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+if('serviceWorker' in navigator){
+  // Nieuwe versie actief? Dan de pagina één keer herladen (alleen bij een update, niet bij de eerste installatie)
+  const hadSW=!!navigator.serviceWorker.controller;let reloaded=false;
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!hadSW||reloaded)return;reloaded=true;location.reload()});
+  addEventListener('load',()=>navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(reg=>{
+    const kick=()=>{if(reg.waiting)reg.waiting.postMessage('skipWaiting')};
+    kick();
+    reg.addEventListener('updatefound',()=>{const w=reg.installing;w&&w.addEventListener('statechange',()=>{if(w.state==='installed')kick()})});
+    reg.update();
+    // Een app op het beginscherm blijft vaak open: kijk bij elke terugkeer naar de app of er een update is
+    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')reg.update().catch(()=>{})});
+  }).catch(()=>{}));
+}
 }
 </script>
 </body>

@@ -14,7 +14,9 @@ Murdoku is een Progressive Web App (PWA): je speelt het in de browser, installee
 
 ## Bediening
 
-Tik op een gezicht om de aanwijzing van die persoon te zien. Op een telefoon staan de gezichten en de aanwijzing in een vaste balk onderin het scherm, zodat je ze altijd ziet.
+Onder het bord staan de personen. Tik op een gezicht om de aanwijzing van die persoon te zien, en tik daarna op een vakje om de persoon neer te zetten. De app vertelt dan waar diegene nu staat, bijvoorbeeld ‘Anna zit op een stoel in de keuken’. Tik je zonder gekozen persoon op een vakje, dan zie je wat daar staat.
+
+Onder het spelregelvenster staat het versienummer van de app.
 
 ## Knoppen
 
@@ -25,7 +27,6 @@ Tik op een gezicht om de aanwijzing van die persoon te zien. Op een telefoon sta
 | **Terug** | Maakt je laatste zet ongedaan. |
 | **Tip** | Haalt iemand weg die verkeerd staat, of zet de volgende persoon goed. |
 | **Wissen** | Haalt iedereen en alle kruisjes van het bord. |
-| **Kamernamen** | Een tik op een kamernaam onder het bord laat die kamer oplichten. |
 
 ## Niveaus en zaaknummers
 
