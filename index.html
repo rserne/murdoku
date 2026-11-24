@@ -51,7 +51,7 @@ h1{font:800 clamp(26px,5vw,38px)/1.05 Outfit,sans-serif;margin:0;letter-spacing:
 .btn.main{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .btn.main:hover{background:color-mix(in srgb,var(--ink) 85%,var(--hot))}
 .game{display:grid;gap:28px;padding:16px max(4vw,16px,env(safe-area-inset-right)) max(48px,env(safe-area-inset-bottom)) max(4vw,16px,env(safe-area-inset-left));max-width:1180px;margin:0 auto}
-@media(min-width:900px){.game{grid-template-columns:minmax(0,580px) minmax(0,1fr);align-items:start;row-gap:14px}.game>section:first-child{display:contents}.stage{grid-column:1;grid-row:1/span 4}.people-row,.toolbar,.side{grid-column:2}.people-row,.toolbar{margin-top:0}}
+@media(min-width:900px){.game{grid-template-columns:minmax(0,580px) minmax(0,1fr);align-items:start;row-gap:14px}.game>section:first-child{display:contents}.stage{grid-column:1;grid-row:1/span 4}.people-row,.toolbar{grid-column:2}.people-row,.toolbar{margin-top:0}}
 .stage{background:var(--card);border-radius:28px;padding:clamp(10px,2.4vw,22px)}
 #board{position:relative;display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));grid-template-rows:repeat(var(--n),minmax(0,1fr));aspect-ratio:1;width:100%;border:3px solid var(--wall);border-radius:18px;overflow:hidden;user-select:none;-webkit-user-select:none;box-shadow:0 18px 40px -18px rgba(20,20,40,.35);background:var(--wall)}
 .cell{position:relative;border:0;border-top:1px solid color-mix(in srgb,var(--wall) 12%,transparent);border-left:1px solid color-mix(in srgb,var(--wall) 12%,transparent);display:grid;place-items:center;padding:0;background:var(--rc);touch-action:manipulation;transition:filter .15s}
@@ -116,12 +116,6 @@ h2{font:700 22px/1.1 Outfit,sans-serif;margin:0 0 12px;letter-spacing:-.01em}
 .chk[aria-pressed=true] path{stroke:var(--bg)}
 .chk:hover circle{stroke:var(--ink)}
 .focus>span{flex:1}
-.all summary{display:flex;align-items:center;justify-content:space-between;min-height:52px;padding:0 16px;border:1.5px solid var(--line);border-radius:16px;font-weight:600;cursor:pointer;list-style:none}
-.all summary::-webkit-details-marker{display:none}
-.all summary::after{content:'';width:9px;height:9px;border-right:2px solid var(--ink);border-bottom:2px solid var(--ink);transform:rotate(45deg);margin-top:-5px;transition:transform .2s}
-.all[open] summary::after{transform:rotate(225deg);margin-top:5px}
-.all summary:hover{border-color:var(--ink)}
-.all .clues{margin-top:8px}
 .rule{margin:0!important}
 .toolbar{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:12px}
 .seg{grid-column:span 2;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px;padding:3px;background:var(--card);border-radius:16px}
@@ -247,9 +241,6 @@ dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
       <button class="tb" type="button" id="clearBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 7V4.5h4V7M6.5 7l1 13h9l1-13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Wissen</button>
     </div>
   </section>
-  <section class="side">
-    <details class="all"><summary>Alle aanwijzingen</summary><ul class="clues" id="clues"></ul></details>
-  </section>
 </main>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -276,7 +267,7 @@ dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
 <script>
 {
 const $=s=>document.querySelector(s);
-const board=$('#board'),tray=$('#tray'),cluesEl=$('#clues');
+const board=$('#board'),tray=$('#tray');
 const LS='murdoku-v4';
 let pz=null,state=null,mode='plaats',undo=[],toastT=0,hlRoom=-1;
 
@@ -372,10 +363,6 @@ function render(){
   board.innerHTML=h;
   const S=state.sel,sc=S>=0?pz.clues.find(c=>c.p===S):null;
   tray.innerHTML=people.map((per,p)=>`<button type="button" class="pick${p===S?' on':''}${state.place[p]>=0?' done':''}" data-p="${p}" aria-pressed="${p===S}">${face(p)}${state.place[p]>=0?'<span class="ok" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 12.5l4 4 8-9"/></svg></span>':''}<span>${per.name}</span></button>`).join('');
-  cluesEl.innerHTML=pz.clues.map((cl,i)=>{
-    const hl=S>=0&&(cl.p===S||cl.t==='with'&&cl.a===S);
-    return `<li class="${hl?'hl':''}"><button type="button" data-p="${cl.p}">${face(cl.p)}<span class="t">${clueText(pz,cl)}</span></button></li>`;
-  }).join('');
   const F=$('#focus');
   if(state.closed){F.className='focus';F.innerHTML=`${face(pz.murderer)}<span><b>Zaak gesloten</b><span class="q">${people[pz.murderer].name} was als enige verdachte samen met ${people[V].name} ${roomName(room[pz.sol[V]])}.</span></span>`}
   else if(S>=0){F.className='focus';F.innerHTML=`${face(S)}<span><span class="q">${clueText(pz,sc)}</span><span class="h">${mode==='kruis'?`Kies ‘Persoon zetten’ om ${people[S].name} neer te zetten.`:state.place[S]>=0?`Tik op een ander vakje om ${people[S].name} te verplaatsen, of op hetzelfde vakje om ${people[S].name} weg te halen.`:`Tik op een vakje om ${people[S].name} neer te zetten.`}</span></span>`}
@@ -424,7 +411,6 @@ board.addEventListener('click',e=>{
   if(pb&&!document.querySelector('dialog[open]'))bubble(c,pb);
 });
 tray.addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(!b||state.closed)return;const p=+b.dataset.p;state.sel=state.sel===p?-1:p;mode='plaats';render();save()});
-cluesEl.addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(!b||state.closed)return;state.sel=+b.dataset.p;mode='plaats';render();save()});
 $('#mPlace').addEventListener('click',()=>{mode='plaats';render()});
 $('#mMark').addEventListener('click',()=>{mode='kruis';render()});
 $('#undoBtn').addEventListener('click',()=>{if(state.closed||!undo.length){toast('Er is niets om ongedaan te maken.');return}const u=JSON.parse(undo.pop());state.place=u.place;state.marks=u.marks;state.solved=false;render();save()});
@@ -503,11 +489,10 @@ function renderRules(){
     <div><i>${IC.tip}</i><span><b>Tip</b>Haal een fout weg of zet iemand goed.</span></div>
     <div><i>${IC.trash}</i><span><b>Wissen</b>Begin opnieuw met een leeg bord.</span></div>
   </div>
-  <p class="ver">Versie 12</p>`;
+  <p class="ver">Versie 13</p>`;
 }
 function boot(data){
   renderRules();
-  if(matchMedia('(min-width:900px)').matches)$('.all').open=true;
   const s=(data&&data.state)||loadSaved();
   if(s&&DIFF[s.diff]&&s.seed&&Array.isArray(s.place)){start(s.diff,s.seed,s);return}
   start('makkelijk',2718);
