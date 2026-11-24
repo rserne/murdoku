@@ -101,6 +101,8 @@ h2{font:700 22px/1.1 Outfit,sans-serif;margin:0 0 12px;letter-spacing:-.01em}
 .focus .q{display:block;font-size:16px;line-height:1.35}
 .focus .h{display:block;font-size:13px;color:var(--soft);margin-top:2px}
 .focus.accuse b,.focus.done b{display:block;font:700 17px/1.25 Outfit,sans-serif}
+.focus.done{background:var(--card);border-color:transparent}
+.focus.done .tag{margin:0 0 6px}
 .focus.done .btn{flex:none;min-height:44px}
 .focus.idle{background:var(--card);border-color:transparent;color:var(--soft)}
 .people{list-style:none;margin:0;padding:0;display:grid;gap:8px}
@@ -343,6 +345,7 @@ function render(){
   const {n,room,obj,people,V}=pz;
   board.style.setProperty('--n',n);
   $('#case').innerHTML=`<span class="zk">Zaak </span><b>${state.seed}</b> · ${DIFF[state.diff].label}`;
+  $('#time').textContent=fmt(state.elapsed);
   // Kamernaam: eerst een plek waar de naam past, dan bij voorkeur in lege vakjes, zo hoog mogelijk
 
   // kamernaam: altijd in een leeg vakje; daarna liefst met ruimte ernaast, zo hoog mogelijk
@@ -351,7 +354,8 @@ function render(){
     const r=Math.floor(c/n),k=c%n,rm=room[c],short=pz.names[rm][0].length<=4;
     let w=0;while(k+w<n&&room[c+w]===rm)w++;
     let f=0;while(k+f<n&&room[c+f]===rm&&!obj[c+f])f++;
-    const sc=(obj[c]?0:300)+(f>=2||(short&&f>=1)?100:0)+(w>=2||short?50:0)+Math.min(w,3)*5-r;
+    const taken=state.place.includes(c)||(k<n-1&&!short&&state.place.includes(c+1));
+    const sc=(obj[c]?0:300)+(taken?-400:0)+(f>=2||(short&&f>=1)?100:0)+(w>=2||short?50:0)+Math.min(w,3)*5-r;
     if(!best[rm]||sc>best[rm].sc)best[rm]={c,len:w,sc};
   }
   const rowC=Array(n).fill(0),colC=Array(n).fill(0);
@@ -385,11 +389,11 @@ function render(){
   const picking=state.solved&&!state.closed;
   tray.innerHTML=people.map((per,p)=>`<button type="button" class="pick${p===S?' on':''}${state.place[p]>=0&&!picking?' done':''}" data-p="${p}" aria-pressed="${p===S}">${face(p)}${state.place[p]>=0&&!picking?'<span class="ok" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 12.5l4 4 8-9"/></svg></span>':''}<span>${per.name}</span></button>`).join('');
   const F=$('#focus');
-  if(state.closed){F.className='focus done';F.innerHTML=`${face(pz.murderer)}<span><b>Zaak gesloten: ${people[pz.murderer].name} was het!</b><span class="h">${people[pz.murderer].name} was als enige verdachte samen met ${people[V].name} ${roomName(room[pz.sol[V]])}. Opgelost in ${fmt(state.elapsed)}${state.hints?` met ${state.hints} tip${state.hints>1?'s':''}`:' zonder tips'}.</span></span><button type="button" class="btn main" data-new>Nieuwe zaak</button>`}
+  if(state.closed){F.className='focus done';F.innerHTML=`${face(pz.murderer)}<span><span class="tag">Zaak gesloten</span><b>${people[pz.murderer].name} was het!</b><span class="h">${people[pz.murderer].name} was als enige verdachte samen met ${people[V].name} ${roomName(room[pz.sol[V]])}. Opgelost in ${fmt(state.elapsed)}${state.hints?` met ${state.hints} tip${state.hints>1?'s':''}`:' zonder tips'}.</span></span><button type="button" class="btn main" data-new>Nieuwe zaak</button>`}
   else if(state.solved){F.className='focus accuse';F.innerHTML=`<span><b>Iedereen staat goed!</b><span class="h">${accMsg||`Wie heeft ${people[V].name} vermoord? Tik op de dader, hieronder of op het bord.`}</span></span>`}
   else if(S>=0){F.className='focus';F.innerHTML=`${face(S)}<span><span class="q">${clueText(pz,sc)}</span><span class="h">${mode==='kruis'?`Kies ‘Persoon zetten’ om ${people[S].name} neer te zetten.`:state.place[S]>=0?`Tik op een ander vakje om ${people[S].name} te verplaatsen, of op hetzelfde vakje om ${people[S].name} weg te halen.`:`Tik op een vakje om ${people[S].name} neer te zetten.`}</span></span>`}
   else{F.className='focus idle';F.innerHTML=`<span><span class="q">${mode==='kruis'?'Tik op vakjes waar volgens jou niemand stond. Nog een keer tikken haalt het kruisje weg.':'Tik op een persoon om de aanwijzing te zien.'}</span></span>`}
-  if(state.solved&&!state.closed)F.style.setProperty('--pc','var(--alarm)');else if(state.closed||S>=0)F.style.setProperty('--pc',people[state.closed?pz.murderer:S].col);else F.style.removeProperty('--pc');
+  if(state.solved&&!state.closed)F.style.setProperty('--pc','var(--alarm)');else if(!state.closed&&S>=0)F.style.setProperty('--pc',people[S].col);else F.style.removeProperty('--pc');
   $('#mPlace').setAttribute('aria-pressed',mode==='plaats');
   $('#mMark').setAttribute('aria-pressed',mode==='kruis');
 }
@@ -508,7 +512,7 @@ function renderRules(){
     <div><i>${IC.tip}</i><span><b>Tip</b>Haal een fout weg of zet iemand goed.</span></div>
     <div><i>${IC.trash}</i><span><b>Wissen</b>Begin opnieuw met een leeg bord.</span></div>
   </div>
-  <p class="ver">Versie 22</p>`;
+  <p class="ver">Versie 23</p>`;
 }
 function boot(data){
   renderRules();

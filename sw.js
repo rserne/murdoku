@@ -1,6 +1,6 @@
 // Murdoku service worker: houdt de app ook offline speelbaar.
 // Verhoog VERSION bij elke release, zodat spelers de nieuwe versie krijgen.
-const VERSION = 'murdoku-v22';
+const VERSION = 'murdoku-v23';
 const FONTS = 'murdoku-fonts';
 const SHELL = [
   './',
