@@ -198,14 +198,23 @@ dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
 .choices .lvl{width:28px;height:28px;color:var(--ink)}
 .choices button:hover .lvl{color:var(--ink)}
 .dlg .sub{color:var(--soft);margin:0 0 16px}
-.seed{margin-top:22px}
+.seg2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px;padding:3px;background:var(--card);border-radius:16px;margin:0 0 18px}
+.seg2 button{min-height:46px;border:0;border-radius:13px;background:none;font-weight:600;font-size:16px;color:var(--soft)}
+.seg2 button[aria-pressed=true]{background:light-dark(#ffffff,#2c2d36);color:var(--ink);box-shadow:0 0 0 1.5px light-dark(#d9d9e1,#40414c),0 2px 6px -2px rgba(0,0,0,.25)}
+.seed{margin:0 0 18px}
 .seed label{display:block;font-weight:600;font-size:15px;margin:0 0 8px}
+.dice{flex:none;width:40px;height:40px;margin-right:-8px;border:0;border-radius:12px;background:var(--card);color:var(--ink);display:grid;place-items:center}
+.dice svg{width:22px;height:22px}
+.seed summary{display:inline-flex;align-items:center;gap:6px;min-height:44px;font-weight:600;font-size:15px;color:var(--soft);cursor:pointer;list-style:none;text-decoration:underline;text-underline-offset:3px}
+.seed summary::-webkit-details-marker{display:none}
+.seed[open] summary{color:var(--ink);text-decoration:none}
+.seed .seedbox{margin-top:6px}
 .seedbox{display:flex;align-items:center;gap:8px;min-height:54px;padding:0 16px;border:1.5px solid var(--line);border-radius:16px;background:var(--bg)}
 .seedbox:focus-within{border-color:var(--ink)}
 .seedbox span{color:var(--soft);font-weight:600;font-size:17px}
 .seedbox input{flex:1;min-width:0;border:0;outline:0;background:none;font:600 17px Inter,sans-serif;color:var(--ink);min-height:50px;font-variant-numeric:tabular-nums}
 .seedbox input:focus-visible{outline:none}
-.seedbox input::placeholder{color:var(--soft);font-weight:400;font-size:15px}
+.seedbox input::placeholder{color:var(--soft);font-weight:400}
 .seed .note{font-size:14px;margin:10px 0 4px!important}
 .choices button:hover{border-color:var(--ink);background:var(--card)}
 .choices small{color:var(--soft);font-weight:400;font-size:14px}
@@ -277,16 +286,17 @@ dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
 <dialog id="newDlg" aria-labelledby="newTitle"><div class="dlg">
   <div class="grabbar"><div class="grab"></div></div>
   <h3 id="newTitle" tabindex="-1" autofocus>Nieuwe zaak</h3>
-  <p class="sub">Hoe zwaar mag het onderzoek zijn?</p>
+  <div class="seg2" role="group" aria-label="Spelvorm"><button type="button" data-mode="solo" aria-pressed="true">Alleen</button><button type="button" data-mode="samen" aria-pressed="false">Samen</button></div>
+  <div class="seed" id="seedArea" hidden>
+    <label for="seedIn">Zaaknummer</label>
+    <div class="seedbox"><span aria-hidden="true">#</span><input id="seedIn" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="bijv. 6368"><button type="button" class="dice" id="diceBtn" aria-label="Nieuw zaaknummer"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="9" cy="9" r="1.4" fill="currentColor"/><circle cx="15" cy="15" r="1.4" fill="currentColor"/><circle cx="15" cy="9" r="1.4" fill="currentColor"/><circle cx="9" cy="15" r="1.4" fill="currentColor"/></svg></button></div>
+    <p class="note">Deel dit nummer met je vriend, of typ het nummer dat je vriend je stuurt.</p>
+  </div>
+  <p class="sub" id="newSub">Hoe zwaar mag het onderzoek zijn?</p>
   <div class="choices">
     <button type="button" data-diff="makkelijk"><svg class="lvl" viewBox="0 0 28 28" aria-hidden="true"><rect x="5" y="15" width="5" height="8" rx="1.5" fill="currentColor"/><rect x="12" y="10" width="5" height="13" rx="1.5" fill="currentColor" opacity=".22"/><rect x="19" y="5" width="5" height="18" rx="1.5" fill="currentColor" opacity=".22"/></svg><span>Makkelijk</span><small>5 × 5 · 4 kamers</small></button>
     <button type="button" data-diff="gemiddeld"><svg class="lvl" viewBox="0 0 28 28" aria-hidden="true"><rect x="5" y="15" width="5" height="8" rx="1.5" fill="currentColor"/><rect x="12" y="10" width="5" height="13" rx="1.5" fill="currentColor"/><rect x="19" y="5" width="5" height="18" rx="1.5" fill="currentColor" opacity=".22"/></svg><span>Gemiddeld</span><small>6 × 6 · 5 kamers</small></button>
     <button type="button" data-diff="moeilijk"><svg class="lvl" viewBox="0 0 28 28" aria-hidden="true"><rect x="5" y="15" width="5" height="8" rx="1.5" fill="currentColor"/><rect x="12" y="10" width="5" height="13" rx="1.5" fill="currentColor"/><rect x="19" y="5" width="5" height="18" rx="1.5" fill="currentColor"/></svg><span>Moeilijk</span><small>7 × 7 · 6 kamers</small></button>
-  </div>
-  <div class="seed">
-    <label for="seedIn">Zaaknummer</label>
-    <div class="seedbox"><span aria-hidden="true">#</span><input id="seedIn" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="Laat leeg voor een willekeurige zaak"></div>
-    <p class="note">Speel je samen? Vul hetzelfde nummer in en kies hetzelfde niveau, dan krijgt iedereen dezelfde zaak.</p>
   </div>
 </div></dialog>
 
@@ -479,7 +489,7 @@ function accuse(p){
   else{state.closed=true;state.sel=-1;save()}
   render();
 }
-$('#focus').addEventListener('click',e=>{if(e.target.closest('[data-new]')){$('#seedIn').value='';$('#newDlg').showModal()}});
+$('#focus').addEventListener('click',e=>{if(e.target.closest('[data-new]'))openNew()});
 document.addEventListener('click',e=>{if(e.target.closest('[data-close]'))e.target.closest('dialog').close()});
 // Sluiten door naast het venster te tikken, of door het omlaag te vegen
 function swipeToClose(d){
@@ -493,8 +503,18 @@ function swipeToClose(d){
 }
 document.querySelectorAll('dialog').forEach(swipeToClose);
 $('#rulesBtn').addEventListener('click',()=>{$('#rulesDlg').showModal();$('#rulesDlg').scrollTop=0});
-$('#newBtn').addEventListener('click',()=>{$('#seedIn').value='';$('#newDlg').showModal();$('#newDlg').scrollTop=0});
-$('#newDlg').addEventListener('click',e=>{const b=e.target.closest('[data-diff]');if(!b)return;const v=parseInt($('#seedIn').value,10);$('#newDlg').close();mode='plaats';start(b.dataset.diff,v)});
+let newMode='solo';
+const rndSeed=()=>String(1000+Math.floor(Math.random()*9000));
+function setNewMode(m){newMode=m;document.querySelectorAll('.seg2 button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mode===m));
+  $('#seedArea').hidden=m!=='samen';$('#newSub').textContent=m==='samen'?'Kies hetzelfde niveau als je vriend.':'Hoe zwaar mag het onderzoek zijn?';
+  if(m==='samen'&&!$('#seedIn').value)$('#seedIn').value=rndSeed()}
+function openNew(){$('#seedIn').value='';setNewMode(newMode);$('#newDlg').showModal();$('#newDlg').scrollTop=0}
+document.querySelector('.seg2').addEventListener('click',e=>{const b=e.target.closest('[data-mode]');if(b)setNewMode(b.dataset.mode)});
+$('#diceBtn').addEventListener('click',()=>{$('#seedIn').value=rndSeed()});
+$('#newBtn').addEventListener('click',openNew);
+$('#newDlg').addEventListener('click',e=>{const b=e.target.closest('[data-diff]');if(!b)return;let v;
+  if(newMode==='samen'){v=parseInt($('#seedIn').value,10);if(!(v>0)){toast('Vul eerst een zaaknummer in.');$('#seedIn').focus();return}}
+  $('#newDlg').close();mode='plaats';start(b.dataset.diff,v)});
 
 setInterval(()=>{if(state&&!state.closed&&!document.hidden){state.elapsed++;$('#time').textContent=fmt(state.elapsed);if(state.elapsed%5===0)save()}},1000);
 
@@ -532,7 +552,7 @@ function renderRules(){
     <div><i>${IC.tip}</i><span><b>Tip</b>Haal een fout weg of zet iemand goed.</span></div>
     <div><i>${IC.trash}</i><span><b>Wissen</b>Begin opnieuw met een leeg bord.</span></div>
   </div>
-  <p class="ver">Versie 26</p>`;
+  <p class="ver">Versie 27</p>`;
 }
 function boot(data){
   renderRules();
