@@ -63,11 +63,12 @@ h1{font:800 clamp(26px,5vw,38px)/1.05 Outfit,sans-serif;margin:0;letter-spacing:
 .cell.blk{background:repeating-linear-gradient(-45deg,var(--rc) 0 7px,color-mix(in srgb,var(--rc) 78%,var(--wall)) 7px 8px);cursor:not-allowed}
 .cell:hover:not(.blk){filter:brightness(1.06)}
 .rl.sm{font-size:11px;left:4px}
+.rl.ctr{left:50%;transform:translateX(-50%)}
 .rl.over{z-index:5}
 .walls{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:4;overflow:visible}
 .walls path{fill:none;stroke:var(--wall);stroke-width:3.5px;stroke-linecap:square;vector-effect:non-scaling-stroke}
 .bwrap{position:relative}
-.rl{position:absolute;top:6px;left:7px;font:600 13px/1 Inter,sans-serif;color:rgba(255,255,255,.92);text-shadow:0 1px 2px rgba(0,0,0,.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;z-index:1;pointer-events:none}
+.rl{position:absolute;top:4px;left:6px;font:600 13px/1.35 Inter,sans-serif;padding:0 1px;color:rgba(255,255,255,.92);text-shadow:0 1px 2px rgba(0,0,0,.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;z-index:1;pointer-events:none}
 .ico{width:60%;height:60%;pointer-events:none;filter:drop-shadow(0 2px 0 rgba(0,0,0,.12))}
 .cell.has .ico{position:absolute;right:3px;bottom:3px;width:32%;height:32%}
 .mk{position:absolute;left:22%;top:22%;width:56%;height:56%;pointer-events:none;color:color-mix(in srgb,var(--wall) 60%,transparent)}
@@ -360,7 +361,7 @@ function render(){
     if(BLOCK[o])cls.push('blk');
     if(p>=0)cls.push('has');
     let inner='';
-    if(best[room[c]].c===c)inner+=`<span class="rl" style="max-width:calc(${best[room[c]].len*100}% - 8px)">${cap(pz.names[room[c]][0])}</span>`;
+    if(best[room[c]].c===c)inner+=`<span class="rl" data-len="${best[room[c]].len}" style="max-width:calc(${best[room[c]].len*100}% - 8px)">${cap(pz.names[room[c]][0])}</span>`;
     if(o&&o!=='kleed')inner+=`<svg class="ico" aria-hidden="true"><use href="#i-${o}"/></svg>`;
     if(p<0&&state.marks.includes(c))inner+=`<svg class="mk" aria-hidden="true"><use href="#i-x"/></svg>`;
     if(p>=0){
@@ -375,7 +376,8 @@ function render(){
   for(let c=0;c<n*n;c++){const r=Math.floor(c/n),k=c%n;if(r>0&&room[c]!==room[c-n])wd+=`M${k} ${r}h1`;if(k>0&&room[c]!==room[c-1])wd+=`M${k} ${r}v1`}
   h+=`<svg class="walls" viewBox="0 0 ${n} ${n}" preserveAspectRatio="none" aria-hidden="true"><path d="${wd}"/></svg>`;
   board.innerHTML=h;
-  board.querySelectorAll('.rl').forEach(l=>{if(l.scrollWidth>l.clientWidth)l.classList.add('sm');if(l.scrollWidth>l.clientWidth){l.style.maxWidth='none';l.classList.add('over')}});
+  board.querySelectorAll('.rl').forEach(l=>{const cw=l.parentElement.clientWidth,tw=l.scrollWidth;if(tw<=cw-12){l.classList.add('ctr');return}
+    const span=Math.min(+l.dataset.len,Math.ceil((tw+12)/cw));if(span>1&&tw<=span*cw-12){l.style.left=Math.round((span*cw-tw)/2)+'px';return}if(l.scrollWidth>l.clientWidth)l.classList.add('sm');if(l.scrollWidth>l.clientWidth){l.style.maxWidth='none';l.classList.add('over')}});
   const S=state.sel,sc=S>=0?pz.clues.find(c=>c.p===S):null;
   tray.innerHTML=people.map((per,p)=>`<button type="button" class="pick${p===S?' on':''}${state.place[p]>=0?' done':''}" data-p="${p}" aria-pressed="${p===S}">${face(p)}${state.place[p]>=0?'<span class="ok" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 12.5l4 4 8-9"/></svg></span>':''}<span>${per.name}</span></button>`).join('');
   const F=$('#focus');
@@ -505,7 +507,7 @@ function renderRules(){
     <div><i>${IC.tip}</i><span><b>Tip</b>Haal een fout weg of zet iemand goed.</span></div>
     <div><i>${IC.trash}</i><span><b>Wissen</b>Begin opnieuw met een leeg bord.</span></div>
   </div>
-  <p class="ver">Versie 19</p>`;
+  <p class="ver">Versie 20</p>`;
 }
 function boot(data){
   renderRules();
