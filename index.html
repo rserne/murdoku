@@ -101,9 +101,14 @@ h2{font:700 22px/1.1 Outfit,sans-serif;margin:0 0 12px;letter-spacing:-.01em}
 .focus .q{display:block;font-size:16px;line-height:1.35}
 .focus .h{display:block;font-size:13px;color:var(--soft);margin-top:2px}
 .focus.accuse b,.focus.done b{display:block;font:700 17px/1.25 Outfit,sans-serif}
-.focus.done{background:var(--card);border-color:transparent}
-.focus.done .tag{margin:0 0 6px}
-.focus.done .btn{flex:none;min-height:44px}
+.focus.done{background:var(--card);border-color:transparent;flex-direction:column;align-items:stretch;gap:0;padding:18px}
+.focus.done .tag{align-self:flex-start;margin:0 0 12px}
+.focus.done b{font:700 22px/1.2 Outfit,sans-serif;margin:0 0 4px}
+.focus.done .h{font-size:15px;line-height:1.45;margin:0}
+.stats{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 16px}
+.stats span{display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 12px;border-radius:999px;background:var(--bg);font-size:14px;font-weight:600;font-variant-numeric:tabular-nums}
+.stats svg{width:16px;height:16px;color:var(--soft)}
+.focus.done .btn{width:100%;min-height:50px;font-size:16px}
 .focus.idle{background:var(--card);border-color:transparent;color:var(--soft)}
 .people{list-style:none;margin:0;padding:0;display:grid;gap:8px}
 .pc{display:flex;align-items:stretch;border:1.5px solid var(--line);border-radius:18px;background:var(--bg);transition:border-color .15s,background .15s}
@@ -389,7 +394,7 @@ function render(){
   const picking=state.solved&&!state.closed;
   tray.innerHTML=people.map((per,p)=>`<button type="button" class="pick${p===S?' on':''}${state.place[p]>=0&&!picking?' done':''}" data-p="${p}" aria-pressed="${p===S}">${face(p)}${state.place[p]>=0&&!picking?'<span class="ok" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 12.5l4 4 8-9"/></svg></span>':''}<span>${per.name}</span></button>`).join('');
   const F=$('#focus');
-  if(state.closed){F.className='focus done';F.innerHTML=`${face(pz.murderer)}<span><span class="tag">Zaak gesloten</span><b>${people[pz.murderer].name} was het!</b><span class="h">${people[pz.murderer].name} was als enige verdachte samen met ${people[V].name} ${roomName(room[pz.sol[V]])}. Opgelost in ${fmt(state.elapsed)}${state.hints?` met ${state.hints} tip${state.hints>1?'s':''}`:' zonder tips'}.</span></span><button type="button" class="btn main" data-new>Nieuwe zaak</button>`}
+  if(state.closed){const t=state.hints;F.className='focus done';F.innerHTML=`<span class="tag">Zaak gesloten</span><b>${people[pz.murderer].name} was het!</b><span class="h">${people[pz.murderer].name} was als enige verdachte samen met ${people[V].name} ${roomName(room[pz.sol[V]])}.</span><span class="stats"><span>${IC.clock}${fmt(state.elapsed)}</span><span>${IC.tip}${t?`${t} tip${t>1?'s':''}`:'Zonder tips'}</span></span><button type="button" class="btn main" data-new>Nieuwe zaak</button>`}
   else if(state.solved){F.className='focus accuse';F.innerHTML=`<span><b>Iedereen staat goed!</b><span class="h">${accMsg||`Wie heeft ${people[V].name} vermoord? Tik op de dader, hieronder of op het bord.`}</span></span>`}
   else if(S>=0){F.className='focus';F.innerHTML=`${face(S)}<span><span class="q">${clueText(pz,sc)}</span><span class="h">${mode==='kruis'?`Kies ‘Persoon zetten’ om ${people[S].name} neer te zetten.`:state.place[S]>=0?`Tik op een ander vakje om ${people[S].name} te verplaatsen, of op hetzelfde vakje om ${people[S].name} weg te halen.`:`Tik op een vakje om ${people[S].name} neer te zetten.`}</span></span>`}
   else{F.className='focus idle';F.innerHTML=`<span><span class="q">${mode==='kruis'?'Tik op vakjes waar volgens jou niemand stond. Nog een keer tikken haalt het kruisje weg.':'Tik op een persoon om de aanwijzing te zien.'}</span></span>`}
@@ -480,6 +485,7 @@ $('#newDlg').addEventListener('click',e=>{const b=e.target.closest('[data-diff]'
 setInterval(()=>{if(state&&!state.closed&&!document.hidden){state.elapsed++;$('#time').textContent=fmt(state.elapsed);if(state.elapsed%5===0)save()}},1000);
 
 const IC={
+  clock:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7.5V12l3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
   person:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" fill="currentColor"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7z" fill="currentColor"/></svg>',
   x:'<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg>',
   undo:'<svg viewBox="0 0 24 24"><path d="M9 7L4 12l5 5M4.5 12H14a6 6 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" transform="translate(0 -3)"/></svg>',
@@ -512,7 +518,7 @@ function renderRules(){
     <div><i>${IC.tip}</i><span><b>Tip</b>Haal een fout weg of zet iemand goed.</span></div>
     <div><i>${IC.trash}</i><span><b>Wissen</b>Begin opnieuw met een leeg bord.</span></div>
   </div>
-  <p class="ver">Versie 23</p>`;
+  <p class="ver">Versie 24</p>`;
 }
 function boot(data){
   renderRules();
