@@ -141,6 +141,10 @@ h2{font:700 22px/1.1 Outfit,sans-serif;margin:0 0 12px;letter-spacing:-.01em}
 .clues li.x .t{text-decoration:line-through}
 .clues li.x .face{opacity:.45}
 .toast{position:fixed;left:50%;bottom:max(20px,env(safe-area-inset-bottom));transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:16px;max-width:min(92vw,460px);opacity:0;transition:.25s;pointer-events:none;z-index:20;font-size:15px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.tip{position:absolute;z-index:30;max-width:min(260px,80vw);background:var(--ink);color:var(--bg);font-size:14px;font-weight:500;line-height:1.35;padding:8px 12px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.3);opacity:0;pointer-events:none;transition:opacity .15s}
+.tip.show{opacity:1}
+.tip::after{content:'';position:absolute;left:var(--ax);transform:translateX(-50%);bottom:-6px;border-left:6px solid transparent;border-right:6px solid transparent;border-top:6px solid var(--ink)}
+.tip.below::after{bottom:auto;top:-6px;border-top:0;border-bottom:6px solid var(--ink)}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 dialog{border:0;border-radius:24px;padding:0;width:min(92vw,540px);max-height:min(88svh,820px);overflow:auto;background:var(--bg);color:var(--ink);box-shadow:0 30px 80px rgba(0,0,0,.4)}
 dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
@@ -301,6 +305,20 @@ function face(p,cls=''){const per=pz.people[p];return `<span class="face ${cls}"
 function save(){try{localStorage.setItem(LS,JSON.stringify(state))}catch(e){}}
 function loadSaved(){try{return JSON.parse(localStorage.getItem(LS)||'null')}catch(e){return null}}
 function fmt(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
+const tipEl=document.createElement('div');tipEl.className='tip';tipEl.setAttribute('role','status');document.body.appendChild(tipEl);let tipT=0;
+// tekstballon direct bij het vakje
+function bubble(c,text){
+  const el=board.querySelector(`[data-c="${c}"]`);if(!el){toast(text);return}
+  tipEl.textContent=text;tipEl.classList.remove('below');tipEl.style.left='0px';tipEl.style.top='0px';
+  const r=el.getBoundingClientRect(),t=tipEl.getBoundingClientRect();
+  const x=Math.max(8,Math.min(r.left+r.width/2-t.width/2,innerWidth-t.width-8));
+  const bt=board.getBoundingClientRect().top;let y=r.top-t.height-10,below=false;if(y<Math.max(8,bt-4)){y=r.bottom+10;below=true}
+  tipEl.classList.toggle('below',below);
+  tipEl.style.left=(x+scrollX)+'px';tipEl.style.top=(y+scrollY)+'px';
+  tipEl.style.setProperty('--ax',(r.left+r.width/2-x)+'px');
+  tipEl.classList.add('show');clearTimeout(tipT);tipT=setTimeout(()=>tipEl.classList.remove('show'),2600);
+}
+addEventListener('scroll',()=>tipEl.classList.remove('show'),{passive:true});
 function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('show'),2800)}
 function roomName(i){return pz.names[i][1]+' '+pz.names[i][0]}
 function cap(s){return s[0].toUpperCase()+s.slice(1)}
@@ -389,25 +407,26 @@ board.addEventListener('click',e=>{
   const c=+b.dataset.c,occ=state.place.indexOf(c);
   if(occ>=0&&occ!==state.sel){state.sel=occ;render();save();return}
   if(mode==='kruis'){
-    if(occ>=0){toast('Haal eerst de persoon van dit vakje.');return}
-    if(BLOCK[pz.obj[c]]){toast(`${cellDesc(c)}: hier kan sowieso niemand staan.`);return}
+    if(occ>=0){bubble(c,'Haal eerst de persoon van dit vakje.');return}
+    if(BLOCK[pz.obj[c]]){bubble(c,`${cellDesc(c)}: hier kan sowieso niemand staan.`);return}
     push();const i=state.marks.indexOf(c);i>=0?state.marks.splice(i,1):state.marks.push(c);after();return;
   }
-  if(BLOCK[pz.obj[c]]){b.classList.add('shake');setTimeout(()=>b.classList.remove('shake'),520);toast(`${cellDesc(c)}: hier kan niemand staan.`);return}
-  if(state.sel<0){toast(`${cellDesc(c)}. Tik eerst op een persoon om iemand neer te zetten.`);return}
+  if(BLOCK[pz.obj[c]]){b.classList.add('shake');setTimeout(()=>b.classList.remove('shake'),520);bubble(c,`${cellDesc(c)}: hier kan niemand staan.`);return}
+  if(state.sel<0){bubble(c,`${cellDesc(c)}. Tik eerst op een persoon om iemand neer te zetten.`);return}
   push();
-  const s=state.sel;
+  const s=state.sel;let pb=null;
   if(state.place[s]===c){state.place[s]=-1}
   else{
     if(occ>=0)state.place[occ]=-1;
     state.place[s]=c;
     state.marks=state.marks.filter(m=>m!==c);
-    toast(placedText(s,c));
+    pb=placedText(s,c);
     let next=-1;
     for(let i=1;i<=pz.n;i++){const q=(s+i)%pz.n;if(state.place[q]<0){next=q;break}}
     state.sel=next;
   }
   after();
+  if(pb&&!document.querySelector('dialog[open]'))bubble(c,pb);
 });
 tray.addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(!b||state.closed)return;const p=+b.dataset.p;state.sel=state.sel===p?-1:p;mode='plaats';render();save()});
 cluesEl.addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(!b||state.closed)return;state.sel=+b.dataset.p;mode='plaats';render();save()});
@@ -479,7 +498,7 @@ function renderRules(){
     <div><i>${IC.trash}</i><span><b>Wissen</b>Begin opnieuw met een leeg bord.</span></div>
   </div>
   <button class="btn main cta" type="button" data-close>Aan de slag</button>
-  <p class="ver">Versie 6</p>`;
+  <p class="ver">Versie 8</p>`;
 }
 function boot(data){
   renderRules();
