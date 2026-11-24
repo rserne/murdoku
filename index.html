@@ -383,7 +383,15 @@ function render(){
   board.innerHTML=h;
   // kamernaam als tab op de bovenmuur van elke kamer
   const tabs=$('#tabs');
-  tabs.innerHTML=pz.names.map((nm,i)=>{let c=0;while(room[c]!==i)c++;const lx=`calc(${(c%n)/n*100}% + 6px)`;return `<span class="tab" data-x="${lx}" style="--rc:var(--r${i});left:${lx};top:${Math.floor(c/n)/n*100}%">${cap(nm[0])}</span>`}).join('');
+  // per kamer het beste stuk bovenmuur: geen meubel eronder of erboven, ruimte ernaast, liefst hoog en links
+  // hoe erg een meubel onder (in het vakje) of boven (vakje erboven) de tab verdwijnt
+  const PEN_IN={kleed:3,bed:2.5,kast:2.5,plant:2,stoel:2},PEN_UP={kleed:3,bed:2,kast:2,plant:1.5,stoel:1};
+  const wallTop=c=>c<n||room[c-n]!==room[c];
+  const tabCell=i=>{let best=-1,bs=-1e9;for(let c=0;c<n*n;c++){if(room[c]!==i||!wallTop(c))continue;const r=Math.floor(c/n),k=c%n;
+    const nx=k<n-1&&room[c+1]===i&&wallTop(c+1);
+    const sc=-(PEN_IN[obj[c]]||0)-(r>0?(PEN_UP[obj[c-n]]||0):0)+(nx&&!obj[c+1]?2:0)+(nx&&r>0&&!obj[c+1-n]?1:0)-r*.1-k*.01;
+    if(sc>bs){bs=sc;best=c}}return best};
+  tabs.innerHTML=pz.names.map((nm,i)=>{const c=tabCell(i);const lx=`calc(${(c%n)/n*100}% + 6px)`;return `<span class="tab" data-x="${lx}" style="--rc:var(--r${i});left:${lx};top:${Math.floor(c/n)/n*100}%">${cap(nm[0])}</span>`}).join('');
   requestAnimationFrame(layoutTabs);
   if(!tabsRO.on){tabsRO.observe($('#tabs'));tabsRO.on=1}
   const S=state.sel,sc=S>=0?pz.clues.find(c=>c.p===S):null;
@@ -515,7 +523,7 @@ function renderRules(){
     <div><i>${IC.tip}</i><span><b>Tip</b>Haal een fout weg of zet iemand goed.</span></div>
     <div><i>${IC.trash}</i><span><b>Wissen</b>Begin opnieuw met een leeg bord.</span></div>
   </div>
-  <p class="ver">Versie 17</p>`;
+  <p class="ver">Versie 18</p>`;
 }
 function boot(data){
   renderRules();
