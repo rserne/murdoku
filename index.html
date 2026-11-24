@@ -39,8 +39,8 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--hot);outline-of
 h1{font:800 clamp(26px,5vw,38px)/1.05 Outfit,sans-serif;margin:0;letter-spacing:-.03em}
 .case{font-size:14px;color:var(--soft)}
 .case b{color:var(--ink);font-weight:600}
-.clock{display:inline-flex;align-items:center;gap:5px;white-space:nowrap;min-height:44px;padding:0 12px;border-radius:999px;background:var(--card);font-size:15px}
-.clock svg{width:17px;height:17px;color:var(--soft)}
+.clock{display:inline-flex;align-items:center;gap:4px;white-space:nowrap;vertical-align:top}
+.clock svg{width:14px;height:14px}
 .clock b{font-weight:600;font-variant-numeric:tabular-nums}
 .acts{display:flex;align-items:center;gap:8px;flex:none}
 .hbtn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;min-width:44px;padding:0 16px;border-radius:999px;border:1.5px solid var(--line);background:var(--bg);font-weight:600;font-size:15px}
@@ -191,7 +191,7 @@ dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
 .tag{display:inline-block;background:var(--alarm);color:#fff;font:700 13px/1 Inter,sans-serif;padding:6px 10px;border-radius:999px;margin-bottom:8px}
 .msg{color:var(--hot);min-height:1.5em;font-size:15px;margin-top:8px}
 .busy #board{opacity:.4}
-@media(max-width:600px){.top .lbl{display:none}.zk{display:none}.case{white-space:nowrap}.clock{background:none;padding:0 4px}.acts{gap:6px}.hbtn{padding:0;width:44px}dialog{width:100%;max-width:100%;margin:auto 0 0;border-radius:24px 24px 0 0;max-height:90svh}.dlg{padding:12px 20px max(24px,env(safe-area-inset-bottom))}.grabbar{display:block;position:sticky;top:0;z-index:2;margin:-12px -20px 6px;padding:12px 0 14px;background:var(--bg);touch-action:none}.grab{display:block;width:40px;height:5px;border-radius:9px;background:var(--line);margin:0 auto}.game{padding-top:10px;gap:22px}.pick{width:62px}.pick .face{width:46px}.stage{border-radius:22px}}
+@media(max-width:600px){.top .lbl{display:none}.zk{display:none}.case{white-space:nowrap}.acts{gap:6px}.hbtn{padding:0;width:44px}dialog{width:100%;max-width:100%;margin:auto 0 0;border-radius:24px 24px 0 0;max-height:90svh}.dlg{padding:12px 20px max(24px,env(safe-area-inset-bottom))}.grabbar{display:block;position:sticky;top:0;z-index:2;margin:-12px -20px 6px;padding:12px 0 14px;background:var(--bg);touch-action:none}.grab{display:block;width:40px;height:5px;border-radius:9px;background:var(--line);margin:0 auto}.game{padding-top:10px;gap:22px}.pick{width:62px}.pick .face{width:46px}.stage{border-radius:22px}}
 @media(max-width:600px){
 .tray{flex-wrap:nowrap;gap:0;justify-content:space-between}
 .pick{flex:1 0 50px;width:auto;padding:6px 2px;gap:4px}
@@ -219,7 +219,6 @@ dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
     <div><h1>Murdoku</h1><div class="case" id="case"></div></div>
   </div>
   <div class="acts">
-    <span class="clock" aria-label="Speeltijd"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7.5V12l3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><b id="time">00:00</b></span>
     <button class="hbtn" id="rulesBtn" type="button" aria-label="Spelregels"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.4 9.3a2.7 2.7 0 0 1 5.2 1c0 1.8-2.6 2.2-2.6 3.9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.2" r="1.2" fill="currentColor"/></svg><span class="lbl">Spelregels</span></button>
     <button class="hbtn" id="newBtn" type="button" aria-label="Nieuwe zaak"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg><span class="lbl">Nieuwe zaak</span></button>
   </div>
@@ -335,8 +334,7 @@ function push(){undo.push(JSON.stringify({place:state.place,marks:state.marks}))
 function render(){
   const {n,room,obj,people,V}=pz;
   board.style.setProperty('--n',n);
-  $('#case').innerHTML=`<span class="zk">Zaak </span><b>${state.seed}</b> · ${DIFF[state.diff].label}`;
-  $('#time').textContent=fmt(state.elapsed);
+  $('#case').innerHTML=`<span class="zk">Zaak </span><b>${state.seed}</b> · ${DIFF[state.diff].label} · <span class="clock" aria-label="Speeltijd"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"8.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/><path d=\"M12 7.5V12l3 2\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"/></svg><b id="time">${fmt(state.elapsed)}</b></span>`;
   // Kamernaam: eerst een plek waar de naam past, dan bij voorkeur in lege vakjes, zo hoog mogelijk
   const best={};
   for(let c=0;c<n*n;c++){
@@ -501,7 +499,7 @@ function renderRules(){
     <div><i>${IC.tip}</i><span><b>Tip</b>Haal een fout weg of zet iemand goed.</span></div>
     <div><i>${IC.trash}</i><span><b>Wissen</b>Begin opnieuw met een leeg bord.</span></div>
   </div>
-  <p class="ver">Versie 15</p>`;
+  <p class="ver">Versie 16</p>`;
 }
 function boot(data){
   renderRules();
