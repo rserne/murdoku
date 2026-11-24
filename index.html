@@ -226,7 +226,14 @@ dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
 #shareBtn{display:flex;align-items:center;justify-content:center;gap:10px}
 #shareBtn svg{width:20px;height:20px}
 .cta2{margin-top:10px;background:var(--bg)}
-.actions{display:grid}
+.actions{display:grid;margin-top:auto}
+#vShare .digits{margin:auto 0}
+.views{display:grid;flex:1}
+.view{grid-area:1/1;display:flex;flex-direction:column;min-width:0;transition:opacity .22s ease,transform .22s ease}
+.view.off{opacity:0;visibility:hidden;pointer-events:none}
+#vChoose.off{transform:translateX(-16px)}
+#vShare.off{transform:translateX(16px)}
+@media(prefers-reduced-motion:reduce){.view{transition:none}.view.off{transform:none}}
 .pane{grid-area:1/1}
 .pane.off{visibility:hidden;pointer-events:none}
 .lbl2{font-weight:600;font-size:15px;margin:0 0 2px!important}
@@ -262,7 +269,7 @@ dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
 .tag{display:inline-block;background:var(--alarm);color:#fff;font:700 13px/1 Inter,sans-serif;padding:6px 10px;border-radius:999px;margin-bottom:8px}
 .msg{color:var(--hot);min-height:1.5em;font-size:15px;margin-top:8px}
 .busy #board{opacity:.4}
-@media(max-width:600px){.top .lbl{display:none}.zk{display:none}.case{white-space:nowrap}.acts{gap:6px}.hbtn{padding:0;width:44px}dialog{width:100%;max-width:100%;margin:auto 0 0;border-radius:24px 24px 0 0;height:min(640px,88svh);max-height:none}dialog .dlg{min-height:100%;display:flex;flex-direction:column}dialog .actions{margin-top:auto}#shareDlg .digits{margin:auto 0}.dlg{padding:12px 20px max(24px,env(safe-area-inset-bottom))}.grabbar{display:block;position:sticky;top:0;z-index:10;margin:-12px -20px 6px;padding:12px 0 14px;background:var(--bg);touch-action:none}.grab{display:block;width:40px;height:5px;border-radius:9px;background:var(--line);margin:0 auto}.game{padding-top:10px;gap:22px}.pick{width:62px}.pick .face{width:46px}.stage{border-radius:22px}}
+@media(max-width:600px){.top .lbl{display:none}.zk{display:none}.case{white-space:nowrap}.acts{gap:6px}.hbtn{padding:0;width:44px}dialog{width:100%;max-width:100%;margin:auto 0 0;border-radius:24px 24px 0 0;height:min(640px,88svh);max-height:none}dialog .dlg{min-height:100%;display:flex;flex-direction:column}dialog .actions{margin-top:auto}#vShare .digits{margin:auto 0}.dlg{padding:12px 20px max(24px,env(safe-area-inset-bottom))}.grabbar{display:block;position:sticky;top:0;z-index:10;margin:-12px -20px 6px;padding:12px 0 14px;background:var(--bg);touch-action:none}.grab{display:block;width:40px;height:5px;border-radius:9px;background:var(--line);margin:0 auto}.game{padding-top:10px;gap:22px}.pick{width:62px}.pick .face{width:46px}.stage{border-radius:22px}}
 @media(max-width:600px){
 .tray{flex-wrap:nowrap;gap:0;justify-content:space-between}
 .pick{flex:1 0 50px;width:auto;padding:6px 2px;gap:4px}
@@ -321,6 +328,8 @@ dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
 
 <dialog id="newDlg" aria-labelledby="newTitle"><div class="dlg">
   <div class="grabbar"><div class="grab"></div></div>
+  <div class="views">
+  <div class="view" id="vChoose">
   <h3 id="newTitle" tabindex="-1" autofocus>Nieuwe zaak</h3>
   <div class="seg2" role="group" aria-label="Spelvorm"><button type="button" data-mode="solo" aria-pressed="true">Alleen</button><button type="button" data-mode="samen" aria-pressed="false">Samen</button></div>
   <div class="panes">
@@ -348,16 +357,19 @@ dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
       </div>
     </div>
   </div>
-</div></dialog>
-
-<dialog id="shareDlg" aria-labelledby="shareTitle"><div class="dlg">
-  <div class="grabbar"><div class="grab"></div></div>
-  <h3 id="shareTitle" tabindex="-1" autofocus>Deel de zaak met je vriend</h3>
+  </div>
+  <div class="view off" id="vShare" aria-hidden="true">
+  <h3 id="shareTitle" tabindex="-1" >Deel de zaak met je vriend</h3>
   <p class="sub" id="shareSub"></p>
   <div class="digits" id="shareDigits" aria-label="Zaaknummer"></div>
   <div class="actions"><button type="button" class="btn main cta" id="shareBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4M8 8l4-4 4 4M5 12v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Deel uitnodiging</button>
-  <button type="button" class="btn cta cta2" data-close>Start de zaak</button></div>
+  <button type="button" class="btn cta cta2" id="goBtn">Start de zaak</button></div>
+
+  </div>
+  </div>
 </div></dialog>
+
+
 <dialog id="accDlg"><div class="dlg" id="accBody"></div></dialog>
 
 <script src="js/core.js"></script>
@@ -568,7 +580,7 @@ const codeOf=(seed,diff)=>LVL[diff]+seed;
 const rndSeed=()=>1000+Math.floor(Math.random()*9000);
 function setNewMode(m){newMode=m;document.querySelectorAll('.seg2 button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mode===m));
   $('#paneSolo').classList.toggle('off',m!=='solo');$('#paneSamen').classList.toggle('off',m!=='samen')}
-function openNew(){$('#joinIn').value='';$('#joinMsg').textContent='';setNewMode(newMode);$('#newDlg').showModal();$('#newDlg').scrollTop=0}
+function openNew(){pending=null;showView('choose');$('#joinIn').value='';$('#joinMsg').textContent='';setNewMode(newMode);$('#newDlg').showModal();$('#newDlg').scrollTop=0}
 document.querySelector('.seg2').addEventListener('click',e=>{const b=e.target.closest('[data-mode]');if(b)setNewMode(b.dataset.mode)});
 $('#newBtn').addEventListener('click',openNew);
 function join(){
@@ -579,16 +591,20 @@ function join(){
 $('#joinBtn').addEventListener('click',join);
 // deelscherm
 const APP_URL='https://rserne.github.io/murdoku/';
-function openShare(){
-  const code=codeOf(state.seed,state.diff);
+let shareCode='',shareDiff='',pending=null;
+function showView(v){const sh=v==='share';$('#vChoose').classList.toggle('off',sh);$('#vShare').classList.toggle('off',!sh);
+  $('#vChoose').toggleAttribute('aria-hidden',sh);$('#vShare').toggleAttribute('aria-hidden',!sh);$('#newDlg').scrollTop=0}
+function fillShare(code,diff){shareCode=code;shareDiff=diff;
   $('#shareDigits').innerHTML=[...code].map(c=>`<span>${c}</span>`).join('');
-  $('#shareSub').textContent=`${DIFF[state.diff].label}. Je vriend kiest bij Nieuwe zaak voor Samen en vult dit nummer in bij Meedoen.`;
-  $('#shareDlg').showModal();$('#shareDlg').scrollTop=0;
-}
+  $('#shareSub').textContent=`${DIFF[diff].label}. Je vriend kiest bij Nieuwe zaak voor Samen en vult dit nummer in bij Meedoen.`}
+function openShare(){pending=null;fillShare(codeOf(state.seed,state.diff),state.diff);$('#goBtn').textContent='Terug naar de zaak';showView('share');$('#newDlg').showModal();$('#newDlg').scrollTop=0}
 $('#case').addEventListener('click',()=>{if(state)openShare()});
+$('#goBtn').addEventListener('click',()=>$('#newDlg').close());
+// een gekozen zaak start pas als het venster dicht is, dus niets beweegt erachter
+$('#newDlg').addEventListener('close',()=>{if(pending){const p=pending;pending=null;mode='plaats';start(p.d,p.sd)}});
 $('#shareBtn').addEventListener('click',async()=>{
-  const code=codeOf(state.seed,state.diff),url=APP_URL+'#zaak-'+code;
-  const text=`Los je samen met mij een moord op? Murdoku, zaak ${code} (${DIFF[state.diff].label}). Open de link, of kies Nieuwe zaak › Samen › Meedoen en vul ${code} in.`;
+  const code=shareCode,url=APP_URL+'#zaak-'+code;
+  const text=`Los je samen met mij een moord op? Murdoku, zaak ${code} (${DIFF[shareDiff].label}). Open de link, of kies Nieuwe zaak › Samen › Meedoen en vul ${code} in.`;
   try{if(navigator.share){await navigator.share({title:'Murdoku',text,url});return}}catch(e){if(e&&e.name==='AbortError')return}
   try{await navigator.clipboard.writeText(text+' '+url);toast('Uitnodiging gekopieerd. Plak hem in een bericht aan je vriend.')}
   catch(e){toast(`Stuur je vriend het zaaknummer ${code}.`)}
@@ -597,10 +613,9 @@ $('#joinIn').addEventListener('keydown',e=>{if(e.key==='Enter')join()});
 $('#joinIn').addEventListener('input',()=>{$('#joinMsg').textContent=''});
 $('#newDlg').addEventListener('click',e=>{
   const a=e.target.closest('[data-diff]'),b=e.target.closest('[data-start]');if(!a&&!b)return;
-  $('#newDlg').close();mode='plaats';
-  if(a){start(a.dataset.diff);return}
-  const d=b.dataset.start,sd=rndSeed();start(d,sd);
-  setTimeout(openShare,120);
+  if(a){$('#newDlg').close();mode='plaats';start(a.dataset.diff);return}
+  const d=b.dataset.start,sd=rndSeed();pending={d,sd};
+  fillShare(codeOf(sd,d),d);$('#goBtn').textContent='Start de zaak';showView('share');
 });
 
 setInterval(()=>{if(state&&!state.closed&&!document.hidden&&!document.querySelector('dialog[open]')){state.elapsed++;$('#time').textContent=fmt(state.elapsed);if(state.elapsed%5===0)save()}},1000);
@@ -639,7 +654,7 @@ function renderRules(){
     <div><i>${IC.tip}</i><span><b>Tip</b>Haal een fout weg of zet iemand goed.</span></div>
     <div><i>${IC.trash}</i><span><b>Wissen</b>Begin opnieuw met een leeg bord.</span></div>
   </div>
-  <p class="ver">Versie 30</p>`;
+  <p class="ver">Versie 31</p>`;
 }
 function boot(data){
   renderRules();
