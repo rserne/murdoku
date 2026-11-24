@@ -24,7 +24,7 @@
    TYPE   Outfit voor koppen + Inter voor tekst
    LAYOUT laptop: bord links, verdachten en aanwijzingen rechts; telefoon: titel, bord, verdachten, aanwijzingen */
 :root{color-scheme:light dark;--bg:light-dark(#ffffff,#0f1014);--ink:light-dark(#14151a,#f0f0f3);--soft:light-dark(#6a6c78,#9d9fab);--line:light-dark(#e6e6ec,#2a2b33);--card:light-dark(#f5f5f8,#191a20);--hot:light-dark(#f2304f,#ff5a73);--wall:light-dark(#1d1e24,#e9e9ee);
---r0:light-dark(#ffc9ad,#7a3a24);--r1:light-dark(#fff08f,#6b580c);--r2:light-dark(#b6e6c3,#1c5a36);--r3:light-dark(#c3d8ff,#1f3f7a);--r4:light-dark(#dfc8ff,#4f2d86);--r5:light-dark(#ffc4df,#7a2350);--alarm:#c8102e;
+--r0:#7a3a24;--r1:#6b580c;--r2:#1c5a36;--r3:#1f3f7a;--r4:#4f2d86;--r5:#7a2350;--alarm:#c8102e;
 --wood:light-dark(#9a6533,#d39c62);--leaf:light-dark(#239455,#57c983);--pot:light-dark(#d06a3d,#e48a5d);--sheet:light-dark(#ffffff,#dedde6);--quilt:light-dark(#5a7fe0,#8aa6f0)}
 :root[data-theme=light]{color-scheme:light}
 :root[data-theme=dark]{color-scheme:dark}
@@ -53,16 +53,17 @@ h1{font:800 clamp(26px,5vw,38px)/1.05 Outfit,sans-serif;margin:0;letter-spacing:
 .game{display:grid;gap:28px;padding:16px max(4vw,16px,env(safe-area-inset-right)) max(48px,env(safe-area-inset-bottom)) max(4vw,16px,env(safe-area-inset-left));max-width:1180px;margin:0 auto}
 @media(min-width:900px){.game{grid-template-columns:minmax(0,580px) minmax(0,1fr);align-items:start;row-gap:14px}.game>section:first-child{display:contents}.stage{grid-column:1;grid-row:1/span 4}.people-row,.toolbar{grid-column:2}.people-row,.toolbar{margin-top:0}}
 .stage{background:var(--card);border-radius:28px;padding:clamp(10px,2.4vw,22px)}
-#board{position:relative;display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));grid-template-rows:repeat(var(--n),minmax(0,1fr));aspect-ratio:1;width:100%;border:3px solid var(--wall);border-radius:18px;overflow:hidden;user-select:none;-webkit-user-select:none;box-shadow:0 18px 40px -18px rgba(20,20,40,.35);background:var(--wall)}
+#board{--wall:#e9e9ee;--wood:#d39c62;--leaf:#57c983;--pot:#e48a5d;--sheet:#dedde6;--quilt:#8aa6f0;--bg:#16171c;--ink:#f0f0f3;position:relative;display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));grid-template-rows:repeat(var(--n),minmax(0,1fr));aspect-ratio:1;width:100%;border:3px solid var(--wall);border-radius:18px;overflow:hidden;user-select:none;-webkit-user-select:none;box-shadow:0 18px 40px -18px rgba(20,20,40,.35);background:var(--wall)}
 .cell{position:relative;border:0;border-top:1px solid color-mix(in srgb,var(--wall) 12%,transparent);border-left:1px solid color-mix(in srgb,var(--wall) 12%,transparent);display:grid;place-items:center;padding:0;background:var(--rc);touch-action:manipulation;transition:filter .15s}
 .r0{--rc:var(--r0)}.r1{--rc:var(--r1)}.r2{--rc:var(--r2)}.r3{--rc:var(--r3)}.r4{--rc:var(--r4)}.r5{--rc:var(--r5)}
 .cell.kleed::before,.rugsw{content:'';border-radius:5px;background:repeating-linear-gradient(45deg,transparent 0 5px,rgba(184,69,47,.32) 5px 6.5px),repeating-linear-gradient(-45deg,transparent 0 5px,rgba(184,69,47,.32) 5px 6.5px),#f6e7cc;box-shadow:0 0 0 2.5px #b8452f,inset 0 0 0 2.5px #f6e7cc,inset 0 0 0 4px #b8452f}
 .cell.kleed::before{position:absolute;inset:18%;pointer-events:none}
 .cell.blk{background:repeating-linear-gradient(-45deg,var(--rc) 0 7px,color-mix(in srgb,var(--rc) 78%,var(--wall)) 7px 8px);cursor:not-allowed}
 .cell:hover:not(.blk){filter:brightness(1.06)}
+.rl.sm{font-size:11px;padding:3px 5px;left:2px}
 .walls{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:4;overflow:visible}
 .walls path{fill:none;stroke:var(--wall);stroke-width:3.5px;stroke-linecap:square;vector-effect:non-scaling-stroke}
-.rl{position:absolute;top:4px;left:4px;font:600 13px/1 Inter,sans-serif;white-space:nowrap;z-index:1;pointer-events:none;background:color-mix(in srgb,var(--bg) 82%,transparent);padding:3px 6px;border-radius:999px}
+.rl{position:absolute;top:4px;left:4px;font:600 13px/1 Inter,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink);z-index:1;pointer-events:none;background:color-mix(in srgb,var(--bg) 82%,transparent);padding:3px 6px;border-radius:999px}
 .ico{width:60%;height:60%;pointer-events:none;filter:drop-shadow(0 2px 0 rgba(0,0,0,.12))}
 .cell.has .ico{position:absolute;right:3px;bottom:3px;width:32%;height:32%}
 .mk{position:absolute;left:22%;top:22%;width:56%;height:56%;pointer-events:none;color:color-mix(in srgb,var(--wall) 60%,transparent)}
@@ -89,12 +90,12 @@ h2{font:700 22px/1.1 Outfit,sans-serif;margin:0 0 12px;letter-spacing:-.01em}
 .ok svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}
 .people-row{margin-top:16px}
 .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-.focus{display:flex;gap:14px;align-items:center;margin-top:8px;padding:12px 16px 12px 12px;border-radius:20px;background:var(--ink);color:var(--bg);min-height:76px}
+.focus{--pc:var(--soft);display:flex;gap:14px;align-items:center;margin-top:8px;padding:12px 16px 12px 12px;border-radius:20px;background:color-mix(in srgb,var(--pc) 13%,var(--bg));border:1.5px solid color-mix(in srgb,var(--pc) 38%,transparent);color:var(--ink);min-height:76px}
 .focus .face{width:52px;flex:none;box-shadow:0 0 0 2.5px var(--ink);animation:none}
 .focus b{display:block;font:700 18px/1.2 Outfit,sans-serif}
 .focus .q{display:block;font-size:16px;line-height:1.35}
-.focus .h{display:block;font-size:13px;opacity:.7;margin-top:2px}
-.focus.idle{background:var(--card);color:var(--soft)}
+.focus .h{display:block;font-size:13px;color:var(--soft);margin-top:2px}
+.focus.idle{background:var(--card);border-color:transparent;color:var(--soft)}
 .people{list-style:none;margin:0;padding:0;display:grid;gap:8px}
 .pc{display:flex;align-items:stretch;border:1.5px solid var(--line);border-radius:18px;background:var(--bg);transition:border-color .15s,background .15s}
 .pbtn{flex:1;display:flex;gap:12px;align-items:center;border:0;background:none;text-align:left;padding:8px 6px 8px 8px;min-height:62px;border-radius:16px}
@@ -121,7 +122,7 @@ h2{font:700 22px/1.1 Outfit,sans-serif;margin:0 0 12px;letter-spacing:-.01em}
 .seg{grid-column:span 2;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px;padding:3px;background:var(--card);border-radius:16px}
 .tb{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:58px;padding:0 2px;border:0;border-radius:13px;background:none;font-weight:600;font-size:13px;color:var(--soft);white-space:nowrap}
 .tb svg{width:22px;height:22px;flex:none}
-.seg .tb[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.seg .tb[aria-pressed=true]{background:light-dark(#ffffff,#2c2d36);color:var(--ink);box-shadow:0 0 0 1.5px light-dark(#d9d9e1,#40414c),0 2px 6px -2px rgba(0,0,0,.25)}
 .toolbar>.tb{border:1.5px solid var(--line);border-radius:16px;background:var(--bg);color:var(--ink)}
 .toolbar>.tb:hover{border-color:var(--ink)}
 .rule{display:flex;gap:12px;align-items:center;background:color-mix(in srgb,var(--hot) 10%,var(--bg));border:1.5px solid color-mix(in srgb,var(--hot) 40%,transparent);border-radius:16px;padding:12px 14px;margin:0 0 10px;font-weight:500;line-height:1.4}
@@ -335,7 +336,8 @@ function render(){
   board.style.setProperty('--n',n);
   $('#case').innerHTML=`<span class="zk">Zaak </span><b>${state.seed}</b> · ${DIFF[state.diff].label}`;
   $('#time').textContent=fmt(state.elapsed);
-  const first={};room.forEach((r,c)=>{if(first[r]===undefined)first[r]=c});
+  const best={};
+  for(let r=0;r<n;r++){let k=0;while(k<n){const rm=room[r*n+k];let e=k;while(e+1<n&&room[r*n+e+1]===rm)e++;const len=e-k+1;if(!best[rm]||len>best[rm].len)best[rm]={c:r*n+k,len};k=e+1}}
   const rowC=Array(n).fill(0),colC=Array(n).fill(0);
   state.place.forEach(c=>{if(c>=0){rowC[Math.floor(c/n)]++;colC[c%n]++}});
   let h='';
@@ -346,7 +348,7 @@ function render(){
     if(BLOCK[o])cls.push('blk');
     if(p>=0)cls.push('has');
     let inner='';
-    if(first[room[c]]===c)inner+=`<span class="rl">${cap(pz.names[room[c]][0])}</span>`;
+    if(best[room[c]].c===c)inner+=`<span class="rl" style="max-width:calc(${best[room[c]].len*100}% - 8px)">${cap(pz.names[room[c]][0])}</span>`;
     if(o&&o!=='kleed')inner+=`<svg class="ico" aria-hidden="true"><use href="#i-${o}"/></svg>`;
     if(p<0&&state.marks.includes(c))inner+=`<svg class="mk" aria-hidden="true"><use href="#i-x"/></svg>`;
     if(p>=0){
@@ -361,12 +363,14 @@ function render(){
   for(let c=0;c<n*n;c++){const r=Math.floor(c/n),k=c%n;if(r>0&&room[c]!==room[c-n])wd+=`M${k} ${r}h1`;if(k>0&&room[c]!==room[c-1])wd+=`M${k} ${r}v1`}
   h+=`<svg class="walls" viewBox="0 0 ${n} ${n}" preserveAspectRatio="none" aria-hidden="true"><path d="${wd}"/></svg>`;
   board.innerHTML=h;
+  board.querySelectorAll('.rl').forEach(l=>{if(l.scrollWidth>l.clientWidth)l.classList.add('sm')});
   const S=state.sel,sc=S>=0?pz.clues.find(c=>c.p===S):null;
   tray.innerHTML=people.map((per,p)=>`<button type="button" class="pick${p===S?' on':''}${state.place[p]>=0?' done':''}" data-p="${p}" aria-pressed="${p===S}">${face(p)}${state.place[p]>=0?'<span class="ok" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 12.5l4 4 8-9"/></svg></span>':''}<span>${per.name}</span></button>`).join('');
   const F=$('#focus');
   if(state.closed){F.className='focus';F.innerHTML=`${face(pz.murderer)}<span><b>Zaak gesloten</b><span class="q">${people[pz.murderer].name} was als enige verdachte samen met ${people[V].name} ${roomName(room[pz.sol[V]])}.</span></span>`}
   else if(S>=0){F.className='focus';F.innerHTML=`${face(S)}<span><span class="q">${clueText(pz,sc)}</span><span class="h">${mode==='kruis'?`Kies ‘Persoon zetten’ om ${people[S].name} neer te zetten.`:state.place[S]>=0?`Tik op een ander vakje om ${people[S].name} te verplaatsen, of op hetzelfde vakje om ${people[S].name} weg te halen.`:`Tik op een vakje om ${people[S].name} neer te zetten.`}</span></span>`}
   else{F.className='focus idle';F.innerHTML=`<span><span class="q">${mode==='kruis'?'Tik op vakjes waar volgens jou niemand stond. Nog een keer tikken haalt het kruisje weg.':'Tik op een persoon om de aanwijzing te zien.'}</span></span>`}
+  if(state.closed||S>=0)F.style.setProperty('--pc',people[state.closed?pz.murderer:S].col);else F.style.removeProperty('--pc');
   $('#mPlace').setAttribute('aria-pressed',mode==='plaats');
   $('#mMark').setAttribute('aria-pressed',mode==='kruis');
 }
@@ -489,7 +493,7 @@ function renderRules(){
     <div><i>${IC.tip}</i><span><b>Tip</b>Haal een fout weg of zet iemand goed.</span></div>
     <div><i>${IC.trash}</i><span><b>Wissen</b>Begin opnieuw met een leeg bord.</span></div>
   </div>
-  <p class="ver">Versie 13</p>`;
+  <p class="ver">Versie 14</p>`;
 }
 function boot(data){
   renderRules();
