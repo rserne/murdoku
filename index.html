@@ -50,7 +50,7 @@ h1{font:800 clamp(26px,5vw,38px)/1.05 Outfit,sans-serif;margin:0;letter-spacing:
 .btn{min-height:44px;padding:0 18px;border-radius:999px;border:1.5px solid var(--line);background:var(--bg);font-weight:600;font-size:15px}
 .btn:hover{border-color:var(--ink)}
 .btn.main{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-.btn.main:hover{background:color-mix(in srgb,var(--ink) 85%,var(--hot))}
+@media(hover:hover){.btn.main:hover{background:color-mix(in srgb,var(--ink) 85%,var(--hot))}}
 .game{display:grid;gap:28px;padding:16px max(4vw,16px,env(safe-area-inset-right)) max(48px,env(safe-area-inset-bottom)) max(4vw,16px,env(safe-area-inset-left));max-width:1180px;margin:0 auto}
 @media(min-width:900px){.game{grid-template-columns:minmax(0,580px) minmax(0,1fr);align-items:start;row-gap:14px}.game>section:first-child{display:contents}.stage{grid-column:1;grid-row:1/span 4}.people-row,.toolbar{grid-column:2}.people-row,.toolbar{margin-top:0}}
 .stage{background:var(--card);border-radius:28px;padding:clamp(14px,2.6vw,22px)}
@@ -226,6 +226,7 @@ dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
 #shareBtn{display:flex;align-items:center;justify-content:center;gap:10px}
 #shareBtn svg{width:20px;height:20px}
 .cta2{margin-top:10px;background:var(--bg)}
+.actions{display:grid}
 .pane{grid-area:1/1}
 .pane.off{visibility:hidden;pointer-events:none}
 .lbl2{font-weight:600;font-size:15px;margin:0 0 2px!important}
@@ -261,7 +262,7 @@ dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
 .tag{display:inline-block;background:var(--alarm);color:#fff;font:700 13px/1 Inter,sans-serif;padding:6px 10px;border-radius:999px;margin-bottom:8px}
 .msg{color:var(--hot);min-height:1.5em;font-size:15px;margin-top:8px}
 .busy #board{opacity:.4}
-@media(max-width:600px){.top .lbl{display:none}.zk{display:none}.case{white-space:nowrap}.acts{gap:6px}.hbtn{padding:0;width:44px}dialog{width:100%;max-width:100%;margin:auto 0 0;border-radius:24px 24px 0 0;max-height:90svh}.dlg{padding:12px 20px max(24px,env(safe-area-inset-bottom))}.grabbar{display:block;position:sticky;top:0;z-index:10;margin:-12px -20px 6px;padding:12px 0 14px;background:var(--bg);touch-action:none}.grab{display:block;width:40px;height:5px;border-radius:9px;background:var(--line);margin:0 auto}.game{padding-top:10px;gap:22px}.pick{width:62px}.pick .face{width:46px}.stage{border-radius:22px}}
+@media(max-width:600px){.top .lbl{display:none}.zk{display:none}.case{white-space:nowrap}.acts{gap:6px}.hbtn{padding:0;width:44px}dialog{width:100%;max-width:100%;margin:auto 0 0;border-radius:24px 24px 0 0;height:min(640px,88svh);max-height:none}dialog .dlg{min-height:100%;display:flex;flex-direction:column}dialog .actions{margin-top:auto}#shareDlg .digits{margin:auto 0}.dlg{padding:12px 20px max(24px,env(safe-area-inset-bottom))}.grabbar{display:block;position:sticky;top:0;z-index:10;margin:-12px -20px 6px;padding:12px 0 14px;background:var(--bg);touch-action:none}.grab{display:block;width:40px;height:5px;border-radius:9px;background:var(--line);margin:0 auto}.game{padding-top:10px;gap:22px}.pick{width:62px}.pick .face{width:46px}.stage{border-radius:22px}}
 @media(max-width:600px){
 .tray{flex-wrap:nowrap;gap:0;justify-content:space-between}
 .pick{flex:1 0 50px;width:auto;padding:6px 2px;gap:4px}
@@ -354,8 +355,8 @@ dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
   <h3 id="shareTitle" tabindex="-1" autofocus>Deel de zaak met je vriend</h3>
   <p class="sub" id="shareSub"></p>
   <div class="digits" id="shareDigits" aria-label="Zaaknummer"></div>
-  <button type="button" class="btn main cta" id="shareBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4M8 8l4-4 4 4M5 12v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Deel uitnodiging</button>
-  <button type="button" class="btn cta cta2" data-close>Start de zaak</button>
+  <div class="actions"><button type="button" class="btn main cta" id="shareBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4M8 8l4-4 4 4M5 12v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Deel uitnodiging</button>
+  <button type="button" class="btn cta cta2" data-close>Start de zaak</button></div>
 </div></dialog>
 <dialog id="accDlg"><div class="dlg" id="accBody"></div></dialog>
 
@@ -638,7 +639,7 @@ function renderRules(){
     <div><i>${IC.tip}</i><span><b>Tip</b>Haal een fout weg of zet iemand goed.</span></div>
     <div><i>${IC.trash}</i><span><b>Wissen</b>Begin opnieuw met een leeg bord.</span></div>
   </div>
-  <p class="ver">Versie 29</p>`;
+  <p class="ver">Versie 30</p>`;
 }
 function boot(data){
   renderRules();
