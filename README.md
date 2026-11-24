@@ -44,8 +44,8 @@ Elke zaak heeft een zaaknummer van vijf cijfers, bijvoorbeeld 21213. Het eerste 
 
 Kies bij **Nieuwe zaak** voor **Samen** om met iemand dezelfde zaak te spelen:
 
-- **Zaak starten:** kies een niveau. Je krijgt een zaaknummer om met je vriend te delen.
-- **Meedoen:** typ het zaaknummer van je vriend en tik op *Doe mee*.
+- **Nieuwe zaak starten:** kies een niveau. Je ziet het zaaknummer in grote cijfers, met een knop *Deel uitnodiging*. De uitnodiging bevat een link (bijv. `…/murdoku/#zaak-21213`) die de zaak bij je vriend direct opent. Tik later linksboven op het zaaknummer om het deelscherm terug te halen.
+- **Meedoen met een zaaknummer:** typ het nummer van je vriend en tik op *Doe mee*.
 
 Dezelfde zaak krijg je alleen met dezelfde versie van de app; die staat onderaan de spelregels.
 
