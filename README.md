@@ -28,6 +28,8 @@ Onder het spelregelvenster staat het versienummer van de app.
 | **Tip** | Haalt iemand weg die verkeerd staat, of zet de volgende persoon goed. |
 | **Wissen** | Haalt iedereen en alle kruisjes van het bord. |
 
+De spelregels en andere vensters sluit je door ze omlaag te vegen, of door ernaast te tikken.
+
 ## Niveaus en zaaknummers
 
 | Niveau | Bord | Kamers | Personen |
