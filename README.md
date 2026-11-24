@@ -20,11 +20,12 @@ Tik op een gezicht om de aanwijzing van die persoon te zien. Op een telefoon sta
 
 | Knop | Wat hij doet |
 | --- | --- |
-| **Persoon zetten** | Een tik op het bord zet de gekozen persoon neer. |
-| **Kruisje zetten** | Een tik op het bord markeert een vakje waar volgens jou niemand stond. |
+| **Persoon** | Een tik op het bord zet de gekozen persoon neer. |
+| **Kruisje** | Een tik op het bord markeert een vakje waar volgens jou niemand stond. |
 | **Terug** | Maakt je laatste zet ongedaan. |
 | **Tip** | Haalt iemand weg die verkeerd staat, of zet de volgende persoon goed. |
 | **Wissen** | Haalt iedereen en alle kruisjes van het bord. |
+| **Kamernamen** | Een tik op een kamernaam onder het bord laat die kamer oplichten. |
 
 ## Niveaus en zaaknummers
 

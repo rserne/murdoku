@@ -24,7 +24,7 @@
    TYPE   Outfit voor koppen + Inter voor tekst
    LAYOUT laptop: bord links, verdachten en aanwijzingen rechts; telefoon: titel, bord, verdachten, aanwijzingen */
 :root{color-scheme:light dark;--bg:light-dark(#ffffff,#0f1014);--ink:light-dark(#14151a,#f0f0f3);--soft:light-dark(#6a6c78,#9d9fab);--line:light-dark(#e6e6ec,#2a2b33);--card:light-dark(#f5f5f8,#191a20);--hot:light-dark(#f2304f,#ff5a73);--wall:light-dark(#1d1e24,#e9e9ee);
---r0:light-dark(#ffd8c6,#4a2b22);--r1:light-dark(#c8eed8,#1f3d2c);--r2:light-dark(#d2e2ff,#22314f);--r3:light-dark(#fff0ae,#463d17);--r4:light-dark(#e8dbff,#36294f);--r5:light-dark(#c4eff2,#1b4046);
+--r0:light-dark(#ffc9ad,#7a3a24);--r1:light-dark(#fff08f,#6b580c);--r2:light-dark(#b6e6c3,#1c5a36);--r3:light-dark(#c3d8ff,#1f3f7a);--r4:light-dark(#dfc8ff,#4f2d86);--r5:light-dark(#ffc4df,#7a2350);--alarm:#c8102e;
 --wood:light-dark(#9a6533,#d39c62);--leaf:light-dark(#239455,#57c983);--pot:light-dark(#d06a3d,#e48a5d);--sheet:light-dark(#ffffff,#dedde6);--quilt:light-dark(#5a7fe0,#8aa6f0)}
 :root[data-theme=light]{color-scheme:light}
 :root[data-theme=dark]{color-scheme:dark}
@@ -33,13 +33,16 @@ html,body{margin:0}
 body{background:var(--bg);color:var(--ink);font:16px/1.5 Inter,system-ui,sans-serif;overflow-x:clip}
 button{font:inherit;color:inherit;cursor:pointer}
 button:focus-visible,input:focus-visible{outline:3px solid var(--hot);outline-offset:2px}
-.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 20px;padding:max(20px,env(safe-area-inset-top)) max(4vw,16px,env(safe-area-inset-right)) 6px max(4vw,16px,env(safe-area-inset-left));max-width:1180px;margin:0 auto}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:max(20px,env(safe-area-inset-top)) max(4vw,16px,env(safe-area-inset-right)) 6px max(4vw,16px,env(safe-area-inset-left));max-width:1180px;margin:0 auto}
 .brand{display:flex;align-items:center;gap:12px}
-.logo{width:44px;height:44px;flex:none}
-h1{font:800 clamp(30px,5vw,40px)/1.05 Outfit,sans-serif;margin:0;letter-spacing:-.03em}
+.logo{width:40px;height:40px;flex:none}
+h1{font:800 clamp(26px,5vw,38px)/1.05 Outfit,sans-serif;margin:0;letter-spacing:-.03em}
 .case{font-size:14px;color:var(--soft)}
 .case b{color:var(--ink);font-weight:600}
-.acts{display:flex;gap:8px;flex-wrap:wrap}
+.acts{display:flex;gap:8px;flex:none}
+.hbtn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;min-width:44px;padding:0 16px;border-radius:999px;border:1.5px solid var(--line);background:var(--bg);font-weight:600;font-size:15px}
+.hbtn:hover{border-color:var(--ink)}
+.hbtn svg{width:20px;height:20px;flex:none}
 .btn{min-height:44px;padding:0 18px;border-radius:999px;border:1.5px solid var(--line);background:var(--bg);font-weight:600;font-size:15px}
 .btn:hover{border-color:var(--ink)}
 .btn.main{background:var(--ink);color:var(--bg);border-color:var(--ink)}
@@ -52,10 +55,16 @@ h1{font:800 clamp(30px,5vw,40px)/1.05 Outfit,sans-serif;margin:0;letter-spacing:
 .cell.wt{border-top:3px solid var(--wall)}
 .cell.wl{border-left:3px solid var(--wall)}
 .r0{--rc:var(--r0)}.r1{--rc:var(--r1)}.r2{--rc:var(--r2)}.r3{--rc:var(--r3)}.r4{--rc:var(--r4)}.r5{--rc:var(--r5)}
-.cell.kleed{background:repeating-linear-gradient(90deg,#e0644d 0 4px,#f08b62 4px 8px);box-shadow:inset 0 0 0 7px var(--rc),inset 0 0 0 9px #b8452f}
+.cell.kleed::before{content:'';position:absolute;inset:17%;border-radius:6px;background:repeating-linear-gradient(90deg,color-mix(in srgb,var(--rc) 62%,#c4553d) 0 3px,color-mix(in srgb,var(--rc) 80%,#c4553d) 3px 6px);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--rc) 45%,#8d3524);pointer-events:none}
 .cell.blk{background:repeating-linear-gradient(-45deg,var(--rc) 0 7px,color-mix(in srgb,var(--rc) 78%,var(--wall)) 7px 8px);cursor:not-allowed}
 .cell:hover:not(.blk){filter:brightness(1.06)}
-.rl{position:absolute;top:4px;left:4px;font:600 12px/1 Inter,sans-serif;white-space:nowrap;z-index:3;pointer-events:none;background:color-mix(in srgb,var(--bg) 82%,transparent);padding:3px 6px;border-radius:999px}
+#board.focusing .cell:not(.inroom){filter:grayscale(.9) brightness(.62)}
+.rooms{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.room{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 14px 0 8px;border-radius:999px;border:1.5px solid var(--line);background:var(--bg);font-weight:600;font-size:14px}
+.room i{width:18px;height:18px;border-radius:6px;background:var(--rc);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--wall) 25%,transparent)}
+.room:hover{border-color:var(--ink)}
+.room[aria-pressed=true]{border-color:var(--ink);background:var(--card)}
+.rl{position:absolute;top:4px;left:4px;font:600 13px/1 Inter,sans-serif;white-space:nowrap;z-index:1;pointer-events:none;background:color-mix(in srgb,var(--bg) 82%,transparent);padding:3px 6px;border-radius:999px}
 .ico{width:60%;height:60%;pointer-events:none;filter:drop-shadow(0 2px 0 rgba(0,0,0,.12))}
 .cell.has .ico{position:absolute;right:3px;bottom:3px;width:32%;height:32%}
 .mk{position:absolute;left:22%;top:22%;width:56%;height:56%;pointer-events:none;color:color-mix(in srgb,var(--wall) 60%,transparent)}
@@ -64,7 +73,7 @@ h1{font:800 clamp(30px,5vw,40px)/1.05 Outfit,sans-serif;margin:0;letter-spacing:
 .cell .face{animation:pop .22s ease-out}
 .face.bad{box-shadow:0 0 0 3px var(--hot),0 0 0 6px color-mix(in srgb,var(--hot) 30%,transparent)}
 .face.sel{box-shadow:0 0 0 2.5px var(--bg),0 0 0 5px var(--ink)}
-.badge{position:absolute;bottom:2px;left:50%;transform:translateX(-50%);background:var(--hot);color:#fff;font:700 11px/1 Inter,sans-serif;padding:3px 7px;border-radius:999px;z-index:4;pointer-events:none;white-space:nowrap}
+.badge{position:absolute;bottom:2px;left:50%;transform:translateX(-50%);background:var(--alarm);color:#fff;font:700 11px/1 Inter,sans-serif;padding:3px 7px;border-radius:999px;z-index:4;pointer-events:none;white-space:nowrap}
 @keyframes pop{from{transform:scale(.5);opacity:.2}}
 @keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
 .shake{animation:shake .25s 2}
@@ -81,8 +90,9 @@ h2{font:700 22px/1.1 Outfit,sans-serif;margin:0 0 12px;letter-spacing:-.01em}
 .pick:hover{background:var(--card)}
 .pick.on{background:var(--card)}
 .pick.on .face{box-shadow:0 0 0 2.5px var(--bg),0 0 0 5px var(--ink)}
-.pick.done .face{opacity:.4;filter:grayscale(.6)}
-.pick.done::after{content:'';position:absolute;top:6px;right:10px;width:18px;height:18px;border-radius:50%;background:var(--hot) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 12.5l4 4 8-9' stroke='white' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") center/12px no-repeat}
+.pick.done .face{opacity:.55}
+.ok{position:absolute;top:4px;right:calc(50% - 30px);width:20px;height:20px;border-radius:50%;background:var(--ink);color:var(--bg);display:grid;place-items:center;box-shadow:0 0 0 2px var(--bg);z-index:3}
+.ok svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}
 .focus{display:flex;gap:14px;align-items:center;margin-top:10px;padding:12px 16px 12px 12px;border-radius:20px;background:var(--ink);color:var(--bg);min-height:76px}
 .focus .face{width:52px;flex:none;box-shadow:0 0 0 2.5px var(--ink);animation:none}
 .focus b{display:block;font:700 18px/1.2 Outfit,sans-serif}
@@ -117,16 +127,13 @@ h2{font:700 22px/1.1 Outfit,sans-serif;margin:0 0 12px;letter-spacing:-.01em}
 .all summary:hover{border-color:var(--ink)}
 .all .clues{margin-top:8px}
 .rule{margin:0!important}
-.tools{display:grid;gap:10px}
-.seg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;background:var(--card);border-radius:16px;padding:4px}
-.seg button{min-height:48px;padding:0 10px;border:0;background:none;font-weight:600;font-size:15px;border-radius:12px;display:flex;align-items:center;justify-content:center;gap:8px;color:var(--soft)}
-.seg svg,.ibtn svg{width:20px;height:20px;flex:none}
-.seg button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
-.modeline{margin:0;font-size:14px;color:var(--soft)}
-.tools2{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-.seg button,.ibtn{white-space:nowrap}
-.ibtn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 8px;border-radius:14px;border:1.5px solid var(--line);background:var(--bg);font-weight:600;font-size:15px}
-.ibtn:hover{border-color:var(--ink)}
+.toolbar{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:14px}
+.seg{grid-column:span 2;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px;padding:3px;background:var(--card);border-radius:16px}
+.tb{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:58px;padding:0 2px;border:0;border-radius:13px;background:none;font-weight:600;font-size:13px;color:var(--soft);white-space:nowrap}
+.tb svg{width:22px;height:22px;flex:none}
+.seg .tb[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.toolbar>.tb{border:1.5px solid var(--line);border-radius:16px;background:var(--bg);color:var(--ink)}
+.toolbar>.tb:hover{border-color:var(--ink)}
 .status{display:flex;justify-content:space-between;gap:12px;font-size:15px;color:var(--soft)}
 .status b{color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap}
 .bar{height:6px;border-radius:999px;background:var(--card);overflow:hidden;margin-top:8px}
@@ -142,13 +149,34 @@ h2{font:700 22px/1.1 Outfit,sans-serif;margin:0 0 12px;letter-spacing:-.01em}
 .clues li.x .face{opacity:.45}
 .toast{position:fixed;left:50%;bottom:calc(var(--dockH,0px) + 16px);transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:16px;max-width:min(92vw,460px);opacity:0;transition:.25s;pointer-events:none;z-index:20;font-size:15px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
 .toast.show{opacity:1;transform:translate(-50%,0)}
-dialog{border:0;border-radius:24px;padding:0;width:min(92vw,480px);background:var(--bg);color:var(--ink);box-shadow:0 30px 80px rgba(0,0,0,.4)}
+dialog{border:0;border-radius:24px;padding:0;width:min(92vw,540px);max-height:min(88svh,820px);overflow:auto;background:var(--bg);color:var(--ink);box-shadow:0 30px 80px rgba(0,0,0,.4)}
 dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
 .dlg{padding:24px}
 .dlg h3{font:800 28px/1.1 Outfit,sans-serif;margin:0 0 10px;letter-spacing:-.02em}
 .dlg ol{padding-left:20px;margin:8px 0 14px}
 .dlg li{margin-bottom:6px}
 .dlg p{margin:0 0 12px}
+.grab{display:none}
+.intro{display:flex;gap:14px;align-items:center;margin-bottom:6px}
+.intro .face{width:56px;flex:none;box-shadow:none}
+.intro p{margin:0;color:var(--soft)}
+.steps{list-style:none;padding:0;margin:18px 0 22px;display:grid;gap:14px;counter-reset:st}
+.steps li{display:grid;grid-template-columns:68px minmax(0,1fr);gap:14px;align-items:center}
+.ill{width:68px;height:68px;border-radius:18px;background:var(--card);position:relative;overflow:hidden}
+.ill svg{display:block;width:100%;height:100%}
+.ill .face{position:absolute;width:30px;box-shadow:0 0 0 2px var(--card);animation:none}
+.steps b{display:block;font:700 17px/1.25 Outfit,sans-serif}
+.steps b::before{counter-increment:st;content:counter(st) '. ';color:var(--soft)}
+.steps p{margin:2px 0 0!important;color:var(--soft);font-size:15px;line-height:1.4}
+.dlg h4{font:700 19px/1.2 Outfit,sans-serif;margin:0 0 10px}
+.ctrl{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px;margin:0 0 20px}
+.ctrl div{display:flex;gap:12px;align-items:center;padding:10px 12px;border-radius:16px;background:var(--card)}
+.ctrl i{flex:none;width:38px;height:38px;border-radius:11px;background:var(--bg);display:grid;place-items:center}
+.ctrl i svg{width:20px;height:20px}
+.ctrl b{display:block;font-weight:600;font-size:15px;line-height:1.2;color:var(--ink);margin-bottom:2px}
+.dlg h3:focus{outline:none}
+.ctrl span{display:block;font-size:14px;color:var(--soft);line-height:1.35}
+.cta{width:100%;min-height:52px;font-size:16px}
 .row{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;margin-top:16px}
 .choices{display:grid;gap:8px}
 .choices button{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:58px;padding:0 18px;border-radius:16px;border:1.5px solid var(--line);background:var(--bg);font-weight:600;text-align:left}
@@ -159,10 +187,10 @@ dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
 .field input{font:16px Inter,sans-serif;min-height:44px;width:8em;padding:0 14px;border:1.5px solid var(--line);border-radius:999px;background:var(--bg);color:var(--ink)}
 .win{display:flex;align-items:center;gap:14px;margin-bottom:12px}
 .win .face{width:72px;flex:none}
-.tag{display:inline-block;background:var(--hot);color:#fff;font:700 13px/1 Inter,sans-serif;padding:6px 10px;border-radius:999px;margin-bottom:8px}
+.tag{display:inline-block;background:var(--alarm);color:#fff;font:700 13px/1 Inter,sans-serif;padding:6px 10px;border-radius:999px;margin-bottom:8px}
 .msg{color:var(--hot);min-height:1.5em;font-size:15px;margin-top:8px}
 .busy #board{opacity:.4}
-@media(max-width:600px){.game{padding-top:10px;gap:22px}.pick{width:62px}.pick .face{width:46px}.stage{border-radius:22px}}
+@media(max-width:600px){.top .lbl{display:none}.hbtn{padding:0;width:44px}dialog{width:100%;max-width:100%;margin:auto 0 0;border-radius:24px 24px 0 0;max-height:90svh}.dlg{padding:12px 20px max(24px,env(safe-area-inset-bottom))}.grab{display:block;width:40px;height:5px;border-radius:9px;background:var(--line);margin:0 auto 14px}.game{padding-top:10px;gap:22px}.pick{width:62px}.pick .face{width:46px}.stage{border-radius:22px}}
 @media(max-width:899px){
 .dock{position:fixed;left:0;right:0;bottom:0;z-index:15;background:color-mix(in srgb,var(--bg) 94%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-top:1px solid var(--line);box-shadow:0 -8px 24px -12px rgba(0,0,0,.35);padding:6px max(12px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}
 .dock h2{display:none}
@@ -174,7 +202,6 @@ dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
 .dock .focus .face{display:none}
 .dock .focus .q{font-size:16px;font-weight:600}
 .dock .focus .h{font-size:13px}
-.pick.done::after{top:2px;right:calc(50% - 26px)}
 }
 @media(prefers-reduced-motion:reduce){.cell .face,.shake{animation:none}.toast,.bar i{transition:none}}
 </style>
@@ -193,16 +220,29 @@ dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
     <svg class="logo" viewBox="0 0 44 44" aria-hidden="true"><rect width="44" height="44" rx="12" fill="var(--ink)"/><path d="M11 11h22v22H11z" fill="none" stroke="var(--bg)" stroke-width="2.4" stroke-linejoin="round"/><path d="M22 11v22M11 22h22" stroke="var(--bg)" stroke-width="1.4" opacity=".5"/><circle cx="16.5" cy="16.5" r="3.2" fill="var(--hot)"/><circle cx="27.5" cy="27.5" r="3.2" fill="var(--bg)"/></svg>
     <div><h1>Murdoku</h1><div class="case" id="case"></div></div>
   </div>
-  <div class="acts"><button class="btn" id="rulesBtn" type="button">Spelregels</button><button class="btn main" id="newBtn" type="button">Nieuwe zaak</button></div>
+  <div class="acts">
+    <button class="hbtn" id="rulesBtn" type="button" aria-label="Spelregels"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.4 9.3a2.7 2.7 0 0 1 5.2 1c0 1.8-2.6 2.2-2.6 3.9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.2" r="1.2" fill="currentColor"/></svg><span class="lbl">Spelregels</span></button>
+    <button class="hbtn" id="newBtn" type="button" aria-label="Nieuwe zaak"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg><span class="lbl">Nieuwe zaak</span></button>
+  </div>
 </header>
 
 <main class="game">
   <section aria-label="Plattegrond">
     <div class="stage"><div id="board" role="grid"></div></div>
+    <div class="toolbar">
+      <div class="seg" role="group" aria-label="Wat doet een tik op het bord?">
+        <button class="tb" type="button" id="mPlace" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" fill="currentColor"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7z" fill="currentColor"/></svg>Persoon</button>
+        <button class="tb" type="button" id="mMark" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg>Kruisje</button>
+      </div>
+      <button class="tb" type="button" id="undoBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7L4 12l5 5M4.5 12H14a6 6 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" transform="translate(0 -3)"/></svg>Terug</button>
+      <button class="tb" type="button" id="hintBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19.5h5M10.5 22h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip</button>
+      <button class="tb" type="button" id="clearBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 7V4.5h4V7M6.5 7l1 13h9l1-13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Wissen</button>
+    </div>
+    <div class="rooms" id="rooms" role="group" aria-label="Tik op een kamer om hem op te lichten"></div>
     <div class="legend">
       <span><svg><use href="#i-stoel"/></svg>Stoel</span>
       <span><svg><use href="#i-bed"/></svg>Bed</span>
-      <span><i class="sw" style="background:repeating-linear-gradient(90deg,#e0644d 0 3px,#f08b62 3px 6px);box-shadow:inset 0 0 0 3px var(--bg),inset 0 0 0 4.5px #b8452f"></i>Kleed</span>
+      <span><i class="sw" style="background:repeating-linear-gradient(90deg,#df9a86 0 3px,#efc0b0 3px 6px);box-shadow:inset 0 0 0 1.5px #a8513d"></i>Kleed</span>
       <span><svg><use href="#i-plant"/></svg>Plant</span>
       <span><svg><use href="#i-kast"/></svg>Boekenkast</span>
       <span><i class="sw" style="background:repeating-linear-gradient(-45deg,var(--card) 0 5px,var(--soft) 5px 6px)"></i>Hier staat niemand</span>
@@ -214,17 +254,6 @@ dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
       <div class="tray" id="tray"></div>
       <div class="focus" id="focus" aria-live="polite"></div>
     </div>
-    <div class="tools">
-      <div class="seg" role="group" aria-label="Wat doet een tik op het bord?">
-        <button type="button" id="mPlace" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" fill="currentColor"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7z" fill="currentColor"/></svg>Persoon zetten</button>
-        <button type="button" id="mMark" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg>Kruisje zetten</button>
-      </div>
-      <p class="modeline" id="modeline"></p>
-      <div class="tools2">
-        <button class="ibtn" type="button" id="undoBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7L4 12l5 5M4.5 12H14a6 6 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" transform="translate(0 -3)"/></svg>Terug</button>
-        <button class="ibtn" type="button" id="hintBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19.5h5M10.5 22h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip</button>
-        <button class="ibtn" type="button" id="clearBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 7V4.5h4V7M6.5 7l1 13h9l1-13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Wissen</button>
-      </div>
     </div>
     <div>
       <div class="status"><span id="placed"></span><span>Tijd <b id="time">00:00</b></span></div>
@@ -237,26 +266,7 @@ dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<dialog id="rulesDlg"><div class="dlg">
-  <h3>Spelregels</h3>
-  <p>Iemand heeft Vincent vermoord. Zoek uit waar iedereen stond en wie de dader is.</p>
-  <ol>
-    <li>Zet iedereen op de plattegrond: de verdachten én Vincent.</li>
-    <li>In elke rij en in elke kolom staat precies één persoon.</li>
-    <li>Op een plant of boekenkast kan niemand staan. Stoelen, bedden en kleden mogen wel.</li>
-    <li>Iedereen heeft één aanwijzing, en elke aanwijzing klopt. ‘Naast’ betekent direct links, rechts, boven of onder, en in dezelfde kamer. Een meubel aan de andere kant van een muur telt dus niet.</li>
-    <li>De dader is de enige verdachte die met Vincent in dezelfde kamer was.</li>
-  </ol>
-  <p><b>Zo speel je:</b> tik op een persoon om de aanwijzing te zien, en tik daarna op een vakje om de persoon neer te zetten. Tik nog eens op hetzelfde vakje om de persoon weer weg te halen.</p>
-  <p><b>De knoppen:</b></p>
-  <ul style="padding-left:20px;margin:0 0 12px">
-    <li><b>Persoon zetten / Kruisje zetten:</b> kies wat een tik op het bord doet. Met kruisjes markeer je vakjes waar volgens jou niemand stond.</li>
-    <li><b>Terug:</b> maakt je laatste zet ongedaan.</li>
-    <li><b>Tip:</b> haalt iemand weg die verkeerd staat, of zet de volgende persoon op de goede plek.</li>
-    <li><b>Wissen:</b> haalt iedereen en alle kruisjes van het bord. Met Terug zet je alles weer terug.</li>
-  </ul>
-  <div class="row"><button class="btn main" type="button" data-close>Aan de slag</button></div>
-</div></dialog>
+<dialog id="rulesDlg" aria-labelledby="rulesTitle"><div class="dlg" id="rulesBody"></div></dialog>
 
 <dialog id="newDlg"><div class="dlg">
   <h3>Nieuwe zaak</h3>
@@ -279,7 +289,7 @@ dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
 const $=s=>document.querySelector(s);
 const board=$('#board'),tray=$('#tray'),cluesEl=$('#clues');
 const LS='murdoku-v4';
-let pz=null,state=null,mode='plaats',undo=[],toastT=0;
+let pz=null,state=null,mode='plaats',undo=[],toastT=0,hlRoom=-1;
 
 // gezichten: kop 64×64, hoofd gecentreerd op (32,30)
 const EYES='<circle cx="27" cy="31" r="1.9" fill="#1b1b22"/><circle cx="37" cy="31" r="1.9" fill="#1b1b22"/>';
@@ -317,7 +327,7 @@ function start(diff,seed,saved){
     if(!g){toast('Deze zaak lukt niet. Probeer een ander nummer.');return}
     pz=g;
     state=saved||{seed,diff,place:Array(pz.n).fill(-1),marks:[],struck:[],hints:0,elapsed:0,solved:false,closed:false,sel:0};
-    undo=[];render();save();
+    undo=[];hlRoom=-1;render();save();
   },30);
 }
 function push(){undo.push(JSON.stringify({place:state.place,marks:state.marks}));if(undo.length>200)undo.shift()}
@@ -338,6 +348,7 @@ function render(){
     if(o==='kleed')cls.push('kleed');
     if(BLOCK[o])cls.push('blk');
     if(p>=0)cls.push('has');
+    if(hlRoom===room[c])cls.push('inroom');
     let inner='';
     if(first[room[c]]===c)inner+=`<span class="rl">${cap(pz.names[room[c]][0])}</span>`;
     if(o&&o!=='kleed')inner+=`<svg class="ico" aria-hidden="true"><use href="#i-${o}"/></svg>`;
@@ -351,8 +362,10 @@ function render(){
     h+=`<button type="button" class="${cls.join(' ')}" data-c="${c}" aria-label="${label}">${inner}</button>`;
   }
   board.innerHTML=h;
+  board.classList.toggle('focusing',hlRoom>=0);
+  $('#rooms').innerHTML=pz.names.map((nm,i)=>`<button type="button" class="room r${i}" data-r="${i}" aria-pressed="${hlRoom===i}"><i></i>${cap(nm[0])}</button>`).join('');
   const S=state.sel,sc=S>=0?pz.clues.find(c=>c.p===S):null;
-  tray.innerHTML=people.map((per,p)=>`<button type="button" class="pick${p===S?' on':''}${state.place[p]>=0?' done':''}" data-p="${p}" aria-pressed="${p===S}">${face(p)}<span>${per.name}</span></button>`).join('');
+  tray.innerHTML=people.map((per,p)=>`<button type="button" class="pick${p===S?' on':''}${state.place[p]>=0?' done':''}" data-p="${p}" aria-pressed="${p===S}">${face(p)}${state.place[p]>=0?'<span class="ok" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 12.5l4 4 8-9"/></svg></span>':''}<span>${per.name}</span></button>`).join('');
   cluesEl.innerHTML=pz.clues.map((cl,i)=>{
     const hl=S>=0&&(cl.p===S||cl.t==='with'&&cl.a===S);
     return `<li class="${hl?'hl':''}"><button type="button" data-p="${cl.p}">${face(cl.p)}<span class="t">${clueText(pz,cl)}</span></button></li>`;
@@ -361,14 +374,13 @@ function render(){
   const F=$('#focus');
   if(state.closed){F.className='focus';F.innerHTML=`${face(pz.murderer)}<span><b>Zaak gesloten</b><span class="q">${people[pz.murderer].name} was als enige verdachte samen met ${people[V].name} ${roomName(room[pz.sol[V]])}.</span></span>`}
   else if(S>=0){F.className='focus';F.innerHTML=`${face(S)}<span><span class="q">${clueText(pz,sc)}</span><span class="h">${mode==='kruis'?`Kies ‘Persoon zetten’ om ${people[S].name} neer te zetten.`:state.place[S]>=0?`Tik op een ander vakje om ${people[S].name} te verplaatsen, of op hetzelfde vakje om ${people[S].name} weg te halen.`:`Tik op een vakje om ${people[S].name} neer te zetten.`}</span></span>`}
-  else{F.className='focus idle';F.innerHTML=`<span><span class="q">Tik op een persoon om de aanwijzing te zien.</span></span>`}
+  else{F.className='focus idle';F.innerHTML=`<span><span class="q">${mode==='kruis'?'Tik op vakjes waar volgens jou niemand stond. Nog een keer tikken haalt het kruisje weg.':'Tik op een persoon om de aanwijzing te zien.'}</span></span>`}
   const placed=state.place.filter(c=>c>=0).length;
   $('#placed').innerHTML=state.closed?`<b>Zaak gesloten</b>`:`Geplaatst <b>${placed} van ${n}</b>${state.hints?` · hints <b>${state.hints}</b>`:''}`;
   $('#prog').style.width=(placed/n*100)+'%';
   $('#time').textContent=fmt(state.elapsed);
   $('#mPlace').setAttribute('aria-pressed',mode==='plaats');
   $('#mMark').setAttribute('aria-pressed',mode==='kruis');
-  $('#modeline').textContent=mode==='plaats'?'Een tik op het bord zet de gekozen persoon neer.':'Een tik op het bord zet een kruisje op een vakje waar volgens jou niemand stond. Nog een keer tikken haalt het weg.';
 }
 
 function after(){
@@ -410,6 +422,7 @@ board.addEventListener('click',e=>{
 });
 tray.addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(!b||state.closed)return;const p=+b.dataset.p;state.sel=state.sel===p?-1:p;mode='plaats';render();save()});
 cluesEl.addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(!b||state.closed)return;state.sel=+b.dataset.p;mode='plaats';render();save()});
+$('#rooms').addEventListener('click',e=>{const b=e.target.closest('[data-r]');if(!b)return;const r=+b.dataset.r;hlRoom=hlRoom===r?-1:r;render()});
 $('#mPlace').addEventListener('click',()=>{mode='plaats';render()});
 $('#mMark').addEventListener('click',()=>{mode='kruis';render()});
 $('#undoBtn').addEventListener('click',()=>{if(state.closed||!undo.length){toast('Er is niets om ongedaan te maken.');return}const u=JSON.parse(undo.pop());state.place=u.place;state.marks=u.marks;state.solved=false;render();save()});
@@ -438,7 +451,7 @@ $('#accDlg').addEventListener('click',e=>{
   $('#againBtn').addEventListener('click',()=>{$('#accDlg').close();$('#seedIn').value='';$('#newDlg').showModal()});
 });
 document.addEventListener('click',e=>{if(e.target.closest('[data-close]'))e.target.closest('dialog').close()});
-$('#rulesBtn').addEventListener('click',()=>$('#rulesDlg').showModal());
+$('#rulesBtn').addEventListener('click',()=>{$('#rulesDlg').showModal();$('#rulesDlg').scrollTop=0});
 $('#newBtn').addEventListener('click',()=>{$('#seedIn').value='';$('#newDlg').showModal()});
 $('#newDlg').addEventListener('click',e=>{const b=e.target.closest('[data-diff]');if(!b)return;const v=parseInt($('#seedIn').value,10);$('#newDlg').close();mode='plaats';start(b.dataset.diff,v)});
 
@@ -447,7 +460,41 @@ const fitDock=()=>{const h=matchMedia('(max-width:899px)').matches?dock.offsetHe
 const dockRO=new ResizeObserver(fitDock);dockRO.observe(dock);addEventListener('resize',fitDock);
 setInterval(()=>{if(state&&!state.closed&&!document.hidden){state.elapsed++;$('#time').textContent=fmt(state.elapsed);if(state.elapsed%5===0)save()}},1000);
 
+const IC={
+  person:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" fill="currentColor"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7z" fill="currentColor"/></svg>',
+  x:'<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg>',
+  undo:'<svg viewBox="0 0 24 24"><path d="M9 7L4 12l5 5M4.5 12H14a6 6 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" transform="translate(0 -3)"/></svg>',
+  tip:'<svg viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19.5h5M10.5 22h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+  trash:'<svg viewBox="0 0 24 24"><path d="M4 7h16M10 7V4.5h4V7M6.5 7l1 13h9l1-13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  rooms:'<svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3.5V13H20.5" fill="none" stroke="currentColor" stroke-width="2"/></svg>'
+};
+function fc(name,col,style){return `<span class="face" style="--c:${col};${style||''}">${faceSvg(name)}</span>`}
+function renderRules(){
+  const [A,B,C]=[PEOPLE[0],PEOPLE[1],PEOPLE[3]],V=VICTIM;
+  const dots=[[32,14.7,'#1d6fd1'],[49.3,32,'#e0711b'],[14.7,49.3,'#8a3fc4']].map(([x,y,c])=>`<circle cx="${x}" cy="${y}" r="6.5" fill="${c}"/>`).join('');
+  $('#rulesBody').innerHTML=`<div class="grab"></div>
+  <h3 id="rulesTitle" tabindex="-1" autofocus>Zo speel je Murdoku</h3>
+  <div class="intro">${fc(V[0],V[1])}<p>Iemand heeft Vincent vermoord. Zet iedereen op de plattegrond en ontmasker de dader.</p></div>
+  <ol class="steps">
+    <li><div class="ill">${fc(A[0],A[1],'left:6px;top:8px')}${fc(B[0],B[1],'left:30px;top:16px')}${fc(V[0],V[1],'left:15px;top:32px')}</div><div><b>Iedereen moet op het bord</b><p>De verdachten én Vincent.</p></div></li>
+    <li><div class="ill"><svg viewBox="0 0 64 64"><g fill="none" stroke="var(--soft)" stroke-width="1.4" opacity=".6"><rect x="6" y="6" width="52" height="52" rx="5"/><path d="M23.3 6v52M40.6 6v52M6 23.3h52M6 40.6h52"/></g>${dots}</svg></div><div><b>Eén persoon per rij en kolom</b><p>Net als de cijfers in een sudoku.</p></div></li>
+    <li><div class="ill" style="background:repeating-linear-gradient(-45deg,var(--card) 0 6px,color-mix(in srgb,var(--card) 70%,var(--soft)) 6px 7px)"><svg viewBox="0 0 64 64"><use href="#i-plant" x="5" y="8" width="28" height="28"/><use href="#i-kast" x="31" y="28" width="28" height="28"/></svg></div><div><b>Niet op planten en kasten</b><p>Op stoelen, bedden en kleden mag je wel staan.</p></div></li>
+    <li><div class="ill"><svg viewBox="0 0 64 64"><rect x="6" y="6" width="52" height="26" fill="var(--r3)"/><rect x="6" y="32" width="52" height="26" fill="var(--r0)"/><path d="M6 32h52" stroke="var(--wall)" stroke-width="3"/><use href="#i-stoel" x="9" y="9" width="20" height="20"/><circle cx="45" cy="19" r="8" fill="#1d6fd1"/><use href="#i-plant" x="35" y="35" width="20" height="20"/><path d="M28 19h6" stroke="#1f9a55" stroke-width="2.4" stroke-linecap="round"/><path d="M45 29v6" stroke="var(--alarm)" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="2 3"/></svg></div><div><b>Elke aanwijzing klopt</b><p>‘Naast’ is direct links, rechts, boven of onder, in dezelfde kamer. Door een muur heen telt niet.</p></div></li>
+    <li><div class="ill"><svg viewBox="0 0 64 64"><rect x="4" y="4" width="38" height="56" rx="6" fill="var(--r2)"/><path d="M42 4v56" stroke="var(--wall)" stroke-width="3"/></svg>${fc(V[0],V[1],'left:9px;top:8px')}${fc(C[0],C[1],'left:9px;top:34px')}${fc(B[0],B[1],'left:44px;top:20px;width:20px;opacity:.6')}</div><div><b>De dader was alleen met Vincent</b><p>De enige verdachte in dezelfde kamer als Vincent heeft het gedaan.</p></div></li>
+  </ol>
+  <h4>Bediening</h4>
+  <div class="ctrl">
+    <div><i>${IC.person}</i><span><b>Persoon</b>Tik op een gezicht en daarna op een vakje.</span></div>
+    <div><i>${IC.x}</i><span><b>Kruisje</b>Markeer vakjes waar niemand stond.</span></div>
+    <div><i>${IC.undo}</i><span><b>Terug</b>Maak je laatste zet ongedaan.</span></div>
+    <div><i>${IC.tip}</i><span><b>Tip</b>Haal een fout weg of zet iemand goed.</span></div>
+    <div><i>${IC.trash}</i><span><b>Wissen</b>Begin opnieuw met een leeg bord.</span></div>
+    <div><i>${IC.rooms}</i><span><b>Kamers</b>Tik op een kamernaam om de kamer op te lichten.</span></div>
+  </div>
+  <button class="btn main cta" type="button" data-close>Aan de slag</button>`;
+}
 function boot(data){
+  renderRules();
   const s=(data&&data.state)||loadSaved();
   if(s&&DIFF[s.diff]&&s.seed&&Array.isArray(s.place)){start(s.diff,s.seed,s);return}
   start('makkelijk',2718);
