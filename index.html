@@ -61,6 +61,7 @@ h1{font:800 clamp(26px,5vw,38px)/1.05 Outfit,sans-serif;margin:0;letter-spacing:
 .cell.blk{background:repeating-linear-gradient(-45deg,var(--rc) 0 7px,color-mix(in srgb,var(--rc) 78%,var(--wall)) 7px 8px);cursor:not-allowed}
 .cell:hover:not(.blk){filter:brightness(1.06)}
 .rl.sm{font-size:11px;padding:3px 5px;left:2px}
+.rl.over{z-index:5}
 .walls{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:4;overflow:visible}
 .walls path{fill:none;stroke:var(--wall);stroke-width:3.5px;stroke-linecap:square;vector-effect:non-scaling-stroke}
 .rl{position:absolute;top:4px;left:4px;font:600 13px/1 Inter,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink);z-index:1;pointer-events:none;background:color-mix(in srgb,var(--bg) 82%,transparent);padding:3px 6px;border-radius:999px}
@@ -336,8 +337,15 @@ function render(){
   board.style.setProperty('--n',n);
   $('#case').innerHTML=`<span class="zk">Zaak </span><b>${state.seed}</b> · ${DIFF[state.diff].label}`;
   $('#time').textContent=fmt(state.elapsed);
+  // Kamernaam: eerst een plek waar de naam past, dan bij voorkeur in lege vakjes, zo hoog mogelijk
   const best={};
-  for(let r=0;r<n;r++){let k=0;while(k<n){const rm=room[r*n+k];let e=k;while(e+1<n&&room[r*n+e+1]===rm)e++;const len=e-k+1;if(!best[rm]||len>best[rm].len)best[rm]={c:r*n+k,len};k=e+1}}
+  for(let c=0;c<n*n;c++){
+    const r=Math.floor(c/n),k=c%n,rm=room[c],short=pz.names[rm][0].length<=4;
+    let w=0;while(k+w<n&&room[c+w]===rm)w++;
+    let f=0;while(k+f<n&&room[c+f]===rm&&!obj[c+f])f++;
+    const sc=(w>=2||short?200:0)+(f>=2||(short&&f>=1)?100:0)+(obj[c]?0:50)+Math.min(w,3)*5-r;
+    if(!best[rm]||sc>best[rm].sc)best[rm]={c,len:w,sc};
+  }
   const rowC=Array(n).fill(0),colC=Array(n).fill(0);
   state.place.forEach(c=>{if(c>=0){rowC[Math.floor(c/n)]++;colC[c%n]++}});
   let h='';
@@ -363,7 +371,7 @@ function render(){
   for(let c=0;c<n*n;c++){const r=Math.floor(c/n),k=c%n;if(r>0&&room[c]!==room[c-n])wd+=`M${k} ${r}h1`;if(k>0&&room[c]!==room[c-1])wd+=`M${k} ${r}v1`}
   h+=`<svg class="walls" viewBox="0 0 ${n} ${n}" preserveAspectRatio="none" aria-hidden="true"><path d="${wd}"/></svg>`;
   board.innerHTML=h;
-  board.querySelectorAll('.rl').forEach(l=>{if(l.scrollWidth>l.clientWidth)l.classList.add('sm')});
+  board.querySelectorAll('.rl').forEach(l=>{if(l.scrollWidth>l.clientWidth)l.classList.add('sm');if(l.scrollWidth>l.clientWidth){l.style.maxWidth='none';l.classList.add('over')}});
   const S=state.sel,sc=S>=0?pz.clues.find(c=>c.p===S):null;
   tray.innerHTML=people.map((per,p)=>`<button type="button" class="pick${p===S?' on':''}${state.place[p]>=0?' done':''}" data-p="${p}" aria-pressed="${p===S}">${face(p)}${state.place[p]>=0?'<span class="ok" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 12.5l4 4 8-9"/></svg></span>':''}<span>${per.name}</span></button>`).join('');
   const F=$('#focus');
@@ -493,7 +501,7 @@ function renderRules(){
     <div><i>${IC.tip}</i><span><b>Tip</b>Haal een fout weg of zet iemand goed.</span></div>
     <div><i>${IC.trash}</i><span><b>Wissen</b>Begin opnieuw met een leeg bord.</span></div>
   </div>
-  <p class="ver">Versie 14</p>`;
+  <p class="ver">Versie 15</p>`;
 }
 function boot(data){
   renderRules();
