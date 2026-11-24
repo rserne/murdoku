@@ -40,7 +40,14 @@ De spelregels en andere vensters sluit je door ze omlaag te vegen, of door ernaa
 | Gemiddeld | 6 × 6 | 5 | 5 verdachten + Vincent |
 | Moeilijk | 7 × 7 | 6 | 6 verdachten + Vincent |
 
-Elke zaak heeft een nummer. Kies bij **Nieuwe zaak** voor **Samen** om met iemand dezelfde zaak te spelen: deel het nummer dat de app voorstelt, of typ het nummer van je vriend, en kies allebei hetzelfde niveau. Zo kun je tegen elkaar racen. Bij **Alleen** kiest de app zelf een willekeurige zaak.
+Elke zaak heeft een zaaknummer van vijf cijfers, bijvoorbeeld 21213. Het eerste cijfer is het niveau (1 = Makkelijk, 2 = Gemiddeld, 3 = Moeilijk), de rest bepaalt de puzzel. Het nummer staat linksboven, onder ‘Murdoku’.
+
+Kies bij **Nieuwe zaak** voor **Samen** om met iemand dezelfde zaak te spelen:
+
+- **Zaak starten:** kies een niveau. Je krijgt een zaaknummer om met je vriend te delen.
+- **Meedoen:** typ het zaaknummer van je vriend en tik op *Doe mee*.
+
+Dezelfde zaak krijg je alleen met dezelfde versie van de app; die staat onderaan de spelregels.
 
 ## Installeren
 
