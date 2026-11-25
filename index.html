@@ -508,7 +508,7 @@ function render(){
   const F=$('#focus');
   if(state.closed){const t=state.hints;F.className='focus done';F.innerHTML=`<span class="tag">Zaak gesloten</span><b>${people[pz.murderer].name} was het!</b><span class="h">${people[pz.murderer].name} was als enige verdachte samen met ${people[V].name} ${roomName(room[pz.sol[V]])}.</span><span class="stats"><span>${IC.clock}${fmt(state.elapsed)}</span><span>${IC.tip}${t?`${t} tip${t>1?'s':''}`:'Zonder tips'}</span></span><button type="button" class="btn main" data-new>Nieuwe zaak</button>`}
   else if(state.solved){F.className='focus accuse';F.innerHTML=`<span><b>Iedereen staat goed!</b><span class="h">${accMsg||`Wie heeft ${people[V].name} vermoord? Tik op de dader, hieronder of op het bord.`}</span></span>`}
-  else if(S>=0){F.className='focus';F.innerHTML=`${face(S)}<span><span class="q">${clueText(pz,sc)}</span><span class="h">${mode==='potlood'?`Potlood: tik op vakjes waar ${people[S].name} zou kunnen staan. Nog een keer tikken haalt de notitie weg.`:mode==='kruis'?`Kies ‘Persoon’ om ${people[S].name} neer te zetten.`:state.place[S]>=0?`Tik op een ander vakje om ${people[S].name} te verplaatsen, of op hetzelfde vakje om ${people[S].name} weg te halen.`:`Tik op een vakje om ${people[S].name} neer te zetten.`}</span></span>`}
+  else if(S>=0){F.className='focus';F.innerHTML=`${face(S)}<span><span class="q">${clueText(pz,sc)}</span><span class="h">${mode==='potlood'?`Potlood: tik op vakjes waar ${people[S].name} zou kunnen staan.`:mode==='kruis'?`Kies ‘Persoon’ om ${people[S].name} neer te zetten.`:state.place[S]>=0?`Tik op een ander vakje om ${people[S].name} te verplaatsen, of op hetzelfde vakje om ${people[S].name} weg te halen.`:`Tik op een vakje om ${people[S].name} neer te zetten.`}</span></span>`}
   else{F.className='focus idle';F.innerHTML=`<span><span class="q">${mode==='kruis'?'Tik op vakjes waar volgens jou niemand stond. Nog een keer tikken haalt het kruisje weg.':mode==='potlood'?'Potlood: tik eerst op een persoon, daarna op de vakjes waar die zou kunnen staan.':'Tik op een persoon om de aanwijzing te zien.'}</span></span>`}
   if(state.solved&&!state.closed)F.style.setProperty('--pc','var(--alarm)');else if(!state.closed&&S>=0)F.style.setProperty('--pc',people[S].col);else F.style.removeProperty('--pc');
   $('#mPlace').setAttribute('aria-pressed',mode==='plaats');
@@ -691,7 +691,7 @@ function renderRules(){
     <div><i>${IC.tip}</i><span><b>Tip</b>Haal een fout weg of zet iemand goed.</span></div>
     <div><i>${IC.more}</i><span><b>Meer</b>Hier vind je Terug (laatste zet ongedaan maken) en Wis het bord.</span></div>
   </div>
-  <p class="ver">Versie 32</p>`;
+  <p class="ver">Versie 33</p>`;
 }
 function boot(data){
   renderRules();
