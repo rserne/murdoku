@@ -513,7 +513,7 @@ function render(){
   if(state.closed){const t=state.hints;F.className='focus done';F.innerHTML=`<span class="tag">Zaak gesloten</span><b>${people[pz.murderer].name} was het!</b><span class="h">${people[pz.murderer].name} was als enige verdachte samen met ${people[V].name} ${roomName(room[pz.sol[V]])}.</span><span class="stats"><span>${IC.clock}${fmt(state.elapsed)}</span><span>${IC.tip}${t?`${t} tip${t>1?'s':''}`:'Zonder tips'}</span></span><button type="button" class="btn main" data-new>Nieuwe zaak</button>`}
   else if(state.solved){F.className='focus accuse';F.innerHTML=`<span><b>Iedereen staat goed!</b><span class="h">${accMsg||`Wie heeft ${people[V].name} vermoord? Tik op de dader, hieronder of op het bord.`}</span></span>`}
   else if(S>=0){F.className='focus';F.innerHTML=`${face(S)}<span><span class="q">${clueText(pz,sc)}</span><span class="h">${mode==='potlood'?`Tik op vakjes waar ${people[S].name} zou kunnen staan.`:mode==='kruis'?`Kies ‘Persoon’ om ${people[S].name} neer te zetten.`:state.place[S]>=0?`Tik op een ander vakje om ${people[S].name} te verplaatsen, of op hetzelfde vakje om ${people[S].name} weg te halen.`:`Tik op een vakje om ${people[S].name} neer te zetten.`}</span></span>`}
-  else{F.className='focus idle';F.innerHTML=`<span><span class="q">${mode==='kruis'?'Tik op vakjes waar volgens jou niemand stond. Nog een keer tikken haalt het kruisje weg.':mode==='potlood'?'Tik eerst op een persoon, daarna op de vakjes waar die zou kunnen staan.':'Tik op een persoon om de aanwijzing te zien.'}</span></span>`}
+  else{F.className='focus idle';F.innerHTML=`<span><span class="q">${mode==='kruis'?'Tik op vakjes waar volgens jou niemand stond.':mode==='potlood'?'Tik eerst op een persoon, daarna op de vakjes waar die zou kunnen staan.':'Tik op een persoon om de aanwijzing te zien.'}</span></span>`}
   if(state.solved&&!state.closed)F.style.setProperty('--pc','var(--alarm)');else if(!state.closed&&S>=0)F.style.setProperty('--pc',people[S].col);else F.style.removeProperty('--pc');
   $('#mPlace').setAttribute('aria-pressed',mode==='plaats');
   $('#mMark').setAttribute('aria-pressed',mode==='kruis');
@@ -537,7 +537,7 @@ board.addEventListener('click',e=>{
   const b=e.target.closest('[data-c]');if(!b||!state||state.closed)return;
   const c=+b.dataset.c,occ=state.place.indexOf(c);
   if(state.solved){if(occ>=0)accuse(occ);else bubble(c,`${cellDesc(c)}. Tik op de dader.`);return}
-  if(occ>=0&&occ!==state.sel){state.sel=occ;render();save();return}
+  if(occ>=0&&occ!==state.sel&&mode!=='kruis'){state.sel=occ;render();save();return}
   if(mode==='potlood'){
     if(occ>=0){bubble(c,'Hier staat al iemand.');return}
     if(BLOCK[pz.obj[c]]){bubble(c,`${cellDesc(c)}: hier kan niemand staan.`);return}
@@ -570,7 +570,7 @@ board.addEventListener('click',e=>{
 });
 tray.addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(!b||state.closed)return;if(state.solved){accuse(+b.dataset.p);return}const p=+b.dataset.p;state.sel=state.sel===p?-1:p;if(mode==='kruis')mode='plaats';render();save()});
 $('#mPlace').addEventListener('click',()=>{mode='plaats';render()});
-$('#mMark').addEventListener('click',()=>{mode='kruis';render()});
+$('#mMark').addEventListener('click',()=>{mode='kruis';if(state)state.sel=-1;render();save()});
 $('#mNote').addEventListener('click',()=>{mode='potlood';render()});
 // menu Meer
 const moreBtn=$('#moreBtn'),moreMenu=$('#moreMenu');
@@ -695,7 +695,7 @@ function renderRules(){
     <div><i>${IC.tip}</i><span><b>Tip</b>Haal een fout weg of zet iemand goed.</span></div>
     <div><i>${IC.more}</i><span><b>Meer</b>Hier vind je Terug (laatste zet ongedaan maken) en Wis het bord.</span></div>
   </div>
-  <p class="ver">Versie 35</p>`;
+  <p class="ver">Versie 36</p>`;
 }
 function boot(data){
   renderRules();
