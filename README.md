@@ -25,10 +25,11 @@ Onder het spelregelvenster staat het versienummer van de app.
 | Knop | Wat hij doet |
 | --- | --- |
 | **Persoon** | Een tik op het bord zet de gekozen persoon neer. |
+| **Potlood** | Een tik op het bord zet een kleine letter van de gekozen persoon in het vakje: een notitie dat die persoon daar zou kunnen staan. Nog een keer tikken haalt de notitie weg. |
 | **Kruisje** | Een tik op het bord markeert een vakje waar volgens jou niemand stond. |
-| **Terug** | Maakt je laatste zet ongedaan. |
 | **Tip** | Haalt iemand weg die verkeerd staat, of zet de volgende persoon goed. |
-| **Wissen** | Haalt iedereen en alle kruisjes van het bord. |
+| **Meer › Terug** | Maakt je laatste zet ongedaan. |
+| **Meer › Wis het bord** | Haalt iedereen, alle notities en alle kruisjes van het bord. |
 
 De spelregels en andere vensters sluit je door ze omlaag te vegen, of door ernaast te tikken.
 

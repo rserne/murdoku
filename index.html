@@ -70,6 +70,9 @@ h1{font:800 clamp(26px,5vw,38px)/1.05 Outfit,sans-serif;margin:0;letter-spacing:
 .rl{position:absolute;top:4px;left:6px;font:600 13px/1.35 Inter,sans-serif;padding:0 1px;color:rgba(255,255,255,.92);text-shadow:0 1px 2px rgba(0,0,0,.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;z-index:1;pointer-events:none}
 .ico{width:60%;height:60%;pointer-events:none;filter:drop-shadow(0 2px 0 rgba(0,0,0,.12))}
 .cell.has .ico{position:absolute;right:3px;bottom:3px;width:32%;height:32%}
+.notes{position:absolute;left:3px;right:3px;bottom:3px;display:flex;flex-wrap:wrap;gap:2px;pointer-events:none;z-index:2}
+.notes i{display:grid;place-items:center;width:clamp(14px,3.6vw,18px);height:clamp(14px,3.6vw,18px);border-radius:5px;background:var(--c);color:#fff;font:700 clamp(10px,2.8vw,12px)/1 Inter,sans-serif;font-style:normal;box-shadow:0 0 0 1px rgba(0,0,0,.25)}
+.cell.noted .ico{opacity:.45}
 .mk{position:absolute;left:22%;top:22%;width:56%;height:56%;pointer-events:none;color:color-mix(in srgb,var(--wall) 60%,transparent)}
 .face{--c:#888;display:block;width:76%;aspect-ratio:1;border-radius:50%;overflow:hidden;background:var(--c);box-shadow:0 0 0 2.5px var(--bg),0 6px 10px -4px rgba(0,0,0,.45);position:relative;z-index:2;pointer-events:none}
 .face svg{display:block;width:100%;height:100%}
@@ -132,7 +135,15 @@ h2{font:700 22px/1.1 Outfit,sans-serif;margin:0 0 12px;letter-spacing:-.01em}
 .focus>span{flex:1}
 .rule{margin:0!important}
 .toolbar{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:12px}
-.seg{grid-column:span 2;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px;padding:3px;background:var(--card);border-radius:16px}
+.morewrap{position:relative;display:grid}
+.morewrap>.tb{border:1.5px solid var(--line);border-radius:16px;background:var(--bg);color:var(--ink)}
+.morewrap>.tb[aria-expanded=true]{border-color:var(--ink);background:var(--card)}
+.menu{position:absolute;right:0;bottom:calc(100% + 8px);z-index:20;min-width:190px;padding:6px;border-radius:16px;background:var(--bg);box-shadow:0 0 0 1px var(--line),0 16px 32px -10px rgba(0,0,0,.35)}
+.menu[hidden]{display:none}
+.menu button{display:flex;align-items:center;gap:12px;width:100%;min-height:46px;padding:0 12px;border:0;border-radius:10px;background:none;font-weight:600;font-size:15px;color:var(--ink);text-align:left;white-space:nowrap}
+.menu button:hover,.menu button:focus-visible{background:var(--card)}
+.menu svg{width:20px;height:20px;flex:none}
+.seg{grid-column:span 3;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px;padding:3px;background:var(--card);border-radius:16px}
 .tb{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:58px;padding:0 2px;border:0;border-radius:13px;background:none;font-weight:600;font-size:13px;color:var(--soft);white-space:nowrap}
 .tb svg{width:22px;height:22px;flex:none}
 .seg .tb[aria-pressed=true]{background:light-dark(#ffffff,#2c2d36);color:var(--ink);box-shadow:0 0 0 1.5px light-dark(#d9d9e1,#40414c),0 2px 6px -2px rgba(0,0,0,.25)}
@@ -313,11 +324,17 @@ dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
     <div class="toolbar">
       <div class="seg" role="group" aria-label="Wat doet een tik op het bord?">
         <button class="tb" type="button" id="mPlace" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" fill="currentColor"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7z" fill="currentColor"/></svg>Persoon</button>
+        <button class="tb" type="button" id="mNote" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l1-4.5L15.5 5a2.1 2.1 0 0 1 3 0l.5.5a2.1 2.1 0 0 1 0 3L8.5 19z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M13.5 7l3.5 3.5" stroke="currentColor" stroke-width="2"/></svg>Potlood</button>
         <button class="tb" type="button" id="mMark" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg>Kruisje</button>
       </div>
-      <button class="tb" type="button" id="undoBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7L4 12l5 5M4.5 12H14a6 6 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" transform="translate(0 -3)"/></svg>Terug</button>
       <button class="tb" type="button" id="hintBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19.5h5M10.5 22h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip</button>
-      <button class="tb" type="button" id="clearBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 7V4.5h4V7M6.5 7l1 13h9l1-13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Wissen</button>
+      <div class="morewrap">
+        <button class="tb" type="button" id="moreBtn" aria-haspopup="menu" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5.5" cy="12" r="1.8" fill="currentColor"/><circle cx="12" cy="12" r="1.8" fill="currentColor"/><circle cx="18.5" cy="12" r="1.8" fill="currentColor"/></svg>Meer</button>
+        <div class="menu" id="moreMenu" role="menu" hidden>
+          <button type="button" role="menuitem" id="undoBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7L4 12l5 5M4.5 12H14a6 6 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" transform="translate(0 -3)"/></svg>Terug</button>
+          <button type="button" role="menuitem" id="clearBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 7V4.5h4V7M6.5 7l1 13h9l1-13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Wis het bord</button>
+        </div>
+      </div>
     </div>
   </section>
 </main>
@@ -433,11 +450,11 @@ function start(diff,seed,saved){
     document.body.classList.remove('busy');
     if(!g){toast('Deze zaak lukt niet. Probeer een ander nummer.');return}
     pz=g;
-    state=saved||{seed,diff,place:Array(pz.n).fill(-1),marks:[],struck:[],hints:0,elapsed:0,solved:false,closed:false,sel:0};
+    state=saved||{seed,diff,place:Array(pz.n).fill(-1),marks:[],notes:{},struck:[],hints:0,elapsed:0,solved:false,closed:false,sel:0};
     undo=[];hlRoom=-1;render();save();
   },30);
 }
-function push(){undo.push(JSON.stringify({place:state.place,marks:state.marks}));if(undo.length>200)undo.shift()}
+function push(){undo.push(JSON.stringify({place:state.place,marks:state.marks,notes:state.notes||{}}));if(undo.length>200)undo.shift()}
 
 
 function render(){
@@ -470,12 +487,13 @@ function render(){
     if(best[room[c]].c===c)inner+=`<span class="rl" data-len="${best[room[c]].len}" style="max-width:calc(${best[room[c]].len*100}% - 8px)">${cap(pz.names[room[c]][0])}</span>`;
     if(o&&o!=='kleed')inner+=`<svg class="ico" aria-hidden="true"><use href="#i-${o}"/></svg>`;
     if(p<0&&state.marks.includes(c))inner+=`<svg class="mk" aria-hidden="true"><use href="#i-x"/></svg>`;
+    const nt=p<0&&state.notes&&state.notes[c];if(nt&&nt.length){cls.push('noted');inner+=`<span class="notes" aria-hidden="true">${nt.map(q=>`<i style="--c:${people[q].col}">${people[q].name[0]}</i>`).join('')}</span>`}
     if(p>=0){
       const bad=rowC[r]>1||colC[k]>1;
       inner+=face(p,(bad?'bad ':'')+(p===state.sel&&!state.closed?'sel':''));
       if(state.closed&&p===pz.murderer)inner+='<span class="badge">Dader</span>';
     }
-    const label=`Rij ${r+1}, kolom ${k+1}, ${pz.names[room[c]][0]}${o?', '+OBJ[o][0]:''}${p>=0?', '+people[p].name:''}`;
+    const label=`Rij ${r+1}, kolom ${k+1}, ${pz.names[room[c]][0]}${o?', '+OBJ[o][0]:''}${p>=0?', '+people[p].name:''}${p<0&&state.notes&&state.notes[c]&&state.notes[c].length?', notities: '+state.notes[c].map(q=>people[q].name).join(', '):''}`;
     h+=`<button type="button" class="${cls.join(' ')}" data-c="${c}" aria-label="${label}">${inner}</button>`;
   }
   let wd='';
@@ -490,11 +508,12 @@ function render(){
   const F=$('#focus');
   if(state.closed){const t=state.hints;F.className='focus done';F.innerHTML=`<span class="tag">Zaak gesloten</span><b>${people[pz.murderer].name} was het!</b><span class="h">${people[pz.murderer].name} was als enige verdachte samen met ${people[V].name} ${roomName(room[pz.sol[V]])}.</span><span class="stats"><span>${IC.clock}${fmt(state.elapsed)}</span><span>${IC.tip}${t?`${t} tip${t>1?'s':''}`:'Zonder tips'}</span></span><button type="button" class="btn main" data-new>Nieuwe zaak</button>`}
   else if(state.solved){F.className='focus accuse';F.innerHTML=`<span><b>Iedereen staat goed!</b><span class="h">${accMsg||`Wie heeft ${people[V].name} vermoord? Tik op de dader, hieronder of op het bord.`}</span></span>`}
-  else if(S>=0){F.className='focus';F.innerHTML=`${face(S)}<span><span class="q">${clueText(pz,sc)}</span><span class="h">${mode==='kruis'?`Kies ‘Persoon zetten’ om ${people[S].name} neer te zetten.`:state.place[S]>=0?`Tik op een ander vakje om ${people[S].name} te verplaatsen, of op hetzelfde vakje om ${people[S].name} weg te halen.`:`Tik op een vakje om ${people[S].name} neer te zetten.`}</span></span>`}
-  else{F.className='focus idle';F.innerHTML=`<span><span class="q">${mode==='kruis'?'Tik op vakjes waar volgens jou niemand stond. Nog een keer tikken haalt het kruisje weg.':'Tik op een persoon om de aanwijzing te zien.'}</span></span>`}
+  else if(S>=0){F.className='focus';F.innerHTML=`${face(S)}<span><span class="q">${clueText(pz,sc)}</span><span class="h">${mode==='potlood'?`Potlood: tik op vakjes waar ${people[S].name} zou kunnen staan. Nog een keer tikken haalt de notitie weg.`:mode==='kruis'?`Kies ‘Persoon’ om ${people[S].name} neer te zetten.`:state.place[S]>=0?`Tik op een ander vakje om ${people[S].name} te verplaatsen, of op hetzelfde vakje om ${people[S].name} weg te halen.`:`Tik op een vakje om ${people[S].name} neer te zetten.`}</span></span>`}
+  else{F.className='focus idle';F.innerHTML=`<span><span class="q">${mode==='kruis'?'Tik op vakjes waar volgens jou niemand stond. Nog een keer tikken haalt het kruisje weg.':mode==='potlood'?'Potlood: tik eerst op een persoon, daarna op de vakjes waar die zou kunnen staan.':'Tik op een persoon om de aanwijzing te zien.'}</span></span>`}
   if(state.solved&&!state.closed)F.style.setProperty('--pc','var(--alarm)');else if(!state.closed&&S>=0)F.style.setProperty('--pc',people[S].col);else F.style.removeProperty('--pc');
   $('#mPlace').setAttribute('aria-pressed',mode==='plaats');
   $('#mMark').setAttribute('aria-pressed',mode==='kruis');
+  $('#mNote').setAttribute('aria-pressed',mode==='potlood');
 }
 
 function after(){
@@ -515,6 +534,14 @@ board.addEventListener('click',e=>{
   const c=+b.dataset.c,occ=state.place.indexOf(c);
   if(state.solved){if(occ>=0)accuse(occ);else bubble(c,`${cellDesc(c)}. Tik op de dader.`);return}
   if(occ>=0&&occ!==state.sel){state.sel=occ;render();save();return}
+  if(mode==='potlood'){
+    if(occ>=0){bubble(c,'Hier staat al iemand.');return}
+    if(BLOCK[pz.obj[c]]){bubble(c,`${cellDesc(c)}: hier kan niemand staan.`);return}
+    if(state.sel<0){bubble(c,'Tik eerst op een persoon om een notitie te maken.');return}
+    push();if(!state.notes)state.notes={};const L=state.notes[c]||(state.notes[c]=[]),x=L.indexOf(state.sel);
+    if(x>=0)L.splice(x,1);else{L.push(state.sel);L.sort((a,b)=>a-b)}
+    if(!L.length)delete state.notes[c];after();return;
+  }
   if(mode==='kruis'){
     if(occ>=0){bubble(c,'Haal eerst de persoon van dit vakje.');return}
     if(BLOCK[pz.obj[c]]){bubble(c,`${cellDesc(c)}: hier kan sowieso niemand staan.`);return}
@@ -537,18 +564,26 @@ board.addEventListener('click',e=>{
   after();
   if(pb&&!document.querySelector('dialog[open]'))bubble(c,pb);
 });
-tray.addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(!b||state.closed)return;if(state.solved){accuse(+b.dataset.p);return}const p=+b.dataset.p;state.sel=state.sel===p?-1:p;mode='plaats';render();save()});
+tray.addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(!b||state.closed)return;if(state.solved){accuse(+b.dataset.p);return}const p=+b.dataset.p;state.sel=state.sel===p?-1:p;if(mode==='kruis')mode='plaats';render();save()});
 $('#mPlace').addEventListener('click',()=>{mode='plaats';render()});
 $('#mMark').addEventListener('click',()=>{mode='kruis';render()});
-$('#undoBtn').addEventListener('click',()=>{if(state.closed||!undo.length){toast('Er is niets om ongedaan te maken.');return}const u=JSON.parse(undo.pop());state.place=u.place;state.marks=u.marks;state.solved=false;render();save()});
-$('#clearBtn').addEventListener('click',()=>{if(state.closed)return;push();state.place=state.place.map(()=>-1);state.marks=[];state.sel=0;after();toast('Het bord is leeg. Met Terug zet je alles weer terug.')});
+$('#mNote').addEventListener('click',()=>{mode='potlood';render()});
+// menu Meer
+const moreBtn=$('#moreBtn'),moreMenu=$('#moreMenu');
+function setMenu(open){moreMenu.hidden=!open;moreBtn.setAttribute('aria-expanded',open);if(open)moreMenu.querySelector('button').focus()}
+moreBtn.addEventListener('click',e=>{e.stopPropagation();setMenu(moreMenu.hidden)});
+moreMenu.addEventListener('click',()=>setMenu(false));
+document.addEventListener('click',e=>{if(!moreMenu.hidden&&!e.target.closest('.morewrap'))setMenu(false)});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!moreMenu.hidden){setMenu(false);moreBtn.focus()}});
+$('#undoBtn').addEventListener('click',()=>{if(state.closed||!undo.length){toast('Er is niets om ongedaan te maken.');return}const u=JSON.parse(undo.pop());state.place=u.place;state.marks=u.marks;state.notes=u.notes||{};state.solved=false;render();save()});
+$('#clearBtn').addEventListener('click',()=>{if(state.closed)return;push();state.place=state.place.map(()=>-1);state.marks=[];state.notes={};state.sel=0;after();toast('Het bord is leeg. Met Terug zet je alles weer terug.')});
 $('#hintBtn').addEventListener('click',()=>{
   if(state.closed)return;
   if(state.solved){toast('Iedereen staat goed. Tik op de dader.');return}
   const {sol,people}=pz;push();state.hints++;
   const wrong=state.place.findIndex((c,p)=>c>=0&&c!==sol[p]);
   if(wrong>=0){state.place[wrong]=-1;state.sel=wrong;toast(`${people[wrong].name} stond op de verkeerde plek. Ik heb ${people[wrong].name} van het bord gehaald.`)}
-  else{const p=state.place.findIndex(c=>c<0);const c=sol[p];const occ=state.place.indexOf(c);if(occ>=0)state.place[occ]=-1;state.place[p]=c;state.marks=state.marks.filter(m=>m!==c);state.sel=state.place.findIndex(x=>x<0);toast(`${people[p].name} staat nu op de juiste plek.`)}
+  else{const p=state.place.findIndex(c=>c<0);const c=sol[p];const occ=state.place.indexOf(c);if(occ>=0)state.place[occ]=-1;state.place[p]=c;state.marks=state.marks.filter(m=>m!==c);if(state.notes)delete state.notes[c];state.sel=state.place.findIndex(x=>x<0);toast(`${people[p].name} staat nu op de juiste plek.`)}
   after();
 });
 
@@ -621,6 +656,8 @@ $('#newDlg').addEventListener('click',e=>{
 setInterval(()=>{if(state&&!state.closed&&!document.hidden&&!document.querySelector('dialog[open]')){state.elapsed++;$('#time').textContent=fmt(state.elapsed);if(state.elapsed%5===0)save()}},1000);
 
 const IC={
+  pencil:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l1-4.5L15.5 5a2.1 2.1 0 0 1 3 0l.5.5a2.1 2.1 0 0 1 0 3L8.5 19z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M13.5 7l3.5 3.5" stroke="currentColor" stroke-width="2"/></svg>',
+  more:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5.5" cy="12" r="1.8" fill="currentColor"/><circle cx="12" cy="12" r="1.8" fill="currentColor"/><circle cx="18.5" cy="12" r="1.8" fill="currentColor"/></svg>',
   clock:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7.5V12l3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
   person:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" fill="currentColor"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7z" fill="currentColor"/></svg>',
   x:'<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg>',
@@ -649,12 +686,12 @@ function renderRules(){
   <h4>Bediening</h4>
   <div class="ctrl">
     <div><i>${IC.person}</i><span><b>Persoon</b>Tik op een gezicht en daarna op een vakje.</span></div>
+    <div><i>${IC.pencil}</i><span><b>Potlood</b>Kies een persoon en tik op vakjes waar die zou kunnen staan. Er verschijnt een kleine letter.</span></div>
     <div><i>${IC.x}</i><span><b>Kruisje</b>Markeer vakjes waar niemand stond.</span></div>
-    <div><i>${IC.undo}</i><span><b>Terug</b>Maak je laatste zet ongedaan.</span></div>
     <div><i>${IC.tip}</i><span><b>Tip</b>Haal een fout weg of zet iemand goed.</span></div>
-    <div><i>${IC.trash}</i><span><b>Wissen</b>Begin opnieuw met een leeg bord.</span></div>
+    <div><i>${IC.more}</i><span><b>Meer</b>Hier vind je Terug (laatste zet ongedaan maken) en Wis het bord.</span></div>
   </div>
-  <p class="ver">Versie 31</p>`;
+  <p class="ver">Versie 32</p>`;
 }
 function boot(data){
   renderRules();
