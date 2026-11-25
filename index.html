@@ -70,9 +70,13 @@ h1{font:800 clamp(26px,5vw,38px)/1.05 Outfit,sans-serif;margin:0;letter-spacing:
 .rl{position:absolute;top:4px;left:6px;font:600 13px/1.35 Inter,sans-serif;padding:0 1px;color:rgba(255,255,255,.92);text-shadow:0 1px 2px rgba(0,0,0,.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;z-index:1;pointer-events:none}
 .ico{width:60%;height:60%;pointer-events:none;filter:drop-shadow(0 2px 0 rgba(0,0,0,.12))}
 .cell.has .ico{position:absolute;right:3px;bottom:3px;width:32%;height:32%}
-.notes{position:absolute;left:3px;right:3px;bottom:3px;display:flex;flex-wrap:wrap;gap:2px;pointer-events:none;z-index:2}
-.notes i{display:grid;place-items:center;width:clamp(14px,3.6vw,18px);height:clamp(14px,3.6vw,18px);border-radius:5px;background:var(--c);color:#fff;font:700 clamp(10px,2.8vw,12px)/1 Inter,sans-serif;font-style:normal;box-shadow:0 0 0 1px rgba(0,0,0,.25)}
-.cell.noted .ico{opacity:.45}
+.cell{container-type:inline-size}
+.notes{--ns:34cqw;position:absolute;inset:6cqw;display:flex;flex-wrap:wrap;align-content:center;justify-content:center;gap:4cqw;pointer-events:none;z-index:2}
+.notes.m{--ns:26cqw}
+.notes.l{--ns:20cqw;gap:3cqw}
+.cell:has(.rl) .notes{top:30cqw}
+.notes i{display:grid;place-items:center;width:var(--ns);height:var(--ns);border-radius:22%;background:var(--c);color:#fff;font:700 calc(var(--ns)*.6)/1 Inter,sans-serif;font-style:normal;box-shadow:0 0 0 1px rgba(0,0,0,.25)}
+.cell.noted .ico{opacity:.3}
 .mk{position:absolute;left:22%;top:22%;width:56%;height:56%;pointer-events:none;color:color-mix(in srgb,var(--wall) 60%,transparent)}
 .face{--c:#888;display:block;width:76%;aspect-ratio:1;border-radius:50%;overflow:hidden;background:var(--c);box-shadow:0 0 0 2.5px var(--bg),0 6px 10px -4px rgba(0,0,0,.45);position:relative;z-index:2;pointer-events:none}
 .face svg{display:block;width:100%;height:100%}
@@ -487,7 +491,7 @@ function render(){
     if(best[room[c]].c===c)inner+=`<span class="rl" data-len="${best[room[c]].len}" style="max-width:calc(${best[room[c]].len*100}% - 8px)">${cap(pz.names[room[c]][0])}</span>`;
     if(o&&o!=='kleed')inner+=`<svg class="ico" aria-hidden="true"><use href="#i-${o}"/></svg>`;
     if(p<0&&state.marks.includes(c))inner+=`<svg class="mk" aria-hidden="true"><use href="#i-x"/></svg>`;
-    const nt=p<0&&state.notes&&state.notes[c];if(nt&&nt.length){cls.push('noted');inner+=`<span class="notes" aria-hidden="true">${nt.map(q=>`<i style="--c:${people[q].col}">${people[q].name[0]}</i>`).join('')}</span>`}
+    const nt=p<0&&state.notes&&state.notes[c];if(nt&&nt.length){cls.push('noted');inner+=`<span class="notes${nt.length>4?' l':nt.length>2?' m':''}" aria-hidden="true">${nt.map(q=>`<i style="--c:${people[q].col}">${people[q].name[0]}</i>`).join('')}</span>`}
     if(p>=0){
       const bad=rowC[r]>1||colC[k]>1;
       inner+=face(p,(bad?'bad ':'')+(p===state.sel&&!state.closed?'sel':''));
@@ -691,7 +695,7 @@ function renderRules(){
     <div><i>${IC.tip}</i><span><b>Tip</b>Haal een fout weg of zet iemand goed.</span></div>
     <div><i>${IC.more}</i><span><b>Meer</b>Hier vind je Terug (laatste zet ongedaan maken) en Wis het bord.</span></div>
   </div>
-  <p class="ver">Versie 33</p>`;
+  <p class="ver">Versie 34</p>`;
 }
 function boot(data){
   renderRules();
