@@ -77,7 +77,7 @@ h1{font:800 clamp(26px,5vw,38px)/1.05 Outfit,sans-serif;margin:0;letter-spacing:
 .cell{container-type:inline-size}
 .notes{--ns:34cqw;position:absolute;inset:6cqw;display:flex;flex-wrap:wrap;align-content:center;justify-content:center;gap:4cqw;pointer-events:none;z-index:2}
 .notes.m{--ns:26cqw}
-.notes.off{opacity:.35}
+.notes.off{opacity:.45}
 .notes.l{--ns:20cqw;gap:3cqw}
 .cell.under .notes{top:30cqw!important}
 .notes i{display:grid;place-items:center;width:var(--ns);height:var(--ns);border-radius:22%;background:var(--c);color:#fff;font:700 calc(var(--ns)*.6)/1 Inter,sans-serif;font-style:normal;box-shadow:0 0 0 1px rgba(0,0,0,.25)}
@@ -91,7 +91,8 @@ h1{font:800 clamp(26px,5vw,38px)/1.05 Outfit,sans-serif;margin:0;letter-spacing:
 .cell.under.nb .ico{top:62cqw;left:34cqw;width:32cqw;height:32cqw}
 .cell.under.kleed.nb::before{top:66cqw}
 .mk{position:absolute;left:21%;top:21%;width:58%;height:58%;pointer-events:none;z-index:2;color:rgba(255,255,255,.92)}
-.mk.auto{left:31%;top:31%;width:38%;height:38%;color:rgba(255,255,255,.72)}
+.cell.ax{background:repeating-linear-gradient(45deg,transparent 0 5px,rgba(0,0,0,.42) 5px 6.5px),color-mix(in srgb,var(--rc) 72%,#000)}
+.cell.ax .ico,.cell.ax.kleed::before{opacity:.6}
 .msep{height:1px;background:var(--line);margin:6px 4px}
 #autoBtn span{flex:1}
 .sw2{flex:none;position:relative;width:40px;height:24px;border-radius:999px;background:var(--line);transition:background .15s}
@@ -358,7 +359,7 @@ dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
           <button type="button" role="menuitem" id="undoBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7L4 12l5 5M4.5 12H14a6 6 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" transform="translate(0 -3)"/></svg>Terug</button>
           <button type="button" role="menuitem" id="clearBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 7V4.5h4V7M6.5 7l1 13h9l1-13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Wis het bord</button>
           <div class="msep" role="separator"></div>
-          <button type="button" role="menuitemcheckbox" id="autoBtn" aria-checked="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg><span>Automatische kruisjes</span><i class="sw2" aria-hidden="true"></i></button>
+          <button type="button" role="menuitemcheckbox" id="autoBtn" aria-checked="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg><span>Automatisch wegstrepen</span><i class="sw2" aria-hidden="true"></i></button>
         </div>
       </div>
     </div>
@@ -519,7 +520,7 @@ function render(){
     if(o&&o!=='kleed'&&p<0)inner+=`<svg class="ico" aria-hidden="true"><use href="#i-${o}"/></svg>`;
     const own=p<0&&state.marks.includes(c),nt=!own&&p<0&&state.notes&&state.notes[c]&&state.notes[c].length?state.notes[c]:null,au=p<0&&autoSet.has(c)&&!BLOCK[o];
     if(own)inner+=`<svg class="mk" aria-hidden="true"><use href="#i-x"/></svg>`;
-    else if(au&&!nt)inner+=`<svg class="mk auto" aria-hidden="true"><use href="#i-x"/></svg>`;
+    if(au)cls.push('ax');
     if(nt){cls.push('noted');if(o&&!BLOCK[o])cls.push('nb');inner+=`<span class="notes${nt.length>4?' l':nt.length>2?' m':''}${au?' off':''}" aria-hidden="true">${nt.map(q=>`<i style="--c:${people[q].col}">${people[q].name[0]}</i>`).join('')}</span>`}
     if(p>=0){
       const bad=rowC[r]>1||colC[k]>1;
@@ -727,9 +728,9 @@ function renderRules(){
     <div><i>${IC.pencil}</i><span><b>Potlood</b>Kies een persoon en tik op vakjes waar die zou kunnen staan. Er verschijnt een kleine letter.</span></div>
     <div><i>${IC.x}</i><span><b>Kruisje</b>Markeer vakjes waar niemand stond.</span></div>
     <div><i>${IC.tip}</i><span><b>Tip</b>Haal een fout weg of zet iemand goed.</span></div>
-    <div><i>${IC.more}</i><span><b>Meer</b>Hier vind je Terug (laatste zet ongedaan maken), Wis het bord en Automatische kruisjes: die strepen de rij en kolom van elke geplaatste persoon voor je weg.</span></div>
+    <div><i>${IC.more}</i><span><b>Meer</b>Hier vind je Terug (laatste zet ongedaan maken), Wis het bord en Automatisch wegstrepen: dat maakt de rij en kolom van elke geplaatste persoon donker en gearceerd.</span></div>
   </div>
-  <p class="ver">Versie 44</p>`;
+  <p class="ver">Versie 45</p>`;
 }
 function boot(data){
   renderRules();
