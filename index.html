@@ -81,8 +81,8 @@ h1{font:800 clamp(26px,5vw,38px)/1.05 Outfit,sans-serif;margin:0;letter-spacing:
 .cell:has(.rl) .notes{top:30cqw}
 .notes i{display:grid;place-items:center;width:var(--ns);height:var(--ns);border-radius:22%;background:var(--c);color:#fff;font:700 calc(var(--ns)*.6)/1 Inter,sans-serif;font-style:normal;box-shadow:0 0 0 1px rgba(0,0,0,.25)}
 .cell.noted .ico{opacity:.3}
-.mk{position:absolute;left:22%;top:22%;width:56%;height:56%;pointer-events:none;color:color-mix(in srgb,var(--wall) 60%,transparent)}
-.mk.auto{left:32%;top:32%;width:36%;height:36%;color:color-mix(in srgb,var(--wall) 32%,transparent)}
+.mk{position:absolute;left:21%;top:21%;width:58%;height:58%;pointer-events:none;z-index:2;color:rgba(255,255,255,.92)}
+.mk.auto{left:31%;top:31%;width:38%;height:38%;color:rgba(255,255,255,.72)}
 .msep{height:1px;background:var(--line);margin:6px 4px}
 #autoBtn span{flex:1}
 .sw2{flex:none;position:relative;width:40px;height:24px;border-radius:999px;background:var(--line);transition:background .15s}
@@ -314,7 +314,7 @@ dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
   <symbol id="i-plant" viewBox="0 0 24 24"><path fill="var(--leaf)" d="M12 15C11.5 10.5 8.5 7.5 4 6.5c.3 4.6 3.3 8 8 8.5zM12 15c.5-4.5 3.5-7.5 8-8.5-.3 4.6-3.3 8-8 8.5zM12 15c-1.6-4-1.4-8.3 0-12 1.4 3.7 1.6 8 0 12z"/><path fill="var(--pot)" d="M7.5 14.5h9l-1.4 7H8.9z"/></symbol>
   <symbol id="i-kast" viewBox="0 0 24 24"><rect x="4" y="2.5" width="16" height="19" rx="1.5" fill="var(--wood)"/><rect x="5.6" y="4" width="12.8" height="7" rx=".6" fill="var(--sheet)"/><rect x="5.6" y="12.6" width="12.8" height="7.4" rx=".6" fill="var(--sheet)"/><path d="M6.6 5.2h1.8V11H6.6zM9 6h1.6v5H9zM11.2 5.4h2v5.6h-2zM7 13.8h2v6.2H7zM9.6 14.6h1.6V20H9.6zM13 14h2v6h-2z" fill="var(--quilt)"/><path d="M14 5.4l2 .4-1 5.2-2-.4z" fill="var(--hot)"/></symbol>
   <symbol id="i-bed" viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.4" fill="var(--wood)"/><rect x="6.3" y="3.8" width="11.4" height="16.4" rx="1.6" fill="var(--sheet)"/><rect x="7.6" y="4.8" width="8.8" height="3.6" rx="1.8" fill="var(--sheet)" stroke="var(--soft)" stroke-width=".6"/><rect x="6.3" y="10.2" width="11.4" height="10" rx="1.4" fill="var(--quilt)"/></symbol>
-  <symbol id="i-x" viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19" stroke="rgba(10,10,16,.72)" stroke-width="5.4" stroke-linecap="round"/><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></symbol>
 </svg>
 
 <header class="top">
@@ -717,7 +717,7 @@ function renderRules(){
     <div><i>${IC.tip}</i><span><b>Tip</b>Haal een fout weg of zet iemand goed.</span></div>
     <div><i>${IC.more}</i><span><b>Meer</b>Hier vind je Terug (laatste zet ongedaan maken), Wis het bord en Automatische kruisjes: die strepen de rij en kolom van elke geplaatste persoon voor je weg.</span></div>
   </div>
-  <p class="ver">Versie 39</p>`;
+  <p class="ver">Versie 40</p>`;
 }
 function boot(data){
   renderRules();
