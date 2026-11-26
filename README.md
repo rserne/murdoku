@@ -4,6 +4,8 @@ Een logische puzzel die sudoku combineert met een moordmysterie. Iemand heeft Vi
 
 Murdoku is een Progressive Web App (PWA): je speelt het in de browser, installeert het als app op je telefoon of computer, en na de eerste keer werkt het ook zonder internet.
 
+**Speel online:** https://rserne.github.io/murdoku/
+
 ## Spelregels
 
 1. Zet iedereen op de plattegrond: de verdachten én Vincent.
@@ -18,7 +20,14 @@ Onder het bord staan de personen. Tik op een gezicht om de aanwijzing van die pe
 
 De naam van elke kamer staat als witte tekst in een leeg vakje van die kamer. Tussen het bord en de personen staat de speeltijd.
 
-Onder het spelregelvenster staat het versienummer van de app.
+Onder het spelregelvenster staat het versienummer van de app. Zolang er een venster openstaat, loopt de klok niet door.
+
+## De dader aanwijzen
+
+Staat iedereen op de goede plek, dan blijft het bord gewoon zichtbaar. De balk onder de gezichten kleurt rood en vraagt wie Vincent heeft vermoord. Tik op de dader, in de rij met gezichten of op het bord.
+
+- **Fout gekozen:** de balk meldt dat die persoon een alibi heeft, en je kiest opnieuw.
+- **Goed gekozen:** de dader krijgt een rood label *Dader* op het bord. De balk toont *Zaak gesloten*, je tijd, het aantal tips en een knop *Nieuwe zaak*.
 
 ## Knoppen
 
@@ -44,7 +53,9 @@ De spelregels en andere vensters sluit je door ze omlaag te vegen, of door ernaa
 
 Elke zaak heeft een zaaknummer van vijf cijfers, bijvoorbeeld 21213. Het eerste cijfer is het niveau (1 = Makkelijk, 2 = Gemiddeld, 3 = Moeilijk), de rest bepaalt de puzzel. Het nummer staat linksboven, onder ‘Murdoku’.
 
-Kies bij **Nieuwe zaak** voor **Samen** om met iemand dezelfde zaak te spelen:
+Bij **Nieuwe zaak** kies je bovenaan tussen **Alleen** en **Samen**. Bij **Alleen** kies je een niveau en krijg je een willekeurige zaak.
+
+Kies **Samen** om met iemand dezelfde zaak te spelen:
 
 - **Nieuwe zaak starten:** kies een niveau. Je ziet het zaaknummer in grote cijfers, met een knop *Deel uitnodiging*. De uitnodiging bevat een link (bijv. `…/murdoku/#zaak-21213`) die de zaak bij je vriend direct opent. Tik later linksboven op het zaaknummer om het deelscherm terug te halen.
 - **Meedoen met een zaaknummer:** typ het nummer van je vriend en tik op *Doe mee*.
@@ -86,4 +97,4 @@ python3 -m http.server 8000
 | `manifest.webmanifest` | App-gegevens voor installatie |
 | `icons/` | App-icoontjes |
 
-Zet je een nieuwe versie online, verhoog dan `VERSION` in `sw.js`. Zo krijgen spelers de update binnen.
+Zet je een nieuwe versie online, verhoog dan het versienummer op twee plekken: `VERSION` in `sw.js` (zo krijgen spelers de update binnen) en de tekst *Versie …* onderaan de spelregels in `index.html`. Houd ze gelijk, zodat spelers kunnen zien of ze de nieuwste versie hebben.
