@@ -169,10 +169,14 @@ h2{font:700 22px/1.1 Outfit,sans-serif;margin:0 0 12px;letter-spacing:-.01em}
 .menu button{display:flex;align-items:center;gap:12px;width:100%;min-height:46px;padding:0 12px;border:0;border-radius:10px;background:none;font-weight:600;font-size:15px;color:var(--ink);text-align:left;white-space:nowrap}
 .menu button:hover,.menu button:focus-visible{background:var(--card)}
 .menu svg{width:20px;height:20px;flex:none}
-.seg{grid-column:span 3;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px;padding:3px;background:var(--card);border-radius:16px}
+.seg{grid-column:span 3;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px;padding:3px;background:var(--card);border-radius:16px;position:relative;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.seg .thumb{position:absolute;top:3px;bottom:3px;left:3px;width:calc((100% - 12px)/3);border-radius:13px;background:light-dark(#ffffff,#2c2d36);box-shadow:0 0 0 1.5px light-dark(#d9d9e1,#40414c),0 2px 6px -2px rgba(0,0,0,.25);transform:translateX(calc(var(--i,0)*(100% + 3px)));transition:transform .28s cubic-bezier(.3,.7,.2,1);pointer-events:none}
+.seg.drag .thumb{transition:none}.seg .tb{position:relative;z-index:1;transition:color .2s}
+.seg.drag .tb[aria-pressed=true]{color:var(--soft)}.seg.drag .tb.near{color:var(--ink)}
+@media(prefers-reduced-motion:reduce){.seg .thumb{transition:none}}
 .tb{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:58px;padding:0 2px;border:0;border-radius:13px;background:none;font-weight:600;font-size:13px;color:var(--soft);white-space:nowrap}
 .tb svg{width:22px;height:22px;flex:none}
-.seg .tb[aria-pressed=true]{background:light-dark(#ffffff,#2c2d36);color:var(--ink);box-shadow:0 0 0 1.5px light-dark(#d9d9e1,#40414c),0 2px 6px -2px rgba(0,0,0,.25)}
+.seg .tb[aria-pressed=true]{color:var(--ink)}
 .toolbar>.tb{border:1.5px solid var(--line);border-radius:16px;background:var(--bg);color:var(--ink)}
 .toolbar>.tb:hover{border-color:var(--ink)}
 .rule{display:flex;gap:12px;align-items:center;background:color-mix(in srgb,var(--hot) 10%,var(--bg));border:1.5px solid color-mix(in srgb,var(--hot) 40%,transparent);border-radius:16px;padding:12px 14px;margin:0 0 10px;font-weight:500;line-height:1.4}
@@ -349,6 +353,7 @@ dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
     </div>
     <div class="toolbar">
       <div class="seg" role="group" aria-label="Wat doet een tik op het bord?">
+        <span class="thumb" aria-hidden="true"></span>
         <button class="tb" type="button" id="mPlace" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" fill="currentColor"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7z" fill="currentColor"/></svg>Persoon</button>
         <button class="tb" type="button" id="mNote" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l1-4.5L15.5 5a2.1 2.1 0 0 1 3 0l.5.5a2.1 2.1 0 0 1 0 3L8.5 19z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M13.5 7l3.5 3.5" stroke="currentColor" stroke-width="2"/></svg>Potlood</button>
         <button class="tb" type="button" id="mMark" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg>Kruisje</button>
@@ -551,6 +556,7 @@ function render(){
   $('#mPlace').setAttribute('aria-pressed',mode==='plaats');
   $('#mMark').setAttribute('aria-pressed',mode==='kruis');
   $('#mNote').setAttribute('aria-pressed',mode==='potlood');
+  $('.seg').style.setProperty('--i',['plaats','potlood','kruis'].indexOf(mode));
   {const off=!!state.closed,tb=$('.toolbar');tb.classList.toggle('off',off);tb.querySelectorAll('button').forEach(x=>x.disabled=off);if(off)$('#moreMenu').hidden=true}
   $('#autoBtn').setAttribute('aria-checked',autoX);
 }
@@ -609,6 +615,20 @@ tray.addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(!b||st
 $('#mPlace').addEventListener('click',()=>{mode='plaats';render()});
 $('#mMark').addEventListener('click',()=>{mode='kruis';if(state)state.sel=-1;render();save()});
 $('#mNote').addEventListener('click',()=>{mode='potlood';render()});
+// schuifbare keuze Persoon / Potlood / Kruisje
+(()=>{const seg=$('.seg'),th=seg.querySelector('.thumb'),btns=[$('#mPlace'),$('#mNote'),$('#mMark')];let d=null,eat=false;
+  const geo=()=>{const w=th.offsetWidth;return{w,step:w+3}};
+  seg.addEventListener('pointerdown',e=>{if(e.button)return;const i=+getComputedStyle(seg).getPropertyValue('--i')||0;d={x:e.clientX,y:e.clientY,i,on:false,id:e.pointerId,near:i}});
+  seg.addEventListener('pointermove',e=>{if(!d||e.pointerId!==d.id)return;const dx=e.clientX-d.x;
+    if(!d.on){if(Math.abs(dx)<8)return;if(Math.abs(e.clientY-d.y)>Math.abs(dx)){d=null;return}d.on=true;seg.classList.add('drag');try{seg.setPointerCapture(d.id)}catch(_){}}
+    const {step}=geo(),pos=Math.max(0,Math.min(2*step,d.i*step+dx)),n=Math.round(pos/step);
+    th.style.transform=`translateX(${pos}px)`;if(n!==d.near){d.near=n}btns.forEach((b,k)=>b.classList.toggle('near',k===n));e.preventDefault()});
+  const end=e=>{if(!d)return;const was=d;d=null;if(!was.on)return;eat=true;setTimeout(()=>eat=false,350);
+    seg.classList.remove('drag');th.style.transform='';btns.forEach(b=>b.classList.remove('near'));
+    if(was.near!==was.i)btns[was.near].click();else render()};
+  seg.addEventListener('pointerup',end);seg.addEventListener('pointercancel',end);
+  seg.addEventListener('click',e=>{if(eat&&e.isTrusted){e.stopPropagation();e.preventDefault();eat=false}},true);
+})();
 // menu Meer
 const moreBtn=$('#moreBtn'),moreMenu=$('#moreMenu');
 function setMenu(open){moreMenu.hidden=!open;moreBtn.setAttribute('aria-expanded',open);if(open)moreMenu.querySelector('button').focus()}
@@ -728,13 +748,13 @@ function renderRules(){
   <p class="note">Op een stoel, bed of kleed mag iemand staan. Op een plant of boekenkast niet: die vakjes zijn gearceerd. Tik op een vakje om te zien wat er staat.</p>
   <h4>Bediening</h4>
   <div class="ctrl">
-    <div><i>${IC.person}</i><span><b>Persoon</b>Tik op een gezicht en daarna op een vakje.</span></div>
+    <div><i>${IC.person}</i><span><b>Persoon</b>Tik op een gezicht en daarna op een vakje. Tussen Persoon, Potlood en Kruisje wissel je met een tik of door met je vinger over de knoppen te schuiven.</span></div>
     <div><i>${IC.pencil}</i><span><b>Potlood</b>Kies een persoon en tik op vakjes waar die zou kunnen staan. Er verschijnt een kleine letter.</span></div>
     <div><i>${IC.x}</i><span><b>Kruisje</b>Markeer vakjes waar niemand stond.</span></div>
     <div><i>${IC.tip}</i><span><b>Tip</b>Haal een fout weg of zet iemand goed.</span></div>
     <div><i>${IC.more}</i><span><b>Meer</b>Hier vind je Terug (laatste zet ongedaan maken), Wis het bord en Automatisch wegstrepen: dat maakt de rij en kolom van elke geplaatste persoon donker en gearceerd.</span></div>
   </div>
-  <p class="ver">Versie 49</p>`;
+  <p class="ver">Versie 51</p>`;
 }
 function boot(data){
   renderRules();
