@@ -78,6 +78,13 @@ h1{font:800 clamp(26px,5vw,38px)/1.05 Outfit,sans-serif;margin:0;letter-spacing:
 .notes i{display:grid;place-items:center;width:var(--ns);height:var(--ns);border-radius:22%;background:var(--c);color:#fff;font:700 calc(var(--ns)*.6)/1 Inter,sans-serif;font-style:normal;box-shadow:0 0 0 1px rgba(0,0,0,.25)}
 .cell.noted .ico{opacity:.3}
 .mk{position:absolute;left:22%;top:22%;width:56%;height:56%;pointer-events:none;color:color-mix(in srgb,var(--wall) 60%,transparent)}
+.mk.auto{left:32%;top:32%;width:36%;height:36%;color:color-mix(in srgb,var(--wall) 32%,transparent)}
+.msep{height:1px;background:var(--line);margin:6px 4px}
+#autoBtn span{flex:1}
+.sw2{flex:none;position:relative;width:40px;height:24px;border-radius:999px;background:var(--line);transition:background .15s}
+.sw2::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .15s}
+#autoBtn[aria-checked=true] .sw2{background:#1f9a55}
+#autoBtn[aria-checked=true] .sw2::after{transform:translateX(16px)}
 .face{--c:#888;display:block;width:76%;aspect-ratio:1;border-radius:50%;overflow:hidden;background:var(--c);box-shadow:0 0 0 2.5px var(--bg),0 6px 10px -4px rgba(0,0,0,.45);position:relative;z-index:2;pointer-events:none}
 .face svg{display:block;width:100%;height:100%}
 .cell .face{animation:pop .22s ease-out}
@@ -337,6 +344,8 @@ dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
         <div class="menu" id="moreMenu" role="menu" hidden>
           <button type="button" role="menuitem" id="undoBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7L4 12l5 5M4.5 12H14a6 6 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" transform="translate(0 -3)"/></svg>Terug</button>
           <button type="button" role="menuitem" id="clearBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 7V4.5h4V7M6.5 7l1 13h9l1-13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Wis het bord</button>
+          <div class="msep" role="separator"></div>
+          <button type="button" role="menuitemcheckbox" id="autoBtn" aria-checked="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg><span>Automatische kruisjes</span><i class="sw2" aria-hidden="true"></i></button>
         </div>
       </div>
     </div>
@@ -399,6 +408,7 @@ dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
 const $=s=>document.querySelector(s);
 const board=$('#board'),tray=$('#tray');
 const LS='murdoku-v4';
+let autoX=false;try{autoX=localStorage.getItem('murdoku-auto')==='1'}catch(e){}
 let pz=null,state=null,mode='plaats',undo=[],toastT=0,hlRoom=-1,accMsg='';
 
 // gezichten: kop 64×64, hoofd gecentreerd op (32,30)
@@ -478,6 +488,9 @@ function render(){
     const sc=(obj[c]?0:300)+(taken?-400:0)+(f>=2||(short&&f>=1)?100:0)+(w>=2||short?50:0)+Math.min(w,3)*5-r;
     if(!best[rm]||sc>best[rm].sc)best[rm]={c,len:w,sc};
   }
+  const autoSet=new Set();
+  if(autoX&&!state.closed)state.place.forEach(pc=>{if(pc<0)return;const pr=Math.floor(pc/n),pk=pc%n;
+    for(let q=0;q<n;q++){autoSet.add(pr*n+q);autoSet.add(q*n+pk)}});
   const rowC=Array(n).fill(0),colC=Array(n).fill(0);
   state.place.forEach(c=>{if(c>=0){rowC[Math.floor(c/n)]++;colC[c%n]++}});
   let h='';
@@ -491,6 +504,7 @@ function render(){
     if(best[room[c]].c===c)inner+=`<span class="rl" data-len="${best[room[c]].len}" style="max-width:calc(${best[room[c]].len*100}% - 8px)">${cap(pz.names[room[c]][0])}</span>`;
     if(o&&o!=='kleed')inner+=`<svg class="ico" aria-hidden="true"><use href="#i-${o}"/></svg>`;
     if(p<0&&state.marks.includes(c))inner+=`<svg class="mk" aria-hidden="true"><use href="#i-x"/></svg>`;
+    else if(p<0&&autoSet.has(c)&&!BLOCK[o])inner+=`<svg class="mk auto" aria-hidden="true"><use href="#i-x"/></svg>`;
     const nt=p<0&&state.notes&&state.notes[c];if(nt&&nt.length){cls.push('noted');inner+=`<span class="notes${nt.length>4?' l':nt.length>2?' m':''}" aria-hidden="true">${nt.map(q=>`<i style="--c:${people[q].col}">${people[q].name[0]}</i>`).join('')}</span>`}
     if(p>=0){
       const bad=rowC[r]>1||colC[k]>1;
@@ -518,6 +532,7 @@ function render(){
   $('#mPlace').setAttribute('aria-pressed',mode==='plaats');
   $('#mMark').setAttribute('aria-pressed',mode==='kruis');
   $('#mNote').setAttribute('aria-pressed',mode==='potlood');
+  $('#autoBtn').setAttribute('aria-checked',autoX);
 }
 
 function after(){
@@ -576,7 +591,9 @@ $('#mNote').addEventListener('click',()=>{mode='potlood';render()});
 const moreBtn=$('#moreBtn'),moreMenu=$('#moreMenu');
 function setMenu(open){moreMenu.hidden=!open;moreBtn.setAttribute('aria-expanded',open);if(open)moreMenu.querySelector('button').focus()}
 moreBtn.addEventListener('click',e=>{e.stopPropagation();setMenu(moreMenu.hidden)});
-moreMenu.addEventListener('click',()=>setMenu(false));
+moreMenu.addEventListener('click',e=>{
+  if(e.target.closest('#autoBtn')){autoX=!autoX;try{localStorage.setItem('murdoku-auto',autoX?'1':'0')}catch(err){}render();return}
+  setMenu(false)});
 document.addEventListener('click',e=>{if(!moreMenu.hidden&&!e.target.closest('.morewrap'))setMenu(false)});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!moreMenu.hidden){setMenu(false);moreBtn.focus()}});
 $('#undoBtn').addEventListener('click',()=>{if(state.closed||!undo.length){toast('Er is niets om ongedaan te maken.');return}const u=JSON.parse(undo.pop());state.place=u.place;state.marks=u.marks;state.notes=u.notes||{};state.solved=false;render();save()});
@@ -693,9 +710,9 @@ function renderRules(){
     <div><i>${IC.pencil}</i><span><b>Potlood</b>Kies een persoon en tik op vakjes waar die zou kunnen staan. Er verschijnt een kleine letter.</span></div>
     <div><i>${IC.x}</i><span><b>Kruisje</b>Markeer vakjes waar niemand stond.</span></div>
     <div><i>${IC.tip}</i><span><b>Tip</b>Haal een fout weg of zet iemand goed.</span></div>
-    <div><i>${IC.more}</i><span><b>Meer</b>Hier vind je Terug (laatste zet ongedaan maken) en Wis het bord.</span></div>
+    <div><i>${IC.more}</i><span><b>Meer</b>Hier vind je Terug (laatste zet ongedaan maken), Wis het bord en Automatische kruisjes: die strepen de rij en kolom van elke geplaatste persoon voor je weg.</span></div>
   </div>
-  <p class="ver">Versie 36</p>`;
+  <p class="ver">Versie 37</p>`;
 }
 function boot(data){
   renderRules();

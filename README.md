@@ -30,6 +30,7 @@ Onder het spelregelvenster staat het versienummer van de app.
 | **Tip** | Haalt iemand weg die verkeerd staat, of zet de volgende persoon goed. |
 | **Meer › Terug** | Maakt je laatste zet ongedaan. |
 | **Meer › Wis het bord** | Haalt iedereen, alle notities en alle kruisjes van het bord. |
+| **Meer › Automatische kruisjes** | Schakelaar, standaard uit. Staat hij aan, dan krijgen alle vrije vakjes in de rij en kolom van een geplaatste persoon een licht kruisje. Je eigen kruisjes blijven groter en blijven altijd staan. |
 
 De spelregels en andere vensters sluit je door ze omlaag te vegen, of door ernaast te tikken.
 
