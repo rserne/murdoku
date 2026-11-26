@@ -89,7 +89,7 @@ h1{font:800 clamp(26px,5vw,38px)/1.05 Outfit,sans-serif;margin:0;letter-spacing:
 .cell.under.nb .notes{top:28cqw!important;bottom:40cqw}
 .cell.under.nb .ico{top:62cqw;left:34cqw;width:32cqw;height:32cqw}
 .cell.under.kleed.nb::before{top:66cqw}
-.mk{position:absolute;left:21%;top:21%;width:58%;height:58%;pointer-events:none;z-index:2;color:rgba(255,255,255,.92)}
+.mk{position:absolute;left:21%;top:21%;width:58%;height:58%;pointer-events:none;z-index:4;color:rgba(255,255,255,.92)}
 .mk.auto{left:31%;top:31%;width:38%;height:38%;color:rgba(255,255,255,.72)}
 .msep{height:1px;background:var(--line);margin:6px 4px}
 #autoBtn span{flex:1}
@@ -532,8 +532,9 @@ function render(){
   for(let c=0;c<n*n;c++){const r=Math.floor(c/n),k=c%n;if(r>0&&room[c]!==room[c-n])wd+=`M${k} ${r}h1`;if(k>0&&room[c]!==room[c-1])wd+=`M${k} ${r}v1`}
   h+=`<svg class="walls" viewBox="0 0 ${n} ${n}" preserveAspectRatio="none" aria-hidden="true"><path d="${wd}"/></svg>`;
   board.innerHTML=h;
-  board.querySelectorAll('.rl').forEach(l=>{const cw=l.parentElement.clientWidth,tw=l.scrollWidth;if(tw<=cw-12){l.classList.add('ctr');return}
-    const span=Math.min(+l.dataset.len,Math.ceil((tw+12)/cw));if(span>1&&tw<=span*cw-12){l.style.left=Math.round((span*cw-tw)/2)+'px';return}if(l.scrollWidth>l.clientWidth)l.classList.add('sm');if(l.scrollWidth>l.clientWidth){l.style.maxWidth='none';l.classList.add('over')}});
+  board.querySelectorAll('.rl').forEach(l=>{const cw=l.parentElement.clientWidth,tw=l.scrollWidth,nx=l.parentElement.nextElementSibling;
+    const span=Math.min(+l.dataset.len,Math.ceil((tw+12)/cw));if(nx&&nx.classList.contains('cell')&&+l.dataset.len>1)nx.classList.toggle('under',span>1&&tw>cw-12);
+    if(tw<=cw-12){l.classList.add('ctr');return}if(span>1&&tw<=span*cw-12){l.style.left=Math.round((span*cw-tw)/2)+'px';return}if(l.scrollWidth>l.clientWidth)l.classList.add('sm');if(l.scrollWidth>l.clientWidth){l.style.maxWidth='none';l.classList.add('over')}});
   const S=state.sel,sc=S>=0?pz.clues.find(c=>c.p===S):null;
   const picking=state.solved&&!state.closed;
   tray.innerHTML=people.map((per,p)=>`<button type="button" class="pick${p===S?' on':''}${state.place[p]>=0&&!picking?' done':''}" data-p="${p}" aria-pressed="${p===S}">${face(p)}${state.place[p]>=0&&!picking?'<span class="ok" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 12.5l4 4 8-9"/></svg></span>':''}<span>${per.name}</span></button>`).join('');
@@ -726,7 +727,7 @@ function renderRules(){
     <div><i>${IC.tip}</i><span><b>Tip</b>Haal een fout weg of zet iemand goed.</span></div>
     <div><i>${IC.more}</i><span><b>Meer</b>Hier vind je Terug (laatste zet ongedaan maken), Wis het bord en Automatische kruisjes: die strepen de rij en kolom van elke geplaatste persoon voor je weg.</span></div>
   </div>
-  <p class="ver">Versie 42</p>`;
+  <p class="ver">Versie 43</p>`;
 }
 function boot(data){
   renderRules();
