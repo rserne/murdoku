@@ -566,6 +566,7 @@ function after(){
   }
 }
 
+function dropNotes(p){const N=state.notes;if(!N)return;for(const k in N){N[k]=N[k].filter(q=>q!==p);if(!N[k].length)delete N[k]}}
 board.addEventListener('click',e=>{
   const b=e.target.closest('[data-c]');if(!b||!state||state.closed)return;
   const c=+b.dataset.c,occ=state.place.indexOf(c);
@@ -593,6 +594,7 @@ board.addEventListener('click',e=>{
     if(occ>=0)state.place[occ]=-1;
     state.place[s]=c;
     state.marks=state.marks.filter(m=>m!==c);
+    dropNotes(s);
     pb=placedText(s,c);
     let next=-1;
     for(let i=1;i<=pz.n;i++){const q=(s+i)%pz.n;if(state.place[q]<0){next=q;break}}
@@ -622,7 +624,7 @@ $('#hintBtn').addEventListener('click',()=>{
   const {sol,people}=pz;push();state.hints++;
   const wrong=state.place.findIndex((c,p)=>c>=0&&c!==sol[p]);
   if(wrong>=0){state.place[wrong]=-1;state.sel=wrong;toast(`${people[wrong].name} stond op de verkeerde plek. Ik heb ${people[wrong].name} van het bord gehaald.`)}
-  else{const p=state.place.findIndex(c=>c<0);const c=sol[p];const occ=state.place.indexOf(c);if(occ>=0)state.place[occ]=-1;state.place[p]=c;state.marks=state.marks.filter(m=>m!==c);if(state.notes)delete state.notes[c];state.sel=state.place.findIndex(x=>x<0);toast(`${people[p].name} staat nu op de juiste plek.`)}
+  else{const p=state.place.findIndex(c=>c<0);const c=sol[p];const occ=state.place.indexOf(c);if(occ>=0)state.place[occ]=-1;state.place[p]=c;state.marks=state.marks.filter(m=>m!==c);if(state.notes)delete state.notes[c];dropNotes(p);state.sel=state.place.findIndex(x=>x<0);toast(`${people[p].name} staat nu op de juiste plek.`)}
   after();
 });
 
@@ -730,7 +732,7 @@ function renderRules(){
     <div><i>${IC.tip}</i><span><b>Tip</b>Haal een fout weg of zet iemand goed.</span></div>
     <div><i>${IC.more}</i><span><b>Meer</b>Hier vind je Terug (laatste zet ongedaan maken), Wis het bord en Automatisch wegstrepen: dat maakt de rij en kolom van elke geplaatste persoon donker en gearceerd.</span></div>
   </div>
-  <p class="ver">Versie 45</p>`;
+  <p class="ver">Versie 46</p>`;
 }
 function boot(data){
   renderRules();
