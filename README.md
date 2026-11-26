@@ -18,7 +18,7 @@ Murdoku is een Progressive Web App (PWA): je speelt het in de browser, installee
 
 Onder het bord staan de personen. Tik op een gezicht om de aanwijzing van die persoon te zien, en tik daarna op een vakje om de persoon neer te zetten. De app vertelt dan waar diegene nu staat, bijvoorbeeld ‘Anna zit op een stoel in de keuken’. Tik je zonder gekozen persoon op een vakje, dan zie je wat daar staat.
 
-De naam van elke kamer staat als witte tekst in een leeg vakje van die kamer. Tussen het bord en de personen staat de speeltijd.
+Staat iemand op een stoel, bed of kleed, dan zie je dat aan een wit rondje met het meubel rechtsonder op het gezicht. De naam van elke kamer staat als witte tekst in een leeg vakje van die kamer. Tussen het bord en de personen staat de speeltijd.
 
 Onder het spelregelvenster staat het versienummer van de app. Zolang er een venster openstaat, loopt de klok niet door.
 

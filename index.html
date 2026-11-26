@@ -69,7 +69,11 @@ h1{font:800 clamp(26px,5vw,38px)/1.05 Outfit,sans-serif;margin:0;letter-spacing:
 .bwrap{position:relative}
 .rl{position:absolute;top:4px;left:6px;font:600 13px/1.35 Inter,sans-serif;padding:0 1px;color:rgba(255,255,255,.92);text-shadow:0 1px 2px rgba(0,0,0,.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;z-index:1;pointer-events:none}
 .ico{width:60%;height:60%;pointer-events:none;filter:drop-shadow(0 2px 0 rgba(0,0,0,.12))}
-.cell.has .ico{position:absolute;right:3px;bottom:3px;width:32%;height:32%}
+.cell.kleed.has::before{display:none}
+.fb{position:absolute;right:3cqw;bottom:3cqw;width:38cqw;height:38cqw;border-radius:50%;background:#fff;box-shadow:0 2px 5px rgba(0,0,0,.4);display:grid;place-items:center;z-index:3;pointer-events:none}
+.fb.up{bottom:auto;top:3cqw}
+.fb svg{width:72%;height:72%;--wood:#9a6533;--sheet:#e9e9f0;--quilt:#5a7fe0;--soft:#9a9aa6}
+.fb .rugsw{display:block;width:62%;height:48%;border-radius:3px;box-shadow:0 0 0 1.5px #b8452f;background:repeating-linear-gradient(45deg,transparent 0 3px,rgba(184,69,47,.35) 3px 4.5px),repeating-linear-gradient(-45deg,transparent 0 3px,rgba(184,69,47,.35) 3px 4.5px),#f6e7cc}
 .cell{container-type:inline-size}
 .notes{--ns:34cqw;position:absolute;inset:6cqw;display:flex;flex-wrap:wrap;align-content:center;justify-content:center;gap:4cqw;pointer-events:none;z-index:2}
 .notes.m{--ns:26cqw}
@@ -502,13 +506,14 @@ function render(){
     if(p>=0)cls.push('has');
     let inner='';
     if(best[room[c]].c===c)inner+=`<span class="rl" data-len="${best[room[c]].len}" style="max-width:calc(${best[room[c]].len*100}% - 8px)">${cap(pz.names[room[c]][0])}</span>`;
-    if(o&&o!=='kleed')inner+=`<svg class="ico" aria-hidden="true"><use href="#i-${o}"/></svg>`;
+    if(o&&o!=='kleed'&&p<0)inner+=`<svg class="ico" aria-hidden="true"><use href="#i-${o}"/></svg>`;
     if(p<0&&state.marks.includes(c))inner+=`<svg class="mk" aria-hidden="true"><use href="#i-x"/></svg>`;
     else if(p<0&&autoSet.has(c)&&!BLOCK[o])inner+=`<svg class="mk auto" aria-hidden="true"><use href="#i-x"/></svg>`;
     const nt=p<0&&state.notes&&state.notes[c];if(nt&&nt.length){cls.push('noted');inner+=`<span class="notes${nt.length>4?' l':nt.length>2?' m':''}" aria-hidden="true">${nt.map(q=>`<i style="--c:${people[q].col}">${people[q].name[0]}</i>`).join('')}</span>`}
     if(p>=0){
       const bad=rowC[r]>1||colC[k]>1;
       inner+=face(p,(bad?'bad ':'')+(p===state.sel&&!state.closed?'sel':''));
+      if(o&&!BLOCK[o])inner+=`<span class="fb${state.closed&&p===pz.murderer?' up':''}" aria-hidden="true">${o==='kleed'?'<i class="rugsw"></i>':`<svg><use href="#i-${o}"/></svg>`}</span>`;
       if(state.closed&&p===pz.murderer)inner+='<span class="badge">Dader</span>';
     }
     const label=`Rij ${r+1}, kolom ${k+1}, ${pz.names[room[c]][0]}${o?', '+OBJ[o][0]:''}${p>=0?', '+people[p].name:''}${p<0&&state.notes&&state.notes[c]&&state.notes[c].length?', notities: '+state.notes[c].map(q=>people[q].name).join(', '):''}`;
@@ -712,7 +717,7 @@ function renderRules(){
     <div><i>${IC.tip}</i><span><b>Tip</b>Haal een fout weg of zet iemand goed.</span></div>
     <div><i>${IC.more}</i><span><b>Meer</b>Hier vind je Terug (laatste zet ongedaan maken), Wis het bord en Automatische kruisjes: die strepen de rij en kolom van elke geplaatste persoon voor je weg.</span></div>
   </div>
-  <p class="ver">Versie 37</p>`;
+  <p class="ver">Versie 38</p>`;
 }
 function boot(data){
   renderRules();
