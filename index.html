@@ -23,7 +23,7 @@
    COLOUR wit of bijna zwart, inkt, koraalrood voor de moord; frisse pasteltinten voor de kamers
    TYPE   Outfit voor koppen + Inter voor tekst
    LAYOUT laptop: bord links, verdachten en aanwijzingen rechts; telefoon: titel, bord, verdachten, aanwijzingen */
-:root{color-scheme:light dark;--bg:light-dark(#ffffff,#0f1014);--ink:light-dark(#14151a,#f0f0f3);--soft:light-dark(#6a6c78,#9d9fab);--line:light-dark(#e6e6ec,#2a2b33);--card:light-dark(#f5f5f8,#191a20);--hot:light-dark(#f2304f,#ff5a73);--wall:light-dark(#1d1e24,#e9e9ee);
+:root{color-scheme:light dark;--bg:light-dark(#ffffff,#0f1014);--ink:light-dark(#14151a,#f0f0f3);--soft:light-dark(#5d5f6b,#9d9fab);--line:light-dark(#e6e6ec,#2a2b33);--card:light-dark(#f5f5f8,#191a20);--hot:light-dark(#f2304f,#ff5a73);--wall:light-dark(#1d1e24,#e9e9ee);
 --r0:#7a3a24;--r1:#6b580c;--r2:#1c5a36;--r3:#1f3f7a;--r4:#4f2d86;--r5:#7a2350;--alarm:#c8102e;
 --wood:light-dark(#9a6533,#d39c62);--leaf:light-dark(#239455,#57c983);--pot:light-dark(#d06a3d,#e48a5d);--sheet:light-dark(#ffffff,#dedde6);--quilt:light-dark(#5a7fe0,#8aa6f0)}
 :root[data-theme=light]{color-scheme:light}
@@ -118,7 +118,6 @@ h2{font:700 22px/1.1 Outfit,sans-serif;margin:0 0 12px;letter-spacing:-.01em}
 .pick:hover{background:var(--card)}
 .pick.on{background:var(--card)}
 .pick.on .face{box-shadow:0 0 0 2.5px var(--bg),0 0 0 5px var(--ink)}
-.pick.done .face{opacity:.55}
 .ok{position:absolute;top:4px;right:calc(50% - 30px);width:20px;height:20px;border-radius:50%;background:var(--ink);color:var(--bg);display:grid;place-items:center;box-shadow:0 0 0 2px var(--bg);z-index:3}
 .ok svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}
 .people-row{margin-top:16px}
@@ -161,6 +160,7 @@ h2{font:700 22px/1.1 Outfit,sans-serif;margin:0 0 12px;letter-spacing:-.01em}
 .focus>span{flex:1}
 .rule{margin:0!important}
 .toolbar{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:12px}
+.toolbar.off{opacity:.35;pointer-events:none}
 .morewrap{position:relative;display:grid}
 .morewrap>.tb{border:1.5px solid var(--line);border-radius:16px;background:var(--bg);color:var(--ink)}
 .morewrap>.tb[aria-expanded=true]{border-color:var(--ink);background:var(--card)}
@@ -551,6 +551,7 @@ function render(){
   $('#mPlace').setAttribute('aria-pressed',mode==='plaats');
   $('#mMark').setAttribute('aria-pressed',mode==='kruis');
   $('#mNote').setAttribute('aria-pressed',mode==='potlood');
+  {const off=!!state.closed,tb=$('.toolbar');tb.classList.toggle('off',off);tb.querySelectorAll('button').forEach(x=>x.disabled=off);if(off)$('#moreMenu').hidden=true}
   $('#autoBtn').setAttribute('aria-checked',autoX);
 }
 
@@ -733,7 +734,7 @@ function renderRules(){
     <div><i>${IC.tip}</i><span><b>Tip</b>Haal een fout weg of zet iemand goed.</span></div>
     <div><i>${IC.more}</i><span><b>Meer</b>Hier vind je Terug (laatste zet ongedaan maken), Wis het bord en Automatisch wegstrepen: dat maakt de rij en kolom van elke geplaatste persoon donker en gearceerd.</span></div>
   </div>
-  <p class="ver">Versie 48</p>`;
+  <p class="ver">Versie 49</p>`;
 }
 function boot(data){
   renderRules();
