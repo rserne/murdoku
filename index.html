@@ -91,7 +91,7 @@ h1{font:800 clamp(26px,5vw,38px)/1.05 Outfit,sans-serif;margin:0;letter-spacing:
 .cell.under.nb .ico{top:62cqw;left:34cqw;width:32cqw;height:32cqw}
 .cell.under.kleed.nb::before{top:66cqw}
 .mk{position:absolute;left:21%;top:21%;width:58%;height:58%;pointer-events:none;z-index:2;color:rgba(255,255,255,.92)}
-.cell.ax{background:repeating-linear-gradient(45deg,transparent 0 5px,rgba(0,0,0,.42) 5px 6.5px),color-mix(in srgb,var(--rc) 72%,#000)}
+.cell.ax{background:repeating-linear-gradient(45deg,transparent 0 4.5px,light-dark(rgba(0,0,0,.62),rgba(0,0,0,.42)) 4.5px 6.5px),light-dark(color-mix(in srgb,var(--rc) 58%,#000),color-mix(in srgb,var(--rc) 72%,#000))}
 .cell.ax .ico,.cell.ax.kleed::before{opacity:.6}
 .msep{height:1px;background:var(--line);margin:6px 4px}
 #autoBtn span{flex:1}
@@ -732,7 +732,7 @@ function renderRules(){
     <div><i>${IC.tip}</i><span><b>Tip</b>Haal een fout weg of zet iemand goed.</span></div>
     <div><i>${IC.more}</i><span><b>Meer</b>Hier vind je Terug (laatste zet ongedaan maken), Wis het bord en Automatisch wegstrepen: dat maakt de rij en kolom van elke geplaatste persoon donker en gearceerd.</span></div>
   </div>
-  <p class="ver">Versie 46</p>`;
+  <p class="ver">Versie 48</p>`;
 }
 function boot(data){
   renderRules();
