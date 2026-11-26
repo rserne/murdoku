@@ -77,6 +77,7 @@ h1{font:800 clamp(26px,5vw,38px)/1.05 Outfit,sans-serif;margin:0;letter-spacing:
 .cell{container-type:inline-size}
 .notes{--ns:34cqw;position:absolute;inset:6cqw;display:flex;flex-wrap:wrap;align-content:center;justify-content:center;gap:4cqw;pointer-events:none;z-index:2}
 .notes.m{--ns:26cqw}
+.notes.off{opacity:.35}
 .notes.l{--ns:20cqw;gap:3cqw}
 .cell.under .notes{top:30cqw!important}
 .notes i{display:grid;place-items:center;width:var(--ns);height:var(--ns);border-radius:22%;background:var(--c);color:#fff;font:700 calc(var(--ns)*.6)/1 Inter,sans-serif;font-style:normal;box-shadow:0 0 0 1px rgba(0,0,0,.25)}
@@ -89,7 +90,7 @@ h1{font:800 clamp(26px,5vw,38px)/1.05 Outfit,sans-serif;margin:0;letter-spacing:
 .cell.under.nb .notes{top:28cqw!important;bottom:40cqw}
 .cell.under.nb .ico{top:62cqw;left:34cqw;width:32cqw;height:32cqw}
 .cell.under.kleed.nb::before{top:66cqw}
-.mk{position:absolute;left:21%;top:21%;width:58%;height:58%;pointer-events:none;z-index:4;color:rgba(255,255,255,.92)}
+.mk{position:absolute;left:21%;top:21%;width:58%;height:58%;pointer-events:none;z-index:2;color:rgba(255,255,255,.92)}
 .mk.auto{left:31%;top:31%;width:38%;height:38%;color:rgba(255,255,255,.72)}
 .msep{height:1px;background:var(--line);margin:6px 4px}
 #autoBtn span{flex:1}
@@ -516,9 +517,10 @@ function render(){
     let inner='';
     if(best[room[c]].c===c)inner+=`<span class="rl" data-len="${best[room[c]].len}" style="max-width:calc(${best[room[c]].len*100}% - 8px)">${cap(pz.names[room[c]][0])}</span>`;
     if(o&&o!=='kleed'&&p<0)inner+=`<svg class="ico" aria-hidden="true"><use href="#i-${o}"/></svg>`;
-    if(p<0&&state.marks.includes(c))inner+=`<svg class="mk" aria-hidden="true"><use href="#i-x"/></svg>`;
-    else if(p<0&&autoSet.has(c)&&!BLOCK[o])inner+=`<svg class="mk auto" aria-hidden="true"><use href="#i-x"/></svg>`;
-    const nt=p<0&&state.notes&&state.notes[c];if(nt&&nt.length){cls.push('noted');if(o&&!BLOCK[o])cls.push('nb');inner+=`<span class="notes${nt.length>4?' l':nt.length>2?' m':''}" aria-hidden="true">${nt.map(q=>`<i style="--c:${people[q].col}">${people[q].name[0]}</i>`).join('')}</span>`}
+    const own=p<0&&state.marks.includes(c),nt=!own&&p<0&&state.notes&&state.notes[c]&&state.notes[c].length?state.notes[c]:null,au=p<0&&autoSet.has(c)&&!BLOCK[o];
+    if(own)inner+=`<svg class="mk" aria-hidden="true"><use href="#i-x"/></svg>`;
+    else if(au&&!nt)inner+=`<svg class="mk auto" aria-hidden="true"><use href="#i-x"/></svg>`;
+    if(nt){cls.push('noted');if(o&&!BLOCK[o])cls.push('nb');inner+=`<span class="notes${nt.length>4?' l':nt.length>2?' m':''}${au?' off':''}" aria-hidden="true">${nt.map(q=>`<i style="--c:${people[q].col}">${people[q].name[0]}</i>`).join('')}</span>`}
     if(p>=0){
       const bad=rowC[r]>1||colC[k]>1;
       inner+=face(p,(bad?'bad ':'')+(p===state.sel&&!state.closed?'sel':''));
@@ -574,12 +576,12 @@ board.addEventListener('click',e=>{
     if(state.sel<0){bubble(c,'Tik eerst op een persoon om een notitie te maken.');return}
     push();if(!state.notes)state.notes={};const L=state.notes[c]||(state.notes[c]=[]),x=L.indexOf(state.sel);
     if(x>=0)L.splice(x,1);else{L.push(state.sel);L.sort((a,b)=>a-b)}
-    if(!L.length)delete state.notes[c];after();return;
+    if(!L.length)delete state.notes[c];else state.marks=state.marks.filter(m=>m!==c);after();return;
   }
   if(mode==='kruis'){
     if(occ>=0){bubble(c,'Haal eerst de persoon van dit vakje.');return}
     if(BLOCK[pz.obj[c]]){bubble(c,`${cellDesc(c)}: hier kan sowieso niemand staan.`);return}
-    push();const i=state.marks.indexOf(c);i>=0?state.marks.splice(i,1):state.marks.push(c);after();return;
+    push();const i=state.marks.indexOf(c);if(i>=0)state.marks.splice(i,1);else{state.marks.push(c);if(state.notes)delete state.notes[c]}after();return;
   }
   if(BLOCK[pz.obj[c]]){b.classList.add('shake');setTimeout(()=>b.classList.remove('shake'),520);bubble(c,`${cellDesc(c)}: hier kan niemand staan.`);return}
   if(state.sel<0){bubble(c,`${cellDesc(c)}. Tik eerst op een persoon om iemand neer te zetten.`);return}
@@ -727,7 +729,7 @@ function renderRules(){
     <div><i>${IC.tip}</i><span><b>Tip</b>Haal een fout weg of zet iemand goed.</span></div>
     <div><i>${IC.more}</i><span><b>Meer</b>Hier vind je Terug (laatste zet ongedaan maken), Wis het bord en Automatische kruisjes: die strepen de rij en kolom van elke geplaatste persoon voor je weg.</span></div>
   </div>
-  <p class="ver">Versie 43</p>`;
+  <p class="ver">Versie 44</p>`;
 }
 function boot(data){
   renderRules();

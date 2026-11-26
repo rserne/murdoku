@@ -35,11 +35,11 @@ Staat iedereen op de goede plek, dan blijft het bord gewoon zichtbaar. De balk o
 | --- | --- |
 | **Persoon** | Een tik op het bord zet de gekozen persoon neer. |
 | **Potlood** | Een tik op het bord zet een kleine letter van de gekozen persoon in het vakje: een notitie dat die persoon daar zou kunnen staan. Nog een keer tikken haalt de notitie weg. |
-| **Kruisje** | Een tik op het bord markeert een vakje waar volgens jou niemand stond. |
+| **Kruisje** | Een tik op het bord markeert een vakje waar volgens jou niemand stond. Een kruisje vervangt de notities in dat vakje, en een nieuwe notitie haalt het kruisje weer weg. |
 | **Tip** | Haalt iemand weg die verkeerd staat, of zet de volgende persoon goed. |
 | **Meer › Terug** | Maakt je laatste zet ongedaan. |
 | **Meer › Wis het bord** | Haalt iedereen, alle notities en alle kruisjes van het bord. |
-| **Meer › Automatische kruisjes** | Schakelaar, standaard uit. Staat hij aan, dan krijgen alle vrije vakjes in de rij en kolom van een geplaatste persoon een licht kruisje. Je eigen kruisjes blijven groter en blijven altijd staan. |
+| **Meer › Automatische kruisjes** | Schakelaar, standaard uit. Staat hij aan, dan krijgen alle vrije vakjes in de rij en kolom van een geplaatste persoon een licht kruisje. Je eigen kruisjes blijven groter en blijven altijd staan. Staan er notities in zo'n vakje, dan vervagen die in plaats van dat er een kruisje verschijnt. |
 
 De spelregels en andere vensters sluit je door ze omlaag te vegen, of door ernaast te tikken.
 
