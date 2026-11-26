@@ -80,9 +80,15 @@ h1{font:800 clamp(26px,5vw,38px)/1.05 Outfit,sans-serif;margin:0;letter-spacing:
 .notes.l{--ns:20cqw;gap:3cqw}
 .cell.under .notes{top:30cqw!important}
 .notes i{display:grid;place-items:center;width:var(--ns);height:var(--ns);border-radius:22%;background:var(--c);color:#fff;font:700 calc(var(--ns)*.6)/1 Inter,sans-serif;font-style:normal;box-shadow:0 0 0 1px rgba(0,0,0,.25)}
-.cell.kleed.nb::before{display:none}
-.cell.nb .notes{inset:6cqw 6cqw 34cqw 6cqw}
-.cell.nb .notes:not(.m):not(.l){--ns:30cqw}
+.cell.nb .ico{position:absolute;left:30cqw;top:54cqw;width:40cqw;height:40cqw}
+.cell.kleed.nb::before{inset:60cqw 24cqw 10cqw;border-radius:4px}
+.cell.nb .notes{inset:6cqw 6cqw 48cqw;--ns:26cqw}
+.cell.nb .notes.m{--ns:22cqw;gap:3cqw}
+.cell.nb .notes.l{--ns:18cqw;gap:2cqw}
+.cell.under.nb .notes.l{--ns:14cqw}
+.cell.under.nb .notes{top:28cqw!important;bottom:40cqw}
+.cell.under.nb .ico{top:62cqw;left:34cqw;width:32cqw;height:32cqw}
+.cell.under.kleed.nb::before{top:66cqw}
 .mk{position:absolute;left:21%;top:21%;width:58%;height:58%;pointer-events:none;z-index:2;color:rgba(255,255,255,.92)}
 .mk.auto{left:31%;top:31%;width:38%;height:38%;color:rgba(255,255,255,.72)}
 .msep{height:1px;background:var(--line);margin:6px 4px}
@@ -509,11 +515,10 @@ function render(){
     {const bl=best[room[c]];if(c===bl.c||(bl.len>1&&c===bl.c+1&&pz.names[room[c]][0].length>4))cls.push('under')}
     let inner='';
     if(best[room[c]].c===c)inner+=`<span class="rl" data-len="${best[room[c]].len}" style="max-width:calc(${best[room[c]].len*100}% - 8px)">${cap(pz.names[room[c]][0])}</span>`;
-    const ntc=p<0&&state.notes&&state.notes[c]&&state.notes[c].length;
-    if(o&&o!=='kleed'&&p<0&&!ntc)inner+=`<svg class="ico" aria-hidden="true"><use href="#i-${o}"/></svg>`;
+    if(o&&o!=='kleed'&&p<0)inner+=`<svg class="ico" aria-hidden="true"><use href="#i-${o}"/></svg>`;
     if(p<0&&state.marks.includes(c))inner+=`<svg class="mk" aria-hidden="true"><use href="#i-x"/></svg>`;
     else if(p<0&&autoSet.has(c)&&!BLOCK[o])inner+=`<svg class="mk auto" aria-hidden="true"><use href="#i-x"/></svg>`;
-    const nt=p<0&&state.notes&&state.notes[c];if(nt&&nt.length){cls.push('noted');if(o&&!BLOCK[o]){cls.push('nb');inner+=`<span class="fb" aria-hidden="true">${o==='kleed'?'<i class="rugsw"></i>':`<svg><use href="#i-${o}"/></svg>`}</span>`}inner+=`<span class="notes${nt.length>4?' l':nt.length>2?' m':''}" aria-hidden="true">${nt.map(q=>`<i style="--c:${people[q].col}">${people[q].name[0]}</i>`).join('')}</span>`}
+    const nt=p<0&&state.notes&&state.notes[c];if(nt&&nt.length){cls.push('noted');if(o&&!BLOCK[o])cls.push('nb');inner+=`<span class="notes${nt.length>4?' l':nt.length>2?' m':''}" aria-hidden="true">${nt.map(q=>`<i style="--c:${people[q].col}">${people[q].name[0]}</i>`).join('')}</span>`}
     if(p>=0){
       const bad=rowC[r]>1||colC[k]>1;
       inner+=face(p,(bad?'bad ':'')+(p===state.sel&&!state.closed?'sel':''));
@@ -721,7 +726,7 @@ function renderRules(){
     <div><i>${IC.tip}</i><span><b>Tip</b>Haal een fout weg of zet iemand goed.</span></div>
     <div><i>${IC.more}</i><span><b>Meer</b>Hier vind je Terug (laatste zet ongedaan maken), Wis het bord en Automatische kruisjes: die strepen de rij en kolom van elke geplaatste persoon voor je weg.</span></div>
   </div>
-  <p class="ver">Versie 41</p>`;
+  <p class="ver">Versie 42</p>`;
 }
 function boot(data){
   renderRules();
