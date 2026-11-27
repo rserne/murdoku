@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Murdoku: een logische puzzel waarin je uitzoekt wie waar stond en wie Vincent heeft vermoord.">
-<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0f1014" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f3f1ee" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0b0c10" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -321,6 +321,50 @@ dialog::backdrop{background:rgba(10,10,16,.55);backdrop-filter:blur(3px)}
 .focus .q{font-size:16px;font-weight:600}
 }
 @media(prefers-reduced-motion:reduce){.cell .face,.shake{animation:none}.toast{transition:none}}
+/* ===== Liquid glass ===== */
+:root{--glass:light-dark(rgba(255,255,255,.52),rgba(40,42,54,.46));--glass-hi:light-dark(rgba(255,255,255,.74),rgba(62,64,80,.6));--edge:light-dark(rgba(255,255,255,.9),rgba(255,255,255,.13));--sheen:inset 0 1px 0 light-dark(rgba(255,255,255,.95),rgba(255,255,255,.2)),inset 0 -1px 0 light-dark(rgba(20,20,40,.05),rgba(0,0,0,.3));--lift:0 10px 30px -14px light-dark(rgba(30,30,60,.32),rgba(0,0,0,.7));--blur:blur(22px) saturate(1.8)}
+html{background:light-dark(#f3f1ee,#0b0c10)}
+body{background:transparent}
+body::before{content:'';position:fixed;inset:-10vh -10vw;z-index:-1;pointer-events:none;background:
+ radial-gradient(42% 34% at 8% 4%,light-dark(rgba(214,118,78,.34),rgba(214,118,78,.2)),transparent 70%),
+ radial-gradient(38% 32% at 96% 16%,light-dark(rgba(84,124,224,.3),rgba(84,124,224,.22)),transparent 70%),
+ radial-gradient(46% 36% at 18% 62%,light-dark(rgba(64,168,112,.26),rgba(64,168,112,.16)),transparent 70%),
+ radial-gradient(40% 34% at 92% 86%,light-dark(rgba(156,96,206,.26),rgba(156,96,206,.2)),transparent 70%),
+ radial-gradient(36% 30% at 40% 104%,light-dark(rgba(226,168,64,.24),rgba(226,168,64,.12)),transparent 70%)}
+.hbtn,.stage,.seg,.toolbar>.tb,.morewrap>.tb,.menu,.focus,.stats span,.card2,.seg2,.pick.on,dialog{background:var(--glass);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);border:1px solid var(--edge);box-shadow:var(--sheen),var(--lift)}
+.hbtn{border-width:1px}
+.hbtn:hover,.toolbar>.tb:hover{border-color:var(--edge);background:var(--glass-hi)}
+.stage{border-radius:32px}
+.seg{padding:4px;gap:4px;border-radius:22px}
+.seg .thumb{top:4px;bottom:4px;left:4px;width:calc((100% - 16px)/3);border-radius:18px;background:var(--glass-hi);border:1px solid var(--edge);box-shadow:var(--sheen),0 4px 14px -6px light-dark(rgba(30,30,60,.35),rgba(0,0,0,.8));transform:translateX(calc(var(--i,0)*(100% + 4px)))}
+.seg.drag .thumb{scale:1.06;background:light-dark(rgba(255,255,255,.45),rgba(70,72,90,.45))}
+.seg .thumb{transition:transform .32s cubic-bezier(.3,1.25,.4,1),scale .2s,background .2s}
+.toolbar>.tb,.morewrap>.tb{border-radius:22px;border-width:1px}
+.morewrap>.tb[aria-expanded=true]{background:var(--glass-hi);border-color:var(--edge)}
+.menu{background:var(--glass-hi);border-radius:22px;padding:6px}
+.menu button{border-radius:14px}
+.menu button:hover,.menu button:focus-visible{background:light-dark(rgba(255,255,255,.6),rgba(255,255,255,.08))}
+.focus{background:color-mix(in srgb,var(--pc) 16%,var(--glass));border-color:color-mix(in srgb,var(--pc) 30%,var(--edge));border-radius:24px}
+.focus.idle,.focus.done{background:var(--glass);border-color:var(--edge)}
+.focus.accuse{background:color-mix(in srgb,var(--alarm) 16%,var(--glass));border-color:color-mix(in srgb,var(--alarm) 35%,var(--edge))}
+.focus.done{border-radius:28px}
+.stats span{background:var(--glass-hi);box-shadow:var(--sheen)}
+.pick{border-radius:22px;border:1px solid transparent}
+.pick:hover{background:light-dark(rgba(255,255,255,.35),rgba(255,255,255,.05))}
+.pick.on{background:var(--glass-hi)}
+.pick.on .face{box-shadow:0 0 0 2.5px light-dark(#fff,#2a2b36),0 0 0 5px var(--ink)}
+.ok{box-shadow:0 0 0 2px light-dark(#fff,#2a2b36)}
+.seg2{border-radius:22px;padding:4px}
+.seg2 button{border-radius:18px}
+.seg2 button[aria-pressed=true]{background:var(--glass-hi);border:1px solid var(--edge);box-shadow:var(--sheen),0 4px 14px -6px rgba(0,0,0,.3)}
+.card2{background:var(--glass);border-radius:24px}
+dialog{background:light-dark(rgba(250,249,247,.78),rgba(28,29,38,.74));border-color:var(--edge)}
+dialog::backdrop{background:light-dark(rgba(40,40,60,.18),rgba(0,0,0,.45));-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.grabbar{background:transparent!important;-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur)}
+.toast,.tip{background:light-dark(rgba(24,25,32,.78),rgba(250,250,252,.82));-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 12px 30px -10px rgba(0,0,0,.45)}
+.btn:not(.main){background:var(--glass);border:1px solid var(--edge);box-shadow:var(--sheen)}
+.btn.main{box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 8px 20px -10px rgba(0,0,0,.5)}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){:root{--glass:light-dark(rgba(255,255,255,.9),rgba(30,32,40,.92));--glass-hi:light-dark(#fff,#2c2d38)}}
 </style>
 </head>
 <body>
@@ -754,7 +798,7 @@ function renderRules(){
     <div><i>${IC.tip}</i><span><b>Tip</b>Haal een fout weg of zet iemand goed.</span></div>
     <div><i>${IC.more}</i><span><b>Meer</b>Hier vind je Terug (laatste zet ongedaan maken), Wis het bord en Automatisch wegstrepen: dat maakt de rij en kolom van elke geplaatste persoon donker en gearceerd.</span></div>
   </div>
-  <p class="ver">Versie 51</p>`;
+  <p class="ver">Versie 52</p>`;
 }
 function boot(data){
   renderRules();
